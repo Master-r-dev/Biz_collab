@@ -10,7 +10,7 @@ namespace Biz_collab.Models
     {
         public DbSet<Client> Clients { get; set; }
         public DbSet<Group> Groups { get; set; }
-        
+        public DbSet<Transaction> Transactions { get; set; }
 
     }
 }

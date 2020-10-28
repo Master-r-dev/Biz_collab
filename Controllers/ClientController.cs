@@ -26,8 +26,8 @@ namespace Biz_collab.Controllers
             var roleStore = new RoleStore<IdentityRole>(new ApplicationDbContext());
             var roleManager = new RoleManager<IdentityRole>(roleStore);
 
-            if (!await roleManager.RoleExistsAsync("Admin"))
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            if (!await roleManager.RoleExistsAsync("Владелец"))
+                await roleManager.CreateAsync(new IdentityRole("Владелец"));
 
 
             using (var dbUser = new ApplicationDbContext())
@@ -37,23 +37,12 @@ namespace Biz_collab.Controllers
                 var user = userManager.FindByName("hhhh@gmail.com");
                 
 
-                await userManager.AddToRoleAsync(user.Id, "Admin");
-                //dbUser.SaveChanges();
+                await userManager.AddToRoleAsync(user.Id, "Владелец");
+                dbUser.SaveChanges();
             }
 
             var userName = System.Web.HttpContext.Current.User.Identity.GetUserName();
-            
-
-
             IEnumerable<Client> clients = db.Clients.Include(p => p.Groups);
-            //var clients = db.Clients.Include(p=> p.Groups);
-            
-            
-
-            //clients.Add(new Client { Name = "test_client", Groups = { new Group { Name = "Group_3" }, new Group { Name = "Group_4" } } });
-            //db.SaveChanges();
-
-            //ViewBag.Test = "Тест Лаба";
             ViewBag.Clients = clients;
             return View();
         }
@@ -65,7 +54,7 @@ namespace Biz_collab.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Владелец")]
         [HttpGet]
         public ActionResult Edit(int? id)
         {
@@ -81,8 +70,22 @@ namespace Biz_collab.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+        /*  [HttpGet]
+          public ActionResult MakeTransaction(int ClientId , int GroupId )
+          {
+              Client client = db.Clients.Find(id);
+              return View(client);
+          }
 
-        
+
+          [HttpPost]
+          public ActionResult MakeTransaction(Client client)
+          {
+              db.Entry(client).State = EntityState.Modified;
+              db.SaveChanges();
+              return RedirectToAction("Index");
+          }*/
+
         public ActionResult AddClient(Client client)
         {
             db.Clients.Add(client);
@@ -90,9 +93,11 @@ namespace Biz_collab.Controllers
             return RedirectPermanent("/Client/Index");
         }
 
-        public ActionResult Index1(Client client)
+        public ActionResult ClientsOfChosenGroup(Client client, string GroupId)
         {
-            var clients = (db.Clients.Include(p => p.Groups)).Where(p=> p.Id == 2);
+            Group group = new Group();
+            group.Id = GroupId;
+            var clients = (db.Clients.Include(p => p.Groups)).Where(p=> p.Groups.Contains(group) );
             return View(clients.ToList());
         }
 

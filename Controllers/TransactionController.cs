@@ -14,10 +14,11 @@ namespace Biz_collab.Controllers
 {
     public class TransactionController : Controller
     {
+        GroupContext db = new GroupContext();
         // GET: Transaction
         public ActionResult Index(string GroupId)
         {
-            GroupContext db = new GroupContext();
+            
             string userId = System.Web.HttpContext.Current.User.Identity.GetUserId();
             string groupId= GroupId;
             IEnumerable<Transaction> transactions = db.Transactions;
@@ -43,18 +44,11 @@ namespace Biz_collab.Controllers
 
         // POST: Transaction/Create
         [HttpPost]
-        public ActionResult Create(FormCollection col)
+        public ActionResult Create(Transaction transaction , int Amount, bool OperationType, string Explanation)
         {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            db.Transactions.Add(new Transaction { UserId= transaction.UserId, GroupId= transaction.GroupId, Amount = Amount , OperationType = OperationType , Explanation= Explanation, StartTime= DateTime.Now }) ;
+            db.SaveChanges();
+            return RedirectPermanent("/Transaction/Index");
         }
 
         // GET: Transaction/Edit/5

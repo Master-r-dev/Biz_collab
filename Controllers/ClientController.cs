@@ -10,7 +10,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
-
 namespace Biz_collab.Controllers
 {
     public class ClientController : Controller
@@ -35,8 +34,6 @@ namespace Biz_collab.Controllers
 
                 var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(dbUser));               
                 var user = userManager.FindByName("hhhh@gmail.com");
-                
-
                 await userManager.AddToRoleAsync(user.Id, "Владелец");
                 dbUser.SaveChanges();
             }
@@ -70,21 +67,7 @@ namespace Biz_collab.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
-        /*  [HttpGet]
-          public ActionResult MakeTransaction(int ClientId , int GroupId )
-          {
-              Client client = db.Clients.Find(id);
-              return View(client);
-          }
-
-
-          [HttpPost]
-          public ActionResult MakeTransaction(Client client)
-          {
-              db.Entry(client).State = EntityState.Modified;
-              db.SaveChanges();
-              return RedirectToAction("Index");
-          }*/
+       
 
         public ActionResult AddClient(Client client)
         {

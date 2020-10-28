@@ -7,11 +7,8 @@ namespace Biz_collab.Models
 {
     public class Client
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-        public string Fname { get; set; }
-
+        public string Id = System.Web.HttpContext.Current.User.Identity.GetUserId();
+        public string Login { get; set; }
         public ICollection<Group> Groups { get; set; }
 
         public Client()

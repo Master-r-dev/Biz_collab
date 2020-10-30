@@ -1,20 +1,14 @@
-using Biz_collab.Models;
-using Microsoft.AspNetCore.Identity;
-//using Microsoft.Owin.Security.Provider;
+﻿using Biz_collab.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin.Security.Provider;
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Entity;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Biz_collab.Data;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Security;
 
 namespace Biz_collab.Controllers
 {
@@ -65,7 +59,7 @@ namespace Biz_collab.Controllers
                                                                    }) ;
 
             //ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
-       // по данному ид группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
+            // по данному ид группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней buddget
             var group = (db.Groups.Include(p => p.Clients)).Where(prop => prop.Id == transaction.GroupId);
             if (transaction.OperationType) group.Budget += transaction.Amount;
             else group.Budget -= transaction.Amount;

@@ -1,15 +1,20 @@
 ﻿using Biz_collab.Models;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Owin.Security.Provider;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Data;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Security;
-
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Biz_collab.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 namespace Biz_collab.Controllers
 {
     public class ClientController : Controller
@@ -34,6 +39,8 @@ namespace Biz_collab.Controllers
 
                 var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(dbUser));               
                 var user = userManager.FindByName("hhhh@gmail.com");
+                
+
                 await userManager.AddToRoleAsync(user.Id, "Владелец");
                 dbUser.SaveChanges();
             }
@@ -67,7 +74,21 @@ namespace Biz_collab.Controllers
             db.SaveChanges();
             return RedirectToAction("Index");
         }
-       
+        /*  [HttpGet]
+          public ActionResult MakeTransaction(int ClientId , int GroupId )
+          {
+              Client client = db.Clients.Find(id);
+              return View(client);
+          }
+
+
+          [HttpPost]
+          public ActionResult MakeTransaction(Client client)
+          {
+              db.Entry(client).State = EntityState.Modified;
+              db.SaveChanges();
+              return RedirectToAction("Index");
+          }*/
 
         public ActionResult AddClient(Client client)
         {

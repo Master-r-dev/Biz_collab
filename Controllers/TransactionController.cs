@@ -1,14 +1,20 @@
-﻿using Biz_collab.Models;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security.Provider;
+using Biz_collab.Models;
+using Microsoft.AspNetCore.Identity;
+//using Microsoft.Owin.Security.Provider;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Data;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Security;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Biz_collab.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Biz_collab.Controllers
 {
@@ -19,7 +25,7 @@ namespace Biz_collab.Controllers
         public ActionResult Index(string GroupId)
         {
             
-            string userId = System.Web.HttpContext.Current.User.Identity.GetUserId();
+            
             string groupId= GroupId;
             IEnumerable<Transaction> transactions = db.Transactions;
             ViewBag.Transactions = transactions;
@@ -33,11 +39,14 @@ namespace Biz_collab.Controllers
         }
 
         // GET: Transaction/Create
-        public ActionResult Create(string userId, string GroupId)
+        [HttpGet]
+        public ActionResult Create( string GroupId)
         {
-            Transaction transaction = new Transaction();
-            transaction.UserId = userId;
-            transaction.GroupId = GroupId;
+            Transaction transaction = new Transaction
+            {
+                UserId = System.Web.HttpContext.Current.User.Identity.GetUserId(),
+                GroupId = GroupId
+            };
 
             return View(transaction);
         }
@@ -46,12 +55,27 @@ namespace Biz_collab.Controllers
         [HttpPost]
         public ActionResult Create(Transaction transaction , int Amount, bool OperationType, string Explanation)
         {
-            db.Transactions.Add(new Transaction { UserId= transaction.UserId, GroupId= transaction.GroupId, Amount = Amount , OperationType = OperationType , Explanation= Explanation, StartTime= DateTime.Now }) ;
+            db.Transactions.Add(new Transaction {
+                                                    UserId= transaction.UserId, 
+                                                    GroupId= transaction.GroupId, 
+                                                    Amount = Amount ,
+                                                    OperationType = OperationType ,
+                                                    Explanation= Explanation,
+                                                    StartTime= DateTime.Now 
+                                                                   }) ;
+
+            //ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
+       // по данному ид группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
+            var group = (db.Groups.Include(p => p.Clients)).Where(prop => prop.Id == transaction.GroupId);
+            if (transaction.OperationType) group.Budget += transaction.Amount;
+            else group.Budget -= transaction.Amount;
+            // db.Entry(group).State = EntityState.Modified;
             db.SaveChanges();
             return RedirectPermanent("/Transaction/Index");
         }
 
         // GET: Transaction/Edit/5
+        [HttpGet]
         public ActionResult Edit(int id)
         {
             return View();

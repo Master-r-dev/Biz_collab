@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -20,7 +20,7 @@ namespace Biz_collab.Models
         [Required]
         public bool OperationType { get; set; }  /// Вычет или пополнение
         [Required]
-        public string Text { get; set; }
+        public string Explanation { get; set; }
         [Required]
         public DateTime StartTime { get; set; }
       

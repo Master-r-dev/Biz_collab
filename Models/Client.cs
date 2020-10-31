@@ -16,11 +16,11 @@ namespace Biz_collab.Models
         public string Id { get; set; }
 
         public string Login { get; set; }
-        public ICollection<Group> Groups { get; set; }
-
+        public int PersBudget { get; set; }
+        public ICollection<Group> MyGroups { get; set; }
         public Client()
         {                     
-               Groups = new List<Group>();            
+               MyGroups = new List<Group>();            
         }
         /*   private readonly IHttpContextAccessor _httpContextAccessor;
         public Client(IHttpContextAccessor httpContextAccessor)

@@ -14,13 +14,22 @@ namespace Biz_collab.Models
     public class Client
     {
         public string Id { get; set; }
-
+        private IGroup provider;
         public string Login { get; set; }
         public int PersBudget { get; set; }
-        public ICollection<Group> MyGroups { get; set; }
+        public ICollection<Group> MyGroups { get; set; }// protected set ?
+
         public Client()
         {                     
                MyGroups = new List<Group>();            
+        }
+        public void SetGroup(string groupName, int Budget, bool Type)
+        {
+            MyGroups = (ICollection<Group>)provider.GetOrAddGroup(groupName, Budget, Type);
+        }
+        public Client(IGroup provider)
+        {
+            this.provider = provider;
         }
         /*   private readonly IHttpContextAccessor _httpContextAccessor;
         public Client(IHttpContextAccessor httpContextAccessor)

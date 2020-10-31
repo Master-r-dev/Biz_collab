@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Biz_collab.Models
 {
-    interface IGroup
+    public interface IGroup
     {
         Group GetOrAddGroup(string groupName, int Budget, bool Type);
     }

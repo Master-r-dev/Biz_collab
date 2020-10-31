@@ -1,5 +1,6 @@
-﻿using Biz_collab.Models;
+using Biz_collab.Models;
 using Microsoft.AspNetCore.Identity;
+//using Microsoft.Owin.Security.Provider;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,13 +15,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 
 namespace Biz_collab.Controllers
@@ -28,9 +22,6 @@ namespace Biz_collab.Controllers
     public class TransactionController : Controller
     {
         GroupContext db = new GroupContext();
-        private readonly UserManager<IdentityUser> _userManager;
-      
-
         // GET: Transaction
         public ActionResult Index(string GroupId)
         {
@@ -54,7 +45,8 @@ namespace Biz_collab.Controllers
         {
             Transaction transaction = new Transaction
             {
-                UserId = _userManager.GetUserId(User),
+                // Нужно вытащить id пользователя в данной сессии
+                // UserId = System.Web.HttpContext.Current.User.Identity.GetUserId(); не работает!!!
                 GroupId = GroupId
             };
 
@@ -74,9 +66,9 @@ namespace Biz_collab.Controllers
                                                     StartTime= DateTime.Now 
                                                                    }) ;
 
-            //ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
-       // по данному ид группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
-            var group = (db.Groups.Include(p => p.Clients)).Where(prop => prop.Id == transaction.GroupId);
+            // ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
+            // по данному id группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
+            var group = (db.Groups.Include(p => p.Clients)).Where(prop => prop.Id == transaction.GroupId).FirstOrDefault();
             if (transaction.OperationType) group.Budget += transaction.Amount;
             else group.Budget -= transaction.Amount;
             // db.Entry(group).State = EntityState.Modified;

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +13,16 @@ namespace Biz_collab.Models
 {
     public class Client
     {
+        public string Id { get; set; }
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        public string Login { get; set; }
+        public ICollection<Group> Groups { get; set; }
+
+        public Client()
+        {                     
+               Groups = new List<Group>();            
+        }
+        /*   private readonly IHttpContextAccessor _httpContextAccessor;
         public Client(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -26,16 +34,11 @@ namespace Biz_collab.Models
             string Id = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
            
         }
-        public string Id { get; set; }
+        public void GetLoginofUser()
+        {
+            string Login = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email)
+                .Substring(0, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email).LastIndexOf("@") + 1);
 
-        public string Login { get; set; }
-        //   public string Login= System.Web.HttpContext.Current.User.Identity.GetUserName()
-           // .Substring(0, System.Web.HttpContext.Current.User.Identity.GetUserName().LastIndexOf("@") + 1);
-        public ICollection<Group> Groups { get; set; }
-
-        public Client()
-        {                     
-               Groups = new List<Group>();            
-        }
+        }*/
     }
 }

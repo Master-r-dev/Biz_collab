@@ -72,7 +72,7 @@ namespace Biz_collab.Controllers
             var group = (db.Groups.Include(p => p.Clients)).Where(prop => prop.Id == transaction.GroupId).FirstOrDefault();
             if (transaction.OperationType) group.Budget += transaction.Amount;
             else group.Budget -= transaction.Amount;
-            // db.Entry(group).State = EntityState.Modified;
+            db.Entry(group).State = EntityState.Modified;
             db.SaveChanges();
             return RedirectPermanent("/Transaction/Index");
         }

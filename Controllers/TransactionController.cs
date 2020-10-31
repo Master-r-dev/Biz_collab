@@ -1,6 +1,5 @@
-using Biz_collab.Models;
+﻿using Biz_collab.Models;
 using Microsoft.AspNetCore.Identity;
-//using Microsoft.Owin.Security.Provider;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,6 +14,13 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 
 namespace Biz_collab.Controllers
@@ -22,6 +28,9 @@ namespace Biz_collab.Controllers
     public class TransactionController : Controller
     {
         GroupContext db = new GroupContext();
+        private readonly UserManager<IdentityUser> _userManager;
+      
+
         // GET: Transaction
         public ActionResult Index(string GroupId)
         {
@@ -45,7 +54,7 @@ namespace Biz_collab.Controllers
         {
             Transaction transaction = new Transaction
             {
-                UserId = System.Web.HttpContext.Current.User.Identity.GetUserId(),
+                UserId = _userManager.GetUserId(User),
                 GroupId = GroupId
             };
 

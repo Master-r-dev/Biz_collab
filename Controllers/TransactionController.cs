@@ -1,6 +1,5 @@
 using Biz_collab.Models;
 using Microsoft.AspNetCore.Identity;
-//using Microsoft.Owin.Security.Provider;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -43,10 +42,12 @@ namespace Biz_collab.Controllers
         [HttpGet]
         public ActionResult Create( string GroupId)
         {
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            
             Transaction transaction = new Transaction
             {
-                // Нужно вытащить id пользователя в данной сессии
-                // UserId = System.Web.HttpContext.Current.User.Identity.GetUserId(); не работает!!!
+                UserId = currentUserID,
                 GroupId = GroupId
             };
 

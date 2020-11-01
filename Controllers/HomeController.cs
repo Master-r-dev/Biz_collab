@@ -12,7 +12,8 @@ namespace Biz_collab.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
+        GroupProvider GroupProvider = new GroupProvider();
+        GroupContext db = new GroupContext();
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -20,6 +21,8 @@ namespace Biz_collab.Controllers
 
         public IActionResult Index()
         {
+            IEnumerable<Client> clients = db.Clients;
+            ViewBag.Clients = clients;
             return View();
         }
 

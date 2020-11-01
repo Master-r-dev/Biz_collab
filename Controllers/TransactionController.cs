@@ -26,7 +26,8 @@ namespace Biz_collab.Controllers
         {
             _db = db;
         }
-      //  ApplicationDbContext db = new ApplicationDbContext();
+        //   GroupContext db = new GroupContext();
+
         // GET: Transaction
         public ActionResult Index(string GroupId)
         {

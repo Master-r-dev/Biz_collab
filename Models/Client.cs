@@ -17,15 +17,16 @@ namespace Biz_collab.Models
         private IGroup provider;
         public string Login { get; set; }
         public int PersBudget { get; set; }
-        public ICollection<Group> MyGroups { get; set; }// protected set ?
-
+        public ICollection<GroupClient> MyGroups { get; set; }// protected set ? 
+        public ICollection<Transaction> MyTransactions { get; set; }
         public Client()
         {                     
-               MyGroups = new List<Group>();            
+               MyGroups = new List<GroupClient>();
+               MyTransactions = new List<Transaction>();
         }
         public void SetGroup(string groupName, int Budget, bool Type)
         {
-            MyGroups = (ICollection<Group>)provider.GetOrAddGroup(groupName, Budget, Type);
+            MyGroups = (ICollection<GroupClient>)provider.GetOrAddGroup(groupName, Budget, Type);
         }
         public Client(IGroup provider)
         {

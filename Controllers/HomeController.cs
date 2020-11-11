@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Biz_collab.Models;
+using Biz_collab.Data;
 
 namespace Biz_collab.Controllers
 {
@@ -13,15 +14,16 @@ namespace Biz_collab.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         GroupProvider GroupProvider = new GroupProvider();
-        GroupContext db = new GroupContext();
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ApplicationDbContext _db;
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db )
         {
             _logger = logger;
+            _db = db;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<Client> clients = db.Clients;
+            IEnumerable<Client> clients = _db.Clients;
             ViewBag.Clients = clients;
             return View();
         }

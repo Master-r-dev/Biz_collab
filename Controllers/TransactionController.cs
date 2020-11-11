@@ -31,8 +31,6 @@ namespace Biz_collab.Controllers
         // GET: Transaction
         public ActionResult Index(string GroupId)
         {
-
-
             string groupId = GroupId;
             IEnumerable<Transaction> transactions = _db.Transactions;
             ViewBag.Transactions = transactions;
@@ -54,7 +52,7 @@ namespace Biz_collab.Controllers
 
             Transaction transaction = new Transaction
             {
-                UserId = currentUserID,
+                ClientId = currentUserID,
                 GroupId = GroupId
             };
 
@@ -67,7 +65,7 @@ namespace Biz_collab.Controllers
         {
             _db.Transactions.Add(new Transaction
             {
-                UserId = transaction.UserId,
+                ClientId = transaction.ClientId,
                 GroupId = transaction.GroupId,
                 Amount = Amount,
                 OperationType = OperationType,
@@ -77,7 +75,7 @@ namespace Biz_collab.Controllers
 
             // ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
             // по данному id группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
-            var group = (_db.Groups.Include(p => p.Clients)).Where(prop => prop.Id == transaction.GroupId).FirstOrDefault();
+            var group = _db.Groups.Include(p => p.Clients).Where(prop => prop.Id == transaction.GroupId).FirstOrDefault();
             if (transaction.OperationType) group.Budget += transaction.Amount;
             else group.Budget -= transaction.Amount;
             _db.Entry(group).State = EntityState.Modified;

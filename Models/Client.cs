@@ -16,6 +16,7 @@ namespace Biz_collab.Models
         public string Id { get; set; }
         private IGroup provider;
         public string Login { get; set; }
+        public string Role { get; set; }
         public int PersBudget { get; set; }
         public ICollection<GroupClient> MyGroups { get; set; }// protected set ? 
         public ICollection<Transaction> MyTransactions { get; set; }

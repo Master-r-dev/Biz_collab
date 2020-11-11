@@ -12,7 +12,7 @@ namespace Biz_collab.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public string UserId { get; set; }
+        public string ClientId { get; set; }
         [Required]
         public string GroupId { get; set; }
         [Required]

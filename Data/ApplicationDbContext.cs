@@ -18,18 +18,22 @@ namespace Biz_collab.Data
         public DbSet<Transaction> Transactions { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Client>();
-            builder.Entity<Group>();
+            builder.Entity<Client>()
+                .HasKey(x => x.Id);
+            builder.Entity<Group>()
+                .HasKey(x => x.Id);
+            builder.Entity<GroupClient>()
+                .HasKey(x => new { x.ClientId, x.GroupId });
+            builder.Entity<GroupClient>()
+                .HasOne(x => x.Client)
+                .WithMany(m => m.MyGroups)
+                .HasForeignKey(x => x.ClientId);
+            builder.Entity<GroupClient>()
+                .HasOne(x => x.Group)
+                .WithMany(m => m.Clients)
+                .HasForeignKey(x => x.GroupId);
             builder.Entity<Transaction>();
             base.OnModelCreating(builder);
-
-          /*  builder.Entity<Client>()
-                .HasMany(b => b.IncomingTransfers)
-                .WithOne(t => t.Destination);
-
-            builder.Entity<Client>()
-                .HasMany(b => b.OutgoingTransfers)
-                .WithOne(t => t.Origin);*/
         }
     }
 }

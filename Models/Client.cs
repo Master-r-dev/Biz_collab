@@ -17,7 +17,7 @@ namespace Biz_collab.Models
         private IGroup provider;
         public string Login { get; set; }
         public string Role { get; set; }
-        public int PersBudget { get; set; }
+        public int PersBudget { get; set; } //поменять на int64 ?
         public ICollection<GroupClient> MyGroups { get; set; }// protected set ? 
         public ICollection<Transaction> MyTransactions { get; set; }
         public Client()

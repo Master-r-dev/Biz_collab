@@ -49,10 +49,11 @@ namespace Biz_collab.Controllers
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-
+            var currentUserLog= currentUser.FindFirst(ClaimTypes.Name).Value;
             Transaction transaction = new Transaction
             {
                 ClientId = currentUserID,
+                ClientName= currentUserLog,
                 GroupId = GroupId
             };
 
@@ -61,11 +62,12 @@ namespace Biz_collab.Controllers
 
         // POST: Transaction/Create
         [HttpPost]
-        public ActionResult Create(Transaction transaction, int Amount, bool OperationType, string Explanation)
+        public ActionResult Create(Transaction transaction, int Amount, short OperationType, string Explanation)
         {
             _db.Transactions.Add(new Transaction
             {
                 ClientId = transaction.ClientId,
+                ClientName = transaction.ClientName,
                 GroupId = transaction.GroupId,
                 Amount = Amount,
                 OperationType = OperationType,
@@ -75,10 +77,29 @@ namespace Biz_collab.Controllers
 
             // ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
             // по данному id группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
-            var group = _db.Groups.Include(p => p.Clients).Where(prop => prop.Id == transaction.GroupId).FirstOrDefault();
-            if (transaction.OperationType) group.Budget += transaction.Amount;
-            else group.Budget -= transaction.Amount;
-            _db.Entry(group).State = EntityState.Modified;
+            var group = _db.Groups.Include(g => g.Clients).Where(gr => gr.Id == transaction.GroupId).FirstOrDefault();
+            var client = _db.Clients.Include(c => c.MyGroups).Where(cr => cr.Id == transaction.ClientId).FirstOrDefault();
+
+            //перевод с счета пользователя  на счет группы
+            if (transaction.OperationType == 1 && transaction.Amount <= client.PersBudget) {
+                group.Budget += transaction.Amount;
+                _db.Entry(group).State = EntityState.Modified;
+                client.PersBudget -= transaction.Amount;
+                _db.Entry(client).State = EntityState.Modified;
+            }
+            //перевод с счета группы на счет пользователя
+            else if (transaction.OperationType == 2 && transaction.Amount <= group.Budget) {
+                group.Budget -= transaction.Amount;
+                _db.Entry(group).State = EntityState.Modified;
+                client.PersBudget += transaction.Amount;
+                _db.Entry(client).State = EntityState.Modified;
+            }
+            //трата бюджета  на внешние источники (тоесть физ у.е. потраченны и обновляется данные на сайте для документации)
+            else if (transaction.OperationType == 3 && transaction.Amount <= group.Budget) {
+                group.Budget -= transaction.Amount;
+                _db.Entry(group).State = EntityState.Modified; 
+            }
+
             _db.SaveChanges();
             return RedirectPermanent("/Transaction/Index");
         }

@@ -14,11 +14,14 @@ namespace Biz_collab.Models
         [Required]
         public string ClientId { get; set; }
         [Required]
+        public string ClientName { get; set; }
+        [Required]
         public string GroupId { get; set; }
         [Required]
-        public int Amount { get; set; }
+        public int Amount { get; set; }//поменять на int64 ?
         [Required]
-        public bool OperationType { get; set; }  /// Вычет или пополнение
+        public short OperationType { get; set; }  /// Вычет или пополнение(между счетами груупы и клиента)
+        /* public enum OperationType : byte { add=1, exch=2, sub=3 }*/
         [Required]
         public string Explanation { get; set; }
         [Required]

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Biz_collab.Data.Migrations
+namespace Biz_collab.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -15,7 +15,7 @@ namespace Biz_collab.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.8")
+                .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -29,6 +29,9 @@ namespace Biz_collab.Data.Migrations
 
                     b.Property<int>("PersBudget")
                         .HasColumnType("int");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -80,7 +83,12 @@ namespace Biz_collab.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ClientId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Explanation")
                         .IsRequired()
@@ -90,15 +98,11 @@ namespace Biz_collab.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("OperationType")
-                        .HasColumnType("bit");
+                    b.Property<short>("OperationType")
+                        .HasColumnType("smallint");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -326,7 +330,9 @@ namespace Biz_collab.Data.Migrations
                 {
                     b.HasOne("Biz_collab.Models.Client", null)
                         .WithMany("MyTransactions")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

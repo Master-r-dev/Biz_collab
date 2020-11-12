@@ -47,9 +47,9 @@ namespace Biz_collab.Controllers
         }
         [Authorize]
         // GET: Groups/Create
-        public IActionResult Create(Client client)
+        public IActionResult Create()
         {
-            return View(client);
+            return View();
         }
 
         // POST: Groups/Create
@@ -58,7 +58,7 @@ namespace Biz_collab.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Budget,Type")] Group @group,Client c)
+        public async Task<IActionResult> Create([Bind("Name,Budget,Type")] Group @group)
         {
             if (ModelState.IsValid)
             {
@@ -66,9 +66,16 @@ namespace Biz_collab.Controllers
                 ClaimsPrincipal currentUser = this.User;
                 var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
                 @group.Id = Guid.NewGuid().ToString();
-                c.Role = "Создатель";
-                @group.Clients.Add(new GroupClient { Client=c });
+                //находим клиента который создает и добовляем его в группу ,даем роль создателя 
+                var client = _context.Clients.Include(c => c.MyGroups).Where(cr => cr.Id == currentUserID).FirstOrDefault();
+                GroupClient cl= new GroupClient { Client = client };
+                cl.Client.Role= "Создатель";
+                @group.Clients.Add(cl);
+                //у этого клиента вычитаем сумму которая выдалась на группу
+                _context.Clients.Where(cr => cr.Id == currentUserID).FirstOrDefault().PersBudget-= @group.Budget;
                 _context.Add(@group);
+                //добавляем созданую группу к создателю клиенту
+                _context.Clients.Where(cr => cr.Id == currentUserID).FirstOrDefault().MyGroups.Add(new GroupClient { Group = @group });
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

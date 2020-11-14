@@ -9,10 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
 namespace Biz_collab.Models
 {
     public class Client
     {
+        [Key]
         public string Id { get; set; }
         private IGroup provider;
         public string Login { get; set; }

@@ -72,7 +72,7 @@ namespace Biz_collab.Controllers
                 cl.Client.Role= "Создатель";
                 @group.Clients.Add(cl);
                 //у этого клиента вычитаем сумму которая выдалась на группу
-                _context.Clients.Where(cr => cr.Id == currentUserID).FirstOrDefault().PersBudget-= @group.Budget;
+                if(client.PersBudget<= @group.Budget)  _context.Clients.Where(cr => cr.Id == currentUserID).FirstOrDefault().PersBudget-= @group.Budget;
                 _context.Add(@group);
                 //добавляем созданую группу к создателю клиенту
                 _context.Clients.Where(cr => cr.Id == currentUserID).FirstOrDefault().MyGroups.Add(new GroupClient { Group = @group });

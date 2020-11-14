@@ -9,6 +9,7 @@ using Biz_collab.Models;
 using Biz_collab.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace Biz_collab.Controllers
 {
@@ -38,9 +39,25 @@ namespace Biz_collab.Controllers
             return View();
         }
         [Authorize]
-        public IActionResult Privacy()
+        [HttpGet]
+        public IActionResult AddBalance()
         {
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ViewBag.PersBudget = _db.Clients.Find(currentUserID).PersBudget;
             return View();
+        }
+     
+        [HttpPost]
+        public ActionResult  AddBalance(int PersBudge)
+        {
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var client = _db.Clients.Find(currentUserID);
+            client.PersBudget += PersBudge;
+            _db.Entry(client).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

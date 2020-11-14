@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Biz_collab.Models
+@using Biz_collab.Data
+@model Client
+@inject ApplicationDbContext _db
+@{
+
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,7 +30,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddBalance">Пополнить баланс:   @_db.Clients.FirstOrDefault(m => m.Login == User.Identity.Name).PersBudget</a>
                         </li>
                     </ul>
                 </div>

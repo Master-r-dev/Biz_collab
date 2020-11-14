@@ -8,6 +8,7 @@ namespace Biz_collab.Models
 {
     public class Group
     {
+        [Key]
         public string Id { get; set; }
         public string Name { get; set; }
         public int Budget { get; set; } // стартовый бюджет группы : поменять на int64 ?

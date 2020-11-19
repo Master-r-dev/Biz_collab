@@ -1,6 +1,5 @@
 ﻿@using Biz_collab.Models
 @using Biz_collab.Data
-@model Client
 @inject ApplicationDbContext _db
 @{
 
@@ -27,11 +26,17 @@
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddBalance">Пополнить баланс:   @_db.Clients.FirstOrDefault(m => m.Login == User.Identity.Name).PersBudget</a>
-                        </li>
+                        @if (User.Identity.Name != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Groups" asp-action="Create">Создать группу</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddBalance">Пополнить баланс:    @_db.Clients.FirstOrDefault(m => m.Login == User.Identity.Name).PersBudget</a>
+                            </li>
+}
                     </ul>
                 </div>
             </div>

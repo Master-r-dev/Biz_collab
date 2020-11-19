@@ -16,28 +16,35 @@ namespace Biz_collab.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        GroupProvider GroupProvider = new GroupProvider();
         private readonly ApplicationDbContext _db;
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
         {
             _logger = logger;
             _db = db;
+            
         }
+        
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
             var currentUserLog = currentUser.FindFirst(ClaimTypes.Name).Value;
-           if ( _db.Clients.Find(currentUserID)==null )
+            if ( _db.Clients.Find(currentUserID)==null )
             {
                 Client client = new Client { Id = currentUserID, Login= currentUserLog, PersBudget=0 };
                 _db.Clients.Add(client);
                 _db.SaveChanges();
+               return View(await _db.Clients.Include(c=>c.MyGroups).Where(c=>c.Id== currentUserID).ToListAsync());
             }
-           
+          
             return View();
         }
+        public IActionResult About()
+        {
+            return View();
+        }
+
         [Authorize]
         [HttpGet]
         public IActionResult AddBalance()
@@ -49,16 +56,24 @@ namespace Biz_collab.Controllers
         }
      
         [HttpPost]
-        public ActionResult  AddBalance(int PersBudge)
+        public IActionResult  AddBalance(int Add)
         {
-            ClaimsPrincipal currentUser = this.User;
-            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var client = _db.Clients.Find(currentUserID);
-            client.PersBudget += PersBudge;
-            _db.Entry(client).State = EntityState.Modified;
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+            if (Add <= 0)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ClaimsPrincipal currentUser = this.User;
+                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var client = _db.Clients.Find(currentUserID);
+                client.PersBudget += Add;
+                _db.Entry(client).State = EntityState.Modified;
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

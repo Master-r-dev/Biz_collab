@@ -16,43 +16,25 @@ namespace Biz_collab.Models
     public class Client
     {
         [Key]
-        public string Id { get; set; }
-        private IGroup provider;
+        public string Id { get; set; }        
         public string Login { get; set; }
-        public string Role { get; set; }
-        public int PersBudget { get; set; } //поменять на int64 ?
-        public ICollection<GroupClient> MyGroups { get; set; }// protected set ? 
+        public int PersBudget { get; set; } //поменять на int64 ?  на uint ?
+        public ICollection<Role_Power> MyGroups { get; set; }// protected set ? 
         public ICollection<Transaction> MyTransactions { get; set; }
+        public ICollection<Vote> MyVotes { get; set; }
         public Client()
         {                     
-               MyGroups = new List<GroupClient>();
+               MyGroups = new List<Role_Power>();
                MyTransactions = new List<Transaction>();
+               MyVotes = new List<Vote>();
         }
-        public void SetGroup(string groupName, int Budget, bool Type)
-        {
-            MyGroups = (ICollection<GroupClient>)provider.GetOrAddGroup(groupName, Budget, Type);
-        }
-        public Client(IGroup provider)
-        {
-            this.provider = provider;
-        }
-        /*   private readonly IHttpContextAccessor _httpContextAccessor;
-        public Client(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        
-        }
-
-        public void GetIdofUser()
-        {
-            string Id = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-           
-        }
-        public void GetLoginofUser()
-        {
-            string Login = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email)
-                .Substring(0, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email).LastIndexOf("@") + 1);
-
-        }*/
+        /*
+          public string MakeLogin()
+         {
+            ClaimsPrincipal currentUser = this.User;
+              string currentUserLog = currentUser.FindFirst(ClaimTypes.Name).Value
+                 .Substring(0,currentUser.FindFirst(ClaimTypes.Name).Value.LastIndexOf("@") + 1);
+        return currentUserLog
+         }*/
     }
 }

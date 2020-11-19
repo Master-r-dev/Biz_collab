@@ -13,38 +13,37 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="ClientId" class="control-label"></label>
-                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="ClientName" class="control-label"></label>
-                <input asp-for="ClientName" class="form-control" />
-                <span asp-validation-for="ClientName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="GroupId" class="control-label"></label>
-                <input asp-for="GroupId" class="form-control" />
-                <span asp-validation-for="GroupId" class="text-danger"></span>
+                <select asp-for="GroupId" class="form-control" asp-items="ViewBag.GroupId"></select>
             </div>
+            <div class="form-group form-check">
+                <label asp-for="OperationType" class="control-label">Вид Транзакции</label>
+                <i class="glyphicon glyphicon-plus"> <input type="radio" asp-for="OperationType" id="1" value="1"></i>
+                <label for="1">Потратить из группового бюджета</label><br>
+                <i class="glyphicon glyphicon-cloud-download"><input type="radio" asp-for="OperationType" id="2" value="2"></i>
+                <label for="2">Перевести на свой счет</label><br>
+                <i class="glyphicon glyphicon-cloud-upload"> <input type="radio" asp-for="OperationType" id="3" value="3"></i>
+                <label for="3">Перевести на счет группы</label>
+                <span asp-validation-for="OperationType" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
-                <input asp-for="Amount" class="form-control" />
+                @if (Model.OperationType == 1)
+                {<input oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) <= @ViewBag.Budget ? Math.abs(this.value) : null " asp-for="Amount" class="form-control" />
+                }
+                @if (Model.OperationType == 2)
+                {<input oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) <= @ViewBag.Budget ? Math.abs(this.value) : null " asp-for="Amount" class="form-control" />
+                }
+                @if (Model.OperationType == 3)
+                {<input oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) <= @ViewBag.PersBudget ? Math.abs(this.value) : null " asp-for="Amount" class="form-control" />
+                }
                 <span asp-validation-for="Amount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="OperationType" class="control-label"></label>
-                <input asp-for="OperationType" class="form-control" />
-                <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Explanation" class="control-label"></label>
                 <input asp-for="Explanation" class="form-control" />
                 <span asp-validation-for="Explanation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

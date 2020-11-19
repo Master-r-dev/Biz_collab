@@ -14,21 +14,22 @@ namespace Biz_collab.Controllers
 {
     public class GroupsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
         public GroupsController(ApplicationDbContext context)
         {
-            _context = context;
+            _db = context;
         }
 
         // GET: Groups
         [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Groups.ToListAsync());
+            return View(await _db.Groups.ToListAsync());
         }
-        [Authorize]
+
         // GET: Groups/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -36,7 +37,7 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            var @group = await _context.Groups
+            var @group = await _db.Groups
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@group == null)
             {
@@ -49,34 +50,33 @@ namespace Biz_collab.Controllers
         // GET: Groups/Create
         public IActionResult Create()
         {
-            return View();
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ViewBag.PersBudget = Convert.ToInt32(_db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget);
+            Group @group = new Group { Id = Guid.NewGuid().ToString() };
+            return View(@group);
         }
 
-        // POST: Groups/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Budget,Type")] Group @group)
+        public async Task<IActionResult> Create([Bind("Name,Budget,Type,CloseCall,EntryFeeDon,EntryFeeUser,EntryFeeVIP,EntryFeeMod,MinPlus,MinMinus")] Group @group)
         {
             if (ModelState.IsValid)
             {
                 //убедится что получает на вход текущего клиента
                 ClaimsPrincipal currentUser = this.User;
-                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-                @group.Id = Guid.NewGuid().ToString();
+                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;                
                 //находим клиента который создает и добовляем его в группу ,даем роль создателя 
-                var client = _context.Clients.Include(c => c.MyGroups).Where(cr => cr.Id == currentUserID).FirstOrDefault();
-                GroupClient cl= new GroupClient { Client = client };
-                cl.Client.Role= "Создатель";
+                var client = _db.Clients.Include(c => c.MyGroups).FirstOrDefault(cr => cr.Id == currentUserID);
+                Role_Power cl = new Role_Power { Group = @group, Client = client, R = "Создатель" ,P= 2147483646 };//overkill value ;)
                 @group.Clients.Add(cl);
                 //у этого клиента вычитаем сумму которая выдалась на группу
-                if(client.PersBudget<= @group.Budget)  _context.Clients.Where(cr => cr.Id == currentUserID).FirstOrDefault().PersBudget-= @group.Budget;
-                _context.Add(@group);
+                if (client.PersBudget >= @group.Budget) _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget -= @group.Budget;
                 //добавляем созданую группу к создателю клиенту
-                _context.Clients.Where(cr => cr.Id == currentUserID).FirstOrDefault().MyGroups.Add(new GroupClient { Group = @group });
-                await _context.SaveChangesAsync();
+                // _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(new GroupClient { Group = @group });
+                _db.Add(@group);
+                await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(@group);
@@ -91,7 +91,7 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            var @group = await _context.Groups.FindAsync(id);
+            var @group = await _db.Groups.FindAsync(id);
             if (@group == null)
             {
                 return NotFound();
@@ -99,13 +99,10 @@ namespace Biz_collab.Controllers
             return View(@group);
         }
 
-        // POST: Groups/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Budget,Type")] Group @group)
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Budget,Type,CloseCall,EntryFeeDon,EntryFeeUser,EntryFeeVIP,EntryFeeMod,MinPlus,MinMinus")] Group @group)
         {
             if (id != @group.Id)
             {
@@ -116,8 +113,8 @@ namespace Biz_collab.Controllers
             {
                 try
                 {
-                    _context.Update(@group);
-                    await _context.SaveChangesAsync();
+                    _db.Update(@group);
+                    await _db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -144,7 +141,7 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            var @group = await _context.Groups
+            var @group = await _db.Groups
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@group == null)
             {
@@ -155,20 +152,20 @@ namespace Biz_collab.Controllers
         }
 
         // POST: Groups/Delete/5
-        [Authorize] // [Authorize(Roles ="Владелец")] пример
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var @group = await _context.Groups.FindAsync(id);
-            _context.Groups.Remove(@group);
-            await _context.SaveChangesAsync();
+            var @group = await _db.Groups.FindAsync(id);
+            _db.Groups.Remove(@group);
+            await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool GroupExists(string id)
         {
-            return _context.Groups.Any(e => e.Id == id);
+            return _db.Groups.Any(e => e.Id == id);
         }
     }
 }

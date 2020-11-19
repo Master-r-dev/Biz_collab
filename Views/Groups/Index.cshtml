@@ -21,6 +21,27 @@
             <th>
                 @Html.DisplayNameFor(model => model.Type)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CloseCall)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EntryFeeDon)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EntryFeeUser)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EntryFeeVIP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EntryFeeMod)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MinPlus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MinMinus)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -35,6 +56,27 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeDon)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CloseCall)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinMinus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeUser)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeVIP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeMod)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinPlus)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

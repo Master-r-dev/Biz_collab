@@ -11,20 +11,25 @@ namespace Biz_collab.Models
         [Key]
         public string Id { get; set; }
         public string Name { get; set; }
-        public int Budget { get; set; } // стартовый бюджет группы : поменять на int64 ?
-        public bool Type { get; set; } //с голосованием или нет
-        /*public int AmountClients { get; set; }// кол-во участников
-        [Required]
-        [MaxLength(Convert.ToInt32(AmountClients))]*/
-        public ICollection<GroupClient> Clients { get; set; }
+        public int Budget { get; set; } //  бюджет группы : поменять на int64 ? на uint ?
+        public byte Type { get; set; } //min=0 for userinput (do in a view of radioboxes!!)
+        public ICollection<Role_Power> Clients { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
         public Group()
         {
-            Clients = new List<GroupClient>();
+            Clients = new List<Role_Power>();
+            Transactions = new List<Transaction>();
         }
+        /*public struct Settings {*/
+        public bool CloseCall { get; set; } //Что делать если голоса за и против равны?(1-принять,0-удалить)
+        public int EntryFeeDon { get; set; } // минимальный внос для подключения в группу /Роль="Донатер" сила голоса=1      
+        public int EntryFeeUser { get; set; } // минимальный внос для подключения в группу /Роль="Участник" сила голоса=1
+        public int EntryFeeVIP { get; set; } // минимальный внос для подключения в группу /Роль="VIP" сила голоса=25% от кол-ва пользователей
+        public int EntryFeeMod { get; set; } // минимальный внос для подключения в группу /Роль="Модератор" сила голоса=50% от кол-ва пользователей
+        public int MinPlus { get; set; } //минимальное пополнение(защита от спама +1 у.е.)
+        public int MinMinus { get; set; } //минимальный вычет(защита от спама -1 у.е.)
+       /* }*/
 
-    
-        //public int EntryFee { get; set; }  минимальный внос для подключения в группу
-        //public int MinPlus { get; set; } минимальное пополнение(защита от спама +1 у.е.)
-        //public int MinMinus { get; set; }минимальный вычет(защита от спама -1 у.е.)
+      
     }
 }

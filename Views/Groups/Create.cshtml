@@ -1,12 +1,12 @@
 ﻿@model Biz_collab.Models.Group
-
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
 
-<h4>Group</h4>
+<h3>Group</h3>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -19,13 +19,96 @@
             </div>
             <div class="form-group">
                 <label asp-for="Budget" class="control-label"></label>
-                <input asp-for="Budget" class="form-control" />
+                <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) <= @ViewBag.PersBudget ? Math.abs(this.value) : null " asp-for="Budget" class="form-control" />
                 <span asp-validation-for="Budget" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Type" /> @Html.DisplayNameFor(model => model.Type)
-                </label>
+            <script type="text/javascript">
+                function ShowHideDiv() {
+                    var chkYes = document.getElementById("1");
+                    var dv1 = document.getElementById("du");
+                    dv1.style.display = chkYes.checked ? "none" : "block";
+                }
+            </script>
+            <div class="form-group">
+                <h4>Выберете тип группы</h4>@*Добавь глиф иконки*@
+                <label for="1" class="control-label">1- Нет голосования(группа для пожертвований)</label>
+                <input type="radio" id="1" onclick="ShowHideDiv()" value="1" asp-for="Type" />
+                <label for="2" class="control-label">2- С голосованием,без покупных VIP и модерации(Тоталитаризм)</label>
+                <input type="radio" id="2" onclick="ShowHideDiv()" value="2" asp-for="Type" />
+                <label for="3" class="control-label">3- С голосованием,нельзя купить модерацию(Тоталирзм с динамикой)</label>
+                <input type="radio" id="3" onclick="ShowHideDiv()" value="3" asp-for="Type" />
+                <label for="4" class="control-label">4- С голосования,нельзя купить VIP(Тоталитаризм без любимчиков)</label>
+                <input type="radio" id="4" onclick="ShowHideDiv()" value="4" asp-for="Type" />
+                <label for="5" class="control-label">5- С голосованием,у всего есть цена(C.R.E.A.M.)</label>
+                <input type="radio" id="5" onclick="ShowHideDiv()" value="5" asp-for="Type" />
+
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EntryFeeDon" class="control-label">Взнос для вступления(донатер)</label>
+                <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) < 1000000000 ? Math.abs(this.value) : null " asp-for="EntryFeeDon" class="form-control" />
+                <span asp-validation-for="EntryFeeDon" class="text-danger"></span>
+            </div>
+            @if (Model.Type != 1)
+            {
+                <div id="du" class="form-group form-check">
+                    <label class="form-check-label">
+                        <input id="call" class="form-check-input" asp-for="CloseCall" /> Что делать если при голосов поровну?(&#10003;-Принять транзакцию,&#9744;-удалить транзакцию)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MinMinus" class="control-label">Минимальное снятие</label>
+                    <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) < 1000000000 ? Math.abs(this.value) : null " asp-for="MinMinus" class="form-control" />
+                    <span asp-validation-for="MinMinus" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EntryFeeUser" class="control-label">Взнос для вступления(участник)</label>
+                    <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) < 1000000000 ? Math.abs(this.value) : null " asp-for="EntryFeeUser" class="form-control" />
+                    <span asp-validation-for="EntryFeeUser" class="text-danger"></span>
+                </div>
+                @if (Model.Type != 2)
+                {
+                    <div id="tre" class="form-group">
+                        <label asp-for="EntryFeeVIP" class="control-label">Взнос для вступления(xXx_VIP_xXx)</label>
+                        <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) < 1000000000 ? Math.abs(this.value) : null " asp-for="EntryFeeVIP" class="form-control" />
+                        <span asp-validation-for="EntryFeeVIP" class="text-danger"></span>
+                    </div>
+                    @if (Model.Type != 3)
+                    {
+                        <div id="4or" class="form-group">
+                            <label asp-for="EntryFeeMod" class="control-label">Взнос для вступления(mod3R47oR)</label>
+                            <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) < 1000000000 ? Math.abs(this.value) : null " asp-for="EntryFeeMod" class="form-control" />
+                            <span asp-validation-for="EntryFeeMod" class="text-danger"></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="fifth" class="form-group">
+                            <label asp-for="EntryFeeVIP" class="control-label">Взнос для вступления(xXx_VIP_xXx)</label>
+                            <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) < 1000000000 ? Math.abs(this.value) : null " asp-for="EntryFeeVIP" class="form-control" />
+                            <span asp-validation-for="EntryFeeVIP" class="text-danger"></span>
+                        </div>
+                        <div id="fifth" class="form-group">
+                            <label asp-for="EntryFeeMod" class="control-label">Взнос для вступления(mod3R47oR)</label>
+                            <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) < 1000000000 ? Math.abs(this.value) : null " asp-for="EntryFeeMod" class="form-control" />
+                            <span asp-validation-for="EntryFeeMod" class="text-danger"></span>
+                        </div>
+                    }
+                }
+
+            }
+            else
+            {
+                Model.CloseCall = true;
+                Model.EntryFeeUser = -1;
+                Model.EntryFeeVIP = -1;
+                Model.EntryFeeMod = -1;
+            }
+            }
+            <div class="form-group">
+                <label asp-for="MinPlus" class="control-label">Минимальное пополнение</label>
+                <input min="0" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) < 1000000000 ? Math.abs(this.value) : null " asp-for="MinPlus" class="form-control" />
+                <span asp-validation-for="MinPlus" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -33,6 +116,8 @@
         </form>
     </div>
 </div>
+
+
 
 <div>
     <a asp-action="Index">Back to List</a>

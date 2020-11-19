@@ -10,23 +10,91 @@
     <h4>Group</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Budget)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Budget)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Type)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Type)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.EntryFeeDon)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EntryFeeDon)
+        </dd>
+        @if (Model.Type != 1)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.CloseCall)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CloseCall)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.MinMinus)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.MinMinus)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.EntryFeeUser)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.EntryFeeUser)
+            </dd>
+            @if (Model.Type != 2)
+            {
+
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.EntryFeeVIP)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.EntryFeeVIP)
+                </dd>
+
+                @if (Model.Type != 3)
+                {
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.EntryFeeMod)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.EntryFeeMod)
+                    </dd>
+                }
+                else
+                {
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.EntryFeeVIP)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.EntryFeeVIP)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.EntryFeeMod)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.EntryFeeMod)
+                    </dd>
+                }
+            }
+        }
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MinPlus)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MinPlus)
         </dd>
     </dl>
 </div>

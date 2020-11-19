@@ -13,10 +13,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ClientName)
+                @Html.DisplayNameFor(model => model.Client)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.GroupId)
+                @Html.DisplayNameFor(model => model.Group)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Amount)
@@ -30,6 +30,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.StartTime)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.YesPercent)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NoPercent)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -37,10 +46,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.ClientName)
+                @Html.DisplayFor(modelItem => item.Client.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GroupId)
+                @Html.DisplayFor(modelItem => item.Group.Id)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Amount)
@@ -53,6 +62,15 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.YesPercent)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NoPercent)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

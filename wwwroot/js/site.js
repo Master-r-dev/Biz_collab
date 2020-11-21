@@ -4,10 +4,23 @@
 // Write your JavaScript code.
 
 function ShowCreatGroupSettings() {
-    if (document.getElementById("1").checked)
+    if (document.getElementById("1").checked) {
         document.getElementById("Settings").style.display = "none";
-    else if (document.getElementById("2").checked)
-        document.getElementById("Settings").style.display = "block";//add default value to hidden blocks
+        document.getElementById("InputCloseCall").value = "true";
+        document.getElementById("InputMinMinus").value = "-1";
+        document.getElementById("InputEntryFeeUser").value = "-1";
+        document.getElementById("InputEntryFeeVIP").value = "-1";
+        document.getElementById("InputEntryFeeMod").value = "-1";
+    }
+    else if (document.getElementById("2").checked) {
+        document.getElementById("Settings").style.display = "block";
+        document.getElementById("InputCloseCall").value = "false";
+        document.getElementById("InputMinMinus").value = "";
+        document.getElementById("InputEntryFeeUser").value = "";
+        document.getElementById("InputEntryFeeVIP").value = "";
+        document.getElementById("InputEntryFeeMod").value = "";
+    }
+    console.log("done");
 } 
 
 function ShowCreatTransactionSettings() {

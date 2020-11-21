@@ -52,16 +52,16 @@ namespace Biz_collab.Controllers
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-            ViewBag.PersBudget = Convert.ToInt32(_db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget);
-            Group @group = new Group { Id = Guid.NewGuid().ToString() };
-            return View(@group);
+            ViewBag.PersBudget = Convert.ToInt32(_db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget);          
+            return View();
         }
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Budget,Type,CloseCall,EntryFeeDon,EntryFeeUser,EntryFeeVIP,EntryFeeMod,MinPlus,MinMinus")] Group @group)
+        public async Task<IActionResult> Create( Group @group)
         {
+            @group.Id = Guid.NewGuid().ToString();
             if (ModelState.IsValid)
             {
                 //убедится что получает на вход текущего клиента

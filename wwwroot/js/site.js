@@ -2,12 +2,13 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
 function ShowCreatGroupSettings() {
     if (document.getElementById("1").checked)
         document.getElementById("Settings").style.display = "none";
     else if (document.getElementById("2").checked)
-        document.getElementById("settings").style.display = "block";
-}
+        document.getElementById("Settings").style.display = "block";//add default value to hidden blocks
+} 
 
 function ShowCreatTransactionSettings() {
     for (var i in ["1", "2", "3"]) {

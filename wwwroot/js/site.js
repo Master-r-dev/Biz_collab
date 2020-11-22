@@ -23,14 +23,23 @@ function ShowCreatGroupSettings() {
     console.log("done");
 } 
 
-function ShowCreatTransactionSettings() {
-    for (var i in ["1", "2", "3"]) {
-        document.getElementById("input_" + i).type = "hidden";
+var myInput = document.querySelectorAll("input[type=number]")[0];
+myInput.addEventListener('keypress', function (e) {
+    var key = !isNaN(e.charCode) ? e.charCode : e.keyCode;
+    function keyAllowed() {
+        var keys = [8, 9, 13, 16, 17, 18, 19, 20, 27, 46, 48, 49, 50,
+            51, 52, 53, 54, 55, 56, 57, 91, 92, 93];
+        if (key && keys.indexOf(key) === -1)
+            return false;
+        else
+            return true;
     }
-    if (document.getElementById("1").ckecked)
-        document.getElementById("input_1").type = "";
-    else if (document.getElementById("2").checked)
-        document.getElementById("input_2").type = "";
-    else if (document.getElementById("3").checked)
-        document.getElementById("input_3").type = "";
-}
+    if (!keyAllowed())
+        e.preventDefault();
+}, false);
+
+myInput.addEventListener('paste', function (e) {
+    var pasteData = e.clipboardData.getData('text/plain');
+    if (pasteData.match(/[^0-9]/))
+        e.preventDefault();
+}, false);

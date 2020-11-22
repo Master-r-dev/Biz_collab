@@ -36,17 +36,14 @@
                 </label>
                 <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
-                <input id="input_1" type="hidden" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) <= @ViewBag.Budget ? Math.abs(this.value) : null " asp-for="Amount" class="form-control" />
-                <input id="input_2" type="hidden" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) <= @ViewBag.Budget ? Math.abs(this.value) : null " asp-for="Amount" class="form-control" />
-                <input id="input_3" type="hidden" oninput="this.value = !!this.value && Math.abs(this.value) >= 0  && Math.abs(this.value) <= @ViewBag.PersBudget ? Math.abs(this.value) : null " asp-for="Amount" class="form-control" />
+                <input id="input" type="number" min="0" asp-for="Amount" class="form-control" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Explanation" class="control-label"></label>
-                <input asp-for="Explanation" class="form-control" />
+                <input type="number" min="0" asp-for="Explanation" class="form-control" />
                 <span asp-validation-for="Explanation" class="text-danger"></span>
             </div>
             <div class="form-group">

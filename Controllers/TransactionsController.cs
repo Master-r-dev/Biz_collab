@@ -84,7 +84,7 @@ namespace Biz_collab.Controllers
                         _db.Transactions.Add(transaction);
                     }
                     //перевод с счета группы на счет пользователя
-                    else if (transaction.OperationType == 2 && transaction.Amount <= gc.Group.Budget)
+                    else if (transaction.OperationType == 2 && transaction.Amount <= gc.Group.Budget && gc.Client.PersBudget+ transaction.Amount < 2147483647)
                     {
                         gc.Group.Budget -= transaction.Amount;
                         _db.Entry(gc.Group).State = EntityState.Modified;

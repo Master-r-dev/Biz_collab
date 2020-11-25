@@ -25,7 +25,11 @@ namespace Biz_collab.Controllers
         }
         
         [Authorize]
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(
+            string sortOrder,
+            string currentFilter,
+            string searchString,
+            int? pageNumber)
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -36,9 +40,25 @@ namespace Biz_collab.Controllers
                 _db.Clients.Add(client);
                 _db.SaveChanges();
             }
+            
             var mygroups= _db.Groups.Include(g => g.Clients).Where(g => g.Clients.First(rp => rp.ClientId == currentUserID) != null);            
             var AllGroups = from s in _db.Groups
                             select s;
+            ViewData["CurrentSort"] = sortOrder;
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewData["CurrentFilter"] = searchString;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                AllGroups = AllGroups.Where(s => s.Name.Contains(searchString) /*|| s.Budget.Equals(Convert.ToInt32(searchString))*/);
+                mygroups = mygroups.Where(s => s.Name.Contains(searchString));
+            }
             ViewData["ClientAmountSortParm"] = String.IsNullOrEmpty(sortOrder) ? "" : "ClientAmount";
             ViewData["NameSortParm"] = sortOrder == "Name" ? "name_desc" : "";
             ViewData["BudgetSortParm"] = sortOrder == "Budget" ? "budget_desc" : "Budget";            
@@ -69,8 +89,9 @@ namespace Biz_collab.Controllers
                     mygroups = mygroups.OrderByDescending(s => s.Clients.Count);
                     break;
             }
-            ViewBag.MyGroups = mygroups.ToList();
-            return View(await AllGroups.ToListAsync());
+            int pageSize = 3;
+            ViewBag.MyGroups = await PaginatedList<Group>.CreateAsync(mygroups, pageNumber ?? 1, pageSize);
+            return View(await PaginatedList<Group>.CreateAsync(AllGroups, pageNumber ?? 1, pageSize));
         }
         public IActionResult About()
         {

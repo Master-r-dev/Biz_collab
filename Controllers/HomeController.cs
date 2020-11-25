@@ -25,7 +25,7 @@ namespace Biz_collab.Controllers
         }
         
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -35,10 +35,42 @@ namespace Biz_collab.Controllers
                 Client client = new Client { Id = currentUserID, Login= currentUserLog, PersBudget=0 };
                 _db.Clients.Add(client);
                 _db.SaveChanges();
-               return View(await _db.Clients.Include(c=>c.MyGroups).Where(c=>c.Id== currentUserID).ToListAsync());
             }
-          
-            return View();
+            var mygroups= _db.Groups.Include(g => g.Clients).Where(g => g.Clients.First(rp => rp.ClientId == currentUserID) != null);            
+            var AllGroups = from s in _db.Groups
+                            select s;
+            ViewData["ClientAmountSortParm"] = String.IsNullOrEmpty(sortOrder) ? "" : "ClientAmount";
+            ViewData["NameSortParm"] = sortOrder == "Name" ? "name_desc" : "";
+            ViewData["BudgetSortParm"] = sortOrder == "Budget" ? "budget_desc" : "Budget";            
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    AllGroups = AllGroups.OrderByDescending(s => s.Name);
+                    mygroups = mygroups.OrderByDescending(s => s.Name);
+                    break;
+                case "Budget":
+                    AllGroups = AllGroups.OrderBy(s => s.Budget);
+                    mygroups = mygroups.OrderBy(s => s.Budget);
+                    break;
+                case "budget_desc":
+                    AllGroups = AllGroups.OrderByDescending(s => s.Budget);
+                    mygroups = mygroups.OrderByDescending(s => s.Budget);
+                    break;
+                case "ClientAmount":
+                    AllGroups = AllGroups.OrderBy(s => s.Clients.Count);
+                    mygroups = mygroups.OrderBy(s => s.Clients.Count);
+                    break;
+                case "Name":
+                    AllGroups = AllGroups.OrderBy(s => s.Name);
+                    mygroups = mygroups.OrderBy(s => s.Name);
+                    break;
+                default:                    
+                    AllGroups = AllGroups.OrderByDescending(s => s.Clients.Count);
+                    mygroups = mygroups.OrderByDescending(s => s.Clients.Count);
+                    break;
+            }
+            ViewBag.MyGroups = mygroups.ToList();
+            return View(await AllGroups.ToListAsync());
         }
         public IActionResult About()
         {

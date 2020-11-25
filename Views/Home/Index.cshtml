@@ -1,52 +1,184 @@
-﻿@{
+﻿@model IEnumerable<Biz_collab.Models.Group>
+
+@{
     ViewData["Title"] = "Home Page";
 }
-@*@model IEnumerable<Biz_collab.Models.Group>*@
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 
-@*
-    <h1>Мои группы</h1>
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Budget)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Type)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Budget)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Type)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-*@
+<h1>Топ-5 популярных групп</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <td>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">Название</a>
+            </td>
+            <td>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["BudgetSortParm"]">Бюджет</a>
+            </td>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ClientAmountSortParm"]">Кол-во клиентов</a>
+            </th>
+            <th>
+                Тип
+            </th>
+            <th>
+                Выбор
+            </th>
+            <th>
+                ВходДона
+            </th>
+            <th>
+                ВходЮзера
+            </th>
+            <th>
+                ВходVIP
+            </th>
+            <th>
+                ВходМодера
+            </th>
+            <th>
+                Мин.Пополнение
+            </th>
+            <th>
+                Мин.Вычет
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Budget)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Clients.Count)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CloseCall)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeDon)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeUser)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeVIP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeMod)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinPlus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinMinus)
+            </td>
+            <td>
+                <a asp-controller="Groups" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-controller="Groups" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-controller="Groups" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+        }
+        
+    </tbody>
+</table>
+<h1>Мои группы</h1>
+<p>
+    <a asp-controller="Groups" asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <td>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">Название</a>
+            </td>
+            <td>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["BudgetSortParm"]">Бюджет</a>
+            </td>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["ClientAmountSortParm"]">Кол-во клиентов</a>
+            </th>
+            <th>
+                Выбор
+            </th>
+            <th>
+                ВходДона
+            </th>
+            <th>
+                ВходЮзера
+            </th>
+            <th>
+                ВходVIP
+            </th>
+            <th>
+                ВходМодера
+            </th>
+            <th>
+                Мин.Пополнение
+            </th>
+            <th>
+                Мин.Вычет
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.MyGroups)
+        {
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.Budget
+            </td>
+            <td>
+                @item.Clients.Count
+            </td>
+            <td>
+                @item.Type
+            </td>
+            <td>
+                @item.CloseCall
+            </td>
+            <td>
+                @item.EntryFeeDon
+            </td>
+            <td>
+                @item.EntryFeeUser
+            </td>
+            <td>
+                @item.EntryFeeVIP
+            </td>
+            <td>
+                @item.EntryFeeMod
+            </td>
+            <td>
+                @item.MinPlus
+            </td>
+            <td>
+                @item.MinMinus
+            </td>
+            <td>
+                <a asp-controller="Groups" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-controller="Groups" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-controller="Groups" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

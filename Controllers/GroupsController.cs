@@ -69,13 +69,14 @@ namespace Biz_collab.Controllers
                 var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;                
                 //находим клиента который создает и добовляем его в группу ,даем роль создателя 
                 var client = _db.Clients.Include(c => c.MyGroups).FirstOrDefault(cr => cr.Id == currentUserID);
-                Role_Power cl = new Role_Power { Group = @group, Client = client, R = "Создатель" ,P= 2147483646 };//overkill value ;)
+                Role_Power cl = new Role_Power { Group = @group, Client = client,ClientId=client.Id,GroupId=@group.Id, R = "Создатель" ,P= 2147483646 };//overkill value ;)
                 @group.Clients.Add(cl);
-                //у этого клиента вычитаем сумму которая выдалась на группу
+                //у этого клиента вычитаем сумму которая выдалась на группу 
                 if (client.PersBudget >= @group.Budget) _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget -= @group.Budget;
                 //добавляем созданую группу к создателю клиенту
-                // _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(new GroupClient { Group = @group });
-                _db.Add(@group);
+                 _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
+                _db.Entry(client).State = EntityState.Modified;
+                _db.Groups.Add(@group);
                 await _db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

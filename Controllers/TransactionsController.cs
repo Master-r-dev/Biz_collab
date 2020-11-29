@@ -227,5 +227,43 @@ namespace Biz_collab.Controllers
         {
             return _db.Transactions.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> VoteYes(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var transaction = await _db.Transactions
+                .Include(t => t.Client)
+                .Include(t => t.Group)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+
+            return View(transaction);
+        }
+
+        public async Task<IActionResult> VoteNo(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var transaction = await _db.Transactions
+                .Include(t => t.Client)
+                .Include(t => t.Group)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
+
+            return View(transaction);
+        }
     }
 }

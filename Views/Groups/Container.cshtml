@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Biz_collab.Models.Role_Power>
+@{
+    ViewData["Title"] = "Container";
+}
+
+<h1>Container</h1>
+<dl class="row">
+    <dt class="col-sm-2">
+        Количество клиентов
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Count()
+    </dd>
+    @foreach (var c in Model)
+    {
+        <dd class="col-sm-10">
+            @c.Client.Login | @c.R | @c.P
+        </dd>
+        <dd>
+            <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-id="@c.Client.Login">Кнопка изменить роль</a> |
+            <a asp-controller="Groups" asp-action="BanClient" asp-route-id="@c.Client.Login">Кнопка забанить</a>
+            @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Transactions" asp-action="DeleteClient" asp-route-id="@c.Client.Id">Кнопка удалить</a> *@
+        </dd>
+
+    }
+</dl>
+<dl class="row">
+    <dt class="col-sm-2">
+        Транзакции
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.First().Group.Transactions.Count)
+        <a asp-controller="Transactions" asp-action="Create">+Новая транзакция</a>
+    </dd>
+    @foreach (var t in Model.First().Group.Transactions)
+    {
+        <dd class="col-sm-10">
+            @Html.DisplayFor(modelItem => t.Id)
+            @Html.DisplayFor(modelItem => t.Explanation)
+            @if (t.OperationType == 3)
+            {
+                <b>+ </b> @Html.DisplayFor(modelItem => t.Amount)
+            }
+            else
+            {
+                <b>- </b> @Html.DisplayFor(modelItem => t.Amount)
+            }
+
+            @Html.DisplayFor(modelItem => t.Client.Login)
+            @if (t.OperationType == 1)
+            {
+                <b>трата бюджета  на внешние источники </b>
+            }
+            else if (t.OperationType == 2)
+            {
+                <b>перевод с счета группы на счет пользователя</b>
+            }
+            else if (t.OperationType == 3)
+            {
+                <b>перевод с счета пользователя  на счет группы</b>
+            }
+            @Html.DisplayFor(modelItem => t.Status)
+        </dd>
+        <dd>
+            <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@t.Id">VoteYes</a> |
+            <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@t.Id">VoteNo</a>
+        </dd>
+        <dd>
+            @if (User.Identity.Name == t.Client.Login) { 
+                     <a asp-controller="Transactions" asp-action="Edit" asp-route-id="@t.Id">Edit</a>            
+                  <a asp-controller="Transactions" asp-action="Delete" asp-route-id="@t.Id">Delete</a>
+            }
+        </dd>
+
+    }
+</dl>
+<dl class="row">
+    <dt class="col-sm-2">
+        Графики
+    </dt>
+    @* <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Clients.Count)
+        </dd>
+        @foreach (var c in ViewBag.Clients)
+        {
+            <dd class="col-sm-10">
+                @c.Client.Login @c.R @c.P
+            </dd>
+
+        }*@
+</dl>

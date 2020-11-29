@@ -30,7 +30,7 @@ namespace Biz_collab.Controllers
 
         // GET: Groups/Details/5
         [Authorize]
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(string id) //характеристики группы
         {
             if (id == null)
             {
@@ -47,34 +47,62 @@ namespace Biz_collab.Controllers
             return View(@group);
         }
         [Authorize]
+        public async Task<IActionResult> Container(string id) //Сама группа
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var @group = await _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).Where(rp => rp.GroupId == id)
+                .ToListAsync();
+            if (@group == null)
+            {
+                return NotFound();
+            }
+
+            return View(@group);
+        }
+        [Authorize]
+        public IActionResult EditRoleClient(string login)
+        {
+            /*код изменение роли клиента*/
+            return View();
+        }
+       [Authorize]
+        public IActionResult BanClient(string login)
+        {
+            /*код банна клиента*/
+            return View();
+        }
+        [Authorize]
         // GET: Groups/Create
         public IActionResult Create()
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-            ViewBag.PersBudget = Convert.ToInt32(_db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget);          
+            ViewBag.PersBudget = Convert.ToInt32(_db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget);
             return View();
         }
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Group @group)
+        public async Task<IActionResult> Create(Group @group)
         {
             @group.Id = Guid.NewGuid().ToString();
             if (ModelState.IsValid)
             {
                 //убедится что получает на вход текущего клиента
                 ClaimsPrincipal currentUser = this.User;
-                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;                
+                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
                 //находим клиента который создает и добовляем его в группу ,даем роль создателя 
                 var client = _db.Clients.Include(c => c.MyGroups).FirstOrDefault(cr => cr.Id == currentUserID);
-                Role_Power cl = new Role_Power { Group = @group, Client = client,ClientId=client.Id,GroupId=@group.Id, R = "Создатель" ,P= 2147483646 };//overkill value ;)
+                Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Создатель", P = 2147483646 };//overkill value ;)
                 @group.Clients.Add(cl);
                 //у этого клиента вычитаем сумму которая выдалась на группу 
                 if (client.PersBudget >= @group.Budget) _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget -= @group.Budget;
                 //добавляем созданую группу к создателю клиенту
-                 _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
+                _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                 _db.Entry(client).State = EntityState.Modified;
                 _db.Groups.Add(@group);
                 await _db.SaveChangesAsync();

@@ -53,8 +53,8 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
-            var @group = await _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).Where(rp => rp.GroupId == id)
-                .ToListAsync();
+            var @group = await _db.Groups.Include(g=>g.Transactions).ThenInclude(t=>t.Votes).ThenInclude(v=>v.Client).Include(g => g.Clients).ThenInclude(rp=>rp.Client).Where(rp => rp.Id == id)
+                .ToListAsync();            
             if (@group == null)
             {
                 return NotFound();

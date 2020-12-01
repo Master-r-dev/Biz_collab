@@ -10,8 +10,12 @@ namespace Biz_collab.Models
     {
         [Key]
         public string Id { get; set; }
+        [Required]
+        [StringLength(50)]
         public string Name { get; set; }
+        [Required]
         public int Budget { get; set; } //  бюджет группы : поменять на int64 ? на uint ?
+        [Required]
         public byte Type { get; set; } //min=0 for userinput (do in a view of radioboxes!!)
         public ICollection<Role_Power> Clients { get; set; }
         public ICollection<Transaction> Transactions { get; set; }

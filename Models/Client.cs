@@ -16,7 +16,8 @@ namespace Biz_collab.Models
     public class Client
     {
         [Key]
-        public string Id { get; set; }        
+        public string Id { get; set; }
+        [Required]
         public string Login { get; set; }
         public int PersBudget { get; set; } //поменять на int64 ?  на uint ?
         public ICollection<Role_Power> MyGroups { get; set; }// protected set ? 

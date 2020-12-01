@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ namespace Biz_collab.Models
     public class Role_Power
     {
         public string ClientId { get; set; }
+        [Required]
         public string R { get; set; } /*Роль(изменяемо модератором и создателем)
                                        * { Создатель - голос 100% также является модератором
                                             модератор-управляет всеми участниками кроме владельца его голос 40%) 
@@ -16,6 +18,7 @@ namespace Biz_collab.Models
                                             Донатер-имеет голос но может только пополнять,не ставит на голосованее(голос= 1)
                                             Забанен-может только пополнять                                                                               
                                          }*/
+        [Required]
         public int P { get; set; }/* Сила голоса по умолчанию {
                                                                    Роль="Забанен"
                                                                     Роль="Донатер" сила голоса=1 

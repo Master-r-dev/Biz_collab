@@ -10,9 +10,9 @@ namespace Biz_collab.Models
     public class Transaction
     {
         [Key]
-        public int Id { get; set; }        
+        public int Id { get; set; }
         public string ClientId { get; set; }
-        public Client Client { get; set; }       
+        public Client Client { get; set; }
         public string GroupId { get; set; }
         public Group Group { get; set; }
         [Required]
@@ -20,6 +20,7 @@ namespace Biz_collab.Models
         [Required]
         public byte OperationType { get; set; }  // Вычет или пополнение(между счетами группы и клиента). здесь должен быть enum     
         [Required]
+        [StringLength(100)]
         public string Explanation { get; set; }
         public DateTime StartTime { get; set; }
         public bool Status { get; set; }//Выполнена или в ожидании

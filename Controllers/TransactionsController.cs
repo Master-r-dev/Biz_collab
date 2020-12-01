@@ -70,7 +70,7 @@ namespace Biz_collab.Controllers
 
                 // ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
                 // по данному id группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
-                var gc = _db.Role_Powers.First(cr => cr.ClientId == transaction.ClientId && cr.GroupId == transaction.GroupId);
+                var gc = _db.Role_Powers.Include(rp=>rp.Client).Include(rp=>rp.Group).First(cr => cr.ClientId == transaction.ClientId && cr.GroupId == transaction.GroupId);
                 if (gc.Group.Type == 1 || gc.P > Convert.ToInt32(Math.Ceiling(Convert.ToDouble(gc.Group.Clients.Count() / 2))))
                 {
                     transaction.StartTime = DateTime.Now;

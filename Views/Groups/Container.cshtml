@@ -11,17 +11,28 @@
     <dd class="col-sm-10">
         @Html.DisplayNameFor(model => model.Clients.Count)
     </dd>
-    @foreach (var c in Model.Clients)
+    @if (Model.Clients.Where(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель" || rp.R == "Модератор") != null)
     {
-        <dd class="col-sm-10">
-            @c.Client.Login | @c.R | @c.P
-        </dd>
-        <dd>
-            <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-id="@c.Client.Login">Кнопка изменить роль</a> |
-            <a asp-controller="Groups" asp-action="BanClient" asp-route-id="@c.Client.Login">Кнопка забанить</a>
-            @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Transactions" asp-action="DeleteClient" asp-route-id="@c.Client.Id">Кнопка удалить</a> *@
-        </dd>
-
+        @foreach (var c in Model.Clients)
+        {
+            <dd class="col-sm-10">
+                @c.Client.Login | @c.R | @c.P
+            </dd>
+            <dd>
+                <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-id="@c.Client.Login">Кнопка изменить роль</a> |
+                <a asp-controller="Groups" asp-action="BanClient" asp-route-id="@c.Client.Login">Кнопка забанить</a>
+                @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Transactions" asp-action="DeleteClient" asp-route-id="@c.Client.Id">Кнопка удалить</a> *@
+            </dd>
+        }
+    }
+    else
+    {
+        @foreach (var c in Model.Clients)
+        {
+            <dd class="col-sm-10">
+                @c.Client.Login | @c.R | @c.P
+            </dd>
+        }
     }
 </dl>
 <dl class="row">
@@ -62,7 +73,7 @@
             @Html.DisplayFor(modelItem => t.Status)
         </dd>        
         <dd>
-            @if (User.Identity.Name != t.Client.Login || t.Votes.Where(v=>v.Client.Login==User.Identity.Name) != null  )
+            @if (User.Identity.Name != t.Client.Login || t.Votes.Where(v=>v.Client.Login==User.Identity.Name) != null)
             {
                 <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@t.Id">VoteYes</a>
                 <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@t.Id">VoteNo</a>

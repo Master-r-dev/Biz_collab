@@ -29,7 +29,7 @@ namespace Biz_collab.Models
         public float NoPercent { get; set; }
         public Transaction()
         {
-            Votes = new List<Vote> {};
+            Votes = new List<Vote> ();
         }
 
     }

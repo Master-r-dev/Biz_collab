@@ -34,7 +34,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="EntryFeeDon" class="control-label">Взнос для вступления(донатер)</label>
-                <input min="1" max="2000000000" oninput="this.value = !!this.value && Math.abs(this.value) >= 1  ? Math.abs(this.value) : null " asp-for="EntryFeeDon" class="form-control" />
+                <input min="1" max="20000000" oninput="this.value = !!this.value && Math.abs(this.value) >= 1  ? Math.abs(this.value) : null " asp-for="EntryFeeDon" class="form-control" />
                 <span asp-validation-for="EntryFeeDon" class="text-danger"></span>
             </div>
 
@@ -52,16 +52,26 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="EntryFeeUser" class="control-label">Взнос для вступления(участник)</label>
-                    <input id="InputEntryFeeUser" min="1" max="2000000000" type="number" oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null "  asp-for="EntryFeeUser" class="form-control" />
+                    <input id="InputEntryFeeUser" min="1" max="2000000000" type="number" oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null " asp-for="EntryFeeUser" class="form-control" />
                     <span asp-validation-for="EntryFeeUser" class="text-danger"></span>
                 </div>
+                
                 <div class="form-group">
-                    <label asp-for="EntryFeeVIP" class="control-label">Взнос для вступления(xXx_VIP_xXx)</label>
+                    <label asp-for="EntryFeeVIP" class="control-label">Взнос для вступления(xXx_VIP_xXx)</label> 
+                        <label for="3" class="control-label">
+                            <input type="checkbox" id="3" onclick="ShowCreatGroupSettings()" />
+                            Без взноса
+                        </label>
                     <input id="InputEntryFeeVIP" min="1" max="2000000000" type="number" oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null " asp-for="EntryFeeVIP" class="form-control" />
                     <span asp-validation-for="EntryFeeVIP" class="text-danger"></span>
                 </div>
+                
                 <div class="form-group">
                     <label asp-for="EntryFeeMod" class="control-label">Взнос для вступления(mod3R47oR)</label>
+                        <label for="4" class="control-label">
+                            <input type="checkbox" id="4" onclick="ShowCreatGroupSettings()" />
+                            Без взноса
+                        </label>
                     <input id="InputEntryFeeMod" min="1" max="2000000000" oninput="this.value = !!this.value && Math.abs(this.value) >= 1  ? Math.abs(this.value) : null " type="number" asp-for="EntryFeeMod" class="form-control" />
                     <span asp-validation-for="EntryFeeMod" class="text-danger"></span>
                 </div>

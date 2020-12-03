@@ -131,7 +131,7 @@ namespace Biz_collab.Controllers
                     }
                 }
                 await _db.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Redirect("~/Home/Index");
 
             }
             return View(transaction);

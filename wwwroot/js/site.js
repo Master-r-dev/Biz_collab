@@ -14,16 +14,46 @@ function ShowCreatGroupSettings() {
     }
     else if (document.getElementById("2").checked) {
         document.getElementById("Settings").style.display = "block";
-        document.getElementById("InputCloseCall").value = "false";
+        document.getElementById("InputCloseCall").value = "";
         document.getElementById("InputMinMinus").value = "";
         document.getElementById("InputEntryFeeUser").value = "";
-        document.getElementById("InputEntryFeeVIP").value = "";
-        document.getElementById("InputEntryFeeMod").value = "";
+        if (document.getElementById("3").checked) {
+            document.getElementById("InputEntryFeeVIP").value = "-1";
+            document.getElementById("InputEntryFeeVIP").style.display = "none";
+        }
+        else {
+            document.getElementById("InputEntryFeeVIP").value = "";
+            document.getElementById("InputEntryFeeVIP").style.display = "block";
+        }
+        if (document.getElementById("4").checked) {
+            document.getElementById("InputEntryFeeMod").value = "-1";
+            document.getElementById("InputEntryFeeMod").style.display = "none";
+        }
+        else {
+            document.getElementById("InputEntryFeeMod").value = "";
+            document.getElementById("InputEntryFeeMod").style.display = "block";
+        }
     }
+    
     console.log("done");
 } 
 
-var myInput = document.querySelectorAll("input[type=number]")[0];
+function VoteCountShow() {
+    if (document.getElementById("VoteYes").checked) {
+        document.getElementById("InputVote").value = true;
+        document.getElementById("InputVote").style.display = "none";
+        document.getElementById("VoteCount").style.display = "block";
+    }
+    else if (document.getElementById("VoteNo").checked) {
+        document.getElementById("InputVote").value = false;
+        document.getElementById("InputVote").style.display = "none";
+        document.getElementById("VoteCount").style.display = "block";
+    }
+
+    console.log("done");
+}
+
+/*var myInput = document.querySelectorAll("input[type=number]")[0];
 myInput.addEventListener('keypress', function (e) {
     var key = !isNaN(e.charCode) ? e.charCode : e.keyCode;
     function keyAllowed() {
@@ -42,4 +72,4 @@ myInput.addEventListener('paste', function (e) {
     var pasteData = e.clipboardData.getData('text/plain');
     if (pasteData.match(/[^0-9]/))
         e.preventDefault();
-}, false);
+}, false);*/

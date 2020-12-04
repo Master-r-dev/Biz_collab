@@ -62,7 +62,7 @@ namespace Biz_collab.Controllers
             }
             if (@group.Clients.FirstOrDefault(rp=>rp.Client== client)==null)
             {
-                return RedirectToAction(nameof(JoinGroup));
+                return RedirectToAction("JoinGroup",new { id=id });
 
             }
 

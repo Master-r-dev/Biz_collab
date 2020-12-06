@@ -9,7 +9,7 @@
         Количество клиентов
     </dt>
     <dd class="col-sm-10">
-        @Html.DisplayNameFor(model => model.Clients.Count)
+        @Html.DisplayFor(model => model.Clients.Count)
     </dd>
     @if (Model.Clients.Where(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель" || rp.R == "Модератор") != null)
     {

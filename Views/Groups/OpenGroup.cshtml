@@ -19,9 +19,9 @@
                 @c.Client.Login | @c.R | @c.P
             </dd>
             <dd>
-                <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-id="@c.Client.Login">Кнопка изменить роль</a> |
-                <a asp-controller="Groups" asp-action="BanClient" asp-route-id="@c.Client.Login">Кнопка забанить</a>
-                @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Transactions" asp-action="DeleteClient" asp-route-id="@c.Client.Id">Кнопка удалить</a> *@
+                <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка изменить роль</a> |
+                <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка забанить</a>
+                @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Groups" asp-action="DeleteClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка удалить</a> *@
             </dd>
         }
     }
@@ -93,9 +93,7 @@
     <dt class="col-sm-2">
         Графики
     </dt>
-    @* <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Clients.Count)
-        </dd>
+    @* canvas and bla bla draw
         @foreach (var c in ViewBag.Clients)
         {
             <dd class="col-sm-10">

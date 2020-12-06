@@ -3,10 +3,10 @@
 
 // Write your JavaScript code.
 
-function ShowCreatGroupSettings() {
+function ShowCreateGroupSettings() {
     if (document.getElementById("1").checked) {
         document.getElementById("Settings").style.display = "none";
-        document.getElementById("InputCloseCall").value = "true";
+        document.getElementById("InputCloseCall").checked = true;
         document.getElementById("InputMinMinus").value = "-1";
         document.getElementById("InputEntryFeeUser").value = "-1";
         document.getElementById("InputEntryFeeVIP").value = "-1";
@@ -14,30 +14,34 @@ function ShowCreatGroupSettings() {
     }
     else if (document.getElementById("2").checked) {
         document.getElementById("Settings").style.display = "block";
-        document.getElementById("InputCloseCall").value = "";
         document.getElementById("InputMinMinus").value = "";
-        document.getElementById("InputEntryFeeUser").value = "";
-        if (document.getElementById("3").checked) {
-            document.getElementById("InputEntryFeeVIP").value = "-1";
-            document.getElementById("InputEntryFeeVIP").style.display = "none";
-        }
-        else {
-            document.getElementById("InputEntryFeeVIP").value = "";
-            document.getElementById("InputEntryFeeVIP").style.display = "block";
-        }
-        if (document.getElementById("4").checked) {
-            document.getElementById("InputEntryFeeMod").value = "-1";
-            document.getElementById("InputEntryFeeMod").style.display = "none";
-        }
-        else {
-            document.getElementById("InputEntryFeeMod").value = "";
-            document.getElementById("InputEntryFeeMod").style.display = "block";
-        }
-    }
-    
+        document.getElementById("InputEntryFeeUser").value = ""; 
+        document.getElementById("InputEntryFeeVIP").value = "";
+        document.getElementById("InputEntryFeeMod").value = "";
+    }    
     console.log("done");
 } 
 
+function VIPShow() {
+    if (document.getElementById("3").checked) {
+        document.getElementById("InputEntryFeeVIP").value = "-1";
+        document.getElementById("InputEntryFeeVIP").style.display = "none";
+    }
+    else {
+        document.getElementById("InputEntryFeeVIP").value = "";
+        document.getElementById("InputEntryFeeVIP").style.display = "block";
+    }
+}
+function ModShow() {
+    if (document.getElementById("4").checked) {
+        document.getElementById("InputEntryFeeMod").value = "-1";
+        document.getElementById("InputEntryFeeMod").style.display = "none";
+    }
+    else {
+        document.getElementById("InputEntryFeeMod").value = "";
+        document.getElementById("InputEntryFeeMod").style.display = "block";
+    }
+}
 function VoteCountShow() {
     if (document.getElementById("VoteYes").checked) {
         document.getElementById("InputVote").value = true;

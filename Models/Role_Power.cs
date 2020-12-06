@@ -8,6 +8,7 @@ namespace Biz_collab.Models
 {
     public class Role_Power
     {
+        [Required]
         public string ClientId { get; set; }
         [Required]
         public string R { get; set; } /*Роль(изменяемо модератором и создателем)
@@ -29,6 +30,7 @@ namespace Biz_collab.Models
                                    (опять же изменяемо модератором и создателем)*/
         public Client Client { get; set; }
         public Group Group { get; set; }
+        [Required]
         public string GroupId { get; set; }
     }
 }

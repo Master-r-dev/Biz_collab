@@ -11,8 +11,10 @@ namespace Biz_collab.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public string ClientId { get; set; }
         public Client Client { get; set; }
+        [Required]
         public string GroupId { get; set; }
         public Group Group { get; set; }
         [Required]

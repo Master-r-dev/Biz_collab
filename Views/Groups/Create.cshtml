@@ -23,11 +23,11 @@
             <div class="form-group">
                 <h4>Выберете тип группы</h4>@*Добавь глиф иконки*@
                 <label for="1" class="control-label">
-                    <input type="radio" id="1" onclick="ShowCreatGroupSettings()" value="1" asp-for="Type" />
+                    <input type="radio" id="1" onclick="ShowCreateGroupSettings()" value="1" asp-for="Type" />
                     Нет голосования(группа для пожертвований)
                 </label>
                 <label for="2" class="control-label">
-                    <input type="radio" id="2" onclick="ShowCreatGroupSettings()" value="2" asp-for="Type" />
+                    <input type="radio" id="2" onclick="ShowCreateGroupSettings()" value="2" asp-for="Type" />
                     С голосованием, у всего есть цена(C.R.E.A.M.)
                 </label>
                 <span asp-validation-for="Type" class="text-danger"></span>
@@ -59,7 +59,7 @@
                 <div class="form-group">
                     <label asp-for="EntryFeeVIP" class="control-label">Взнос для вступления(xXx_VIP_xXx)</label> 
                         <label for="3" class="control-label">
-                            <input type="checkbox" id="3" onclick="ShowCreatGroupSettings()" />
+                            <input type="checkbox" id="3" onclick="VIPShow()" />
                             Без взноса
                         </label>
                     <input id="InputEntryFeeVIP" min="1" max="2000000000" type="number" oninput="this.value = !!this.value && Math.abs(this.value) >= 1 ? Math.abs(this.value) : null " asp-for="EntryFeeVIP" class="form-control" />
@@ -69,7 +69,7 @@
                 <div class="form-group">
                     <label asp-for="EntryFeeMod" class="control-label">Взнос для вступления(mod3R47oR)</label>
                         <label for="4" class="control-label">
-                            <input type="checkbox" id="4" onclick="ShowCreatGroupSettings()" />
+                            <input type="checkbox" id="4" onclick="ModShow()" />
                             Без взноса
                         </label>
                     <input id="InputEntryFeeMod" min="1" max="2000000000" oninput="this.value = !!this.value && Math.abs(this.value) >= 1  ? Math.abs(this.value) : null " type="number" asp-for="EntryFeeMod" class="form-control" />

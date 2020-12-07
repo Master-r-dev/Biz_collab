@@ -9,36 +9,32 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="GroupId" class="control-label"></label>
-                <select asp-for="GroupId" class="form-control" asp-items="ViewBag.GroupId"></select>
-            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>            
             <div class="form-group form-check">
                 <label asp-for="OperationType" class="control-label">Вид Транзакции</label>
                 <label for="1">
-                    <i class="glyphicon glyphicon-plus">
-                        <input type="radio" asp-for="OperationType" id="1" value="1" onclick="ShowCreatTransactionSettings()">
-                    </i>
+                    <span class="glyphicon glyphicon-plus">
+                        <input type="radio" asp-for="OperationType" id="1" value="1">
+                    </span>
                     Потратить из группового бюджета
                 </label>
                 <label for="2">
-                    <i class="glyphicon glyphicon-cloud-download">
-                        <input type="radio" asp-for="OperationType" id="2" value="2" onclick="ShowCreatTransactionSettings()">
-                    </i>
+                    <span class="glyphicon glyphicon-cloud-download">
+                        <input type="radio" asp-for="OperationType" id="2" value="2">
+                    </span>
                     Перевести на свой счет
                 </label>
                 <label for="3">
-                    <i class="glyphicon glyphicon-cloud-upload">
-                        <input type="radio" asp-for="OperationType" id="3" value="3" onclick="ShowCreatTransactionSettings()">
-                    </i>
+                    <span class="glyphicon glyphicon-cloud-upload">
+                        <input type="radio" asp-for="OperationType" id="3" value="3">
+                    </span>
                     Перевести на счет группы
                 </label>
                 <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
-                <input id="input" type="number" min="0" asp-for="Amount" class="form-control" />
+                <input  oninput="Trans()" id="input" type="number" min="0" asp-for="Amount" class="form-control" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -52,7 +48,20 @@
         </form>
     </div>
 </div>
-
+<script>
+  function Trans() {
+    var x = document.getElementById("input").value;
+    var y =@ViewBag.Budget;
+    var z =@ViewBag.PersBudget;
+    if ((document.getElementById("1").checked || document.getElementById("2").checked) && Math.abs(x) <= y ) {
+        document.getElementById("input").value = Math.abs(x);
+    }
+    else if (document.getElementById("3").checked && Math.abs(x) <= z) {
+        document.getElementById("input").value = Math.abs(x);
+    }
+    else  document.getElementById("input").value = 0;
+}
+</script>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

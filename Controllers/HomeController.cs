@@ -56,11 +56,11 @@ namespace Biz_collab.Controllers
             ViewData["CurrentFilter"] = searchString;
             if (!String.IsNullOrEmpty(searchString))
             {
-                AllGroups = AllGroups.Where(s => s.Name.Contains(searchString) /*|| s.Budget.Equals(Convert.ToInt32(searchString))*/);
+                AllGroups = AllGroups.Where(s => s.Name.Contains(searchString));
                 mygroups = mygroups.Where(s => s.Name.Contains(searchString));
             }
-            ViewData["ClientAmountSortParm"] = String.IsNullOrEmpty(sortOrder) ? "" : "ClientAmount";
-            ViewData["NameSortParm"] = sortOrder == "Name" ? "name_desc" : "";
+            ViewData["ClientAmountSortParm"] = sortOrder == "ClientAmount" ? "clientamount_desc" : "ClientAmount";
+            ViewData["NameSortParm"] = sortOrder == "Name" ? "name_desc" : "Name";
             ViewData["BudgetSortParm"] = sortOrder == "Budget" ? "budget_desc" : "Budget";            
             switch (sortOrder)
             {
@@ -84,7 +84,11 @@ namespace Biz_collab.Controllers
                     AllGroups = AllGroups.OrderBy(s => s.Name);
                     mygroups = mygroups.OrderBy(s => s.Name);
                     break;
-                default:                    
+                case "clientamount_desc":                    
+                    AllGroups = AllGroups.OrderByDescending(s => s.Clients.Count);
+                    mygroups = mygroups.OrderByDescending(s => s.Clients.Count);
+                    break;
+                default:
                     AllGroups = AllGroups.OrderByDescending(s => s.Clients.Count);
                     mygroups = mygroups.OrderByDescending(s => s.Clients.Count);
                     break;
@@ -102,8 +106,7 @@ namespace Biz_collab.Controllers
         [HttpGet]
         public IActionResult AddBalance()
         {
-            ClaimsPrincipal currentUser = this.User;
-            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             ViewBag.PersBudget = _db.Clients.Find(currentUserID).PersBudget;
             return View();
         }
@@ -117,8 +120,7 @@ namespace Biz_collab.Controllers
             }
             else
             {
-                ClaimsPrincipal currentUser = this.User;
-                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 var client = _db.Clients.Find(currentUserID);
                 client.PersBudget += Add;
                 _db.Entry(client).State = EntityState.Modified;

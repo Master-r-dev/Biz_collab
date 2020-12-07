@@ -48,7 +48,12 @@ namespace Biz_collab.Controllers
         }
         [Authorize]
 
-        public async Task<IActionResult> OpenGroup(string id) //Сама группа
+        public async Task<IActionResult> OpenGroup(string id,
+            bool x, 
+            string sortOrder,
+            string currentFilter,
+            string searchString,
+            int? pageNumber) //Сама группа
         {            
             if (id == null)
             {
@@ -64,29 +69,77 @@ namespace Biz_collab.Controllers
             if (@group.Clients.FirstOrDefault(rp=>rp.Client == client) ==null)
             {
                 return RedirectToAction("JoinGroup",new { id=id });
-
             }
-            if (@group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R=="VIP") != null)
+            var trans = _db.Transactions.Include(t=>t.Client).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == id);
+            ViewData["CurrentSort"] = sortOrder;
+            if (searchString != null)
             {
-                @group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "VIP").P= Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() * 0.25)));
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewData["CurrentFilter"] = searchString;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                trans = trans.Where(s => s.Client.Login.Contains(searchString) || s.Explanation.Contains(searchString));
+            }
+            ViewData["TimeSortParm"] = sortOrder == "Time" ? "time_desc" : "Time";
+            ViewData["ClientNameSortParm"] = sortOrder == "Name" ? "name_desc" : "Name";
+            ViewData["OperationTypeSortParm"] = sortOrder == "OperationType" ? "optype_desc" : "OperationType";
+            ViewData["AmountSortParm"] = sortOrder == "Amount" ? "amount_desc" : "Amount";
+            switch (sortOrder)
+            {                
+                case "OperationType":
+                    trans = trans.OrderBy(s => s.OperationType);
+                    break;                
+                case "Time":
+                    trans = trans.OrderBy(s => s.StartTime);
+                    break;
+                case "Name":
+                    trans = trans.OrderBy(s => s.Client.Login);
+                    break;
+                case "Amount":
+                    trans = trans.OrderBy(s => s.Amount);
+                    break;
+                case "amount_desc":
+                    trans = trans.OrderByDescending(s => s.Amount);
+                    break;
+                case "time_desc":
+                    trans = trans.OrderByDescending(s => s.StartTime);
+                    break;
+                case "optype_desc":
+                    trans = trans.OrderByDescending(s => s.OperationType);
+                    break;
+                case "name_desc":
+                    trans = trans.OrderByDescending(s => s.Client.Login);
+                    break;
+                default:
+                    trans = trans.OrderByDescending(s => s.Status);
+                    break;
+            }
+            int pageSize = 6;
+            ViewBag.MyGroups = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
+            if (x)
+            {
+                foreach (var i in @group.Clients.Where(rp => rp.R == "VIP"))
+                {
+                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() * 0.25)));
+                    _db.Entry(i).State = EntityState.Modified;
+                }
+                foreach (var i in @group.Clients.Where(rp => rp.R == "Mod"))
+                {
+                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() * 0.5)));
+                    _db.Entry(i).State = EntityState.Modified;
+                }
+                @group.Clients.FirstOrDefault(rp =>rp.R == "Создатель").P = _db.Groups.Find(id).Clients.Count();
                 _db.Entry(group).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
             }
-            else if (@group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Mod") != null)
-            {
-                @group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Mod").P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() * 0.5)));
-                _db.Entry(group).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
-            }
-            else if (@group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Забанен") != null)
+            if (@group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Забанен") != null)
             {
                 return RedirectToAction("BannedInGroup", new { id = id });
-            }
-            if (@group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Создатель") != null)
-            {
-                @group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Создатель").P = _db.Groups.Find(id).Clients.Count();
-                _db.Entry(group).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
             }
             return View(@group);
         }
@@ -104,10 +157,12 @@ namespace Biz_collab.Controllers
             var client =  _db.Clients.First(c => c.Id == currentUserID);
             ViewBag.PersBudget =  client.PersBudget;
             var @group =  _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Id == id);
-            if (client.PersBudget>=group.EntryFeeDon) {
-                return View(@group);
+            if (group.EntryFeeDon!=-1) {
+                if (client.PersBudget >= group.EntryFeeDon || client.PersBudget >= group.EntryFeeUser || client.PersBudget >= group.EntryFeeMod || client.PersBudget >= group.EntryFeeVIP) {
+                    return View(@group);
+                } 
             }
-            else { return RedirectToAction(nameof(Index)); }
+            return RedirectToAction(nameof(Index)); 
         }
         [Authorize]
         [HttpPost]
@@ -126,7 +181,7 @@ namespace Biz_collab.Controllers
                 _db.Entry(client).State = EntityState.Modified;
                 _db.Entry(group).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
-                return RedirectToAction("OpenGroup", new { id = id });
+                return RedirectToAction("OpenGroup", new { id = id ,x=true });
             }
             else if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 2)
             {
@@ -139,7 +194,7 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
-                    return RedirectToAction("OpenGroup", new { id = id });
+                    return RedirectToAction("OpenGroup", new { id = id,x=true });
                 }
                 if (sum == 2 && client.PersBudget >= group.EntryFeeUser) {
                     Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Участник", P = 1 }; 
@@ -150,7 +205,7 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
-                    return RedirectToAction("OpenGroup", new { id = id });
+                    return RedirectToAction("OpenGroup", new { id = id,x=true });
                 }
                 if (sum == 3 && client.PersBudget >= group.EntryFeeVIP) {
                     Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "VIP", P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() *0.25))) };
@@ -161,7 +216,7 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
-                    return RedirectToAction("OpenGroup", new { id = id });
+                    return RedirectToAction("OpenGroup", new { id = id, x = true });
                 }
                 if (sum == 4 && client.PersBudget >= group.EntryFeeMod) {
                     Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Mod", P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() *0.5))) };
@@ -172,7 +227,7 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
-                    return RedirectToAction("OpenGroup", new { id = id });
+                    return RedirectToAction("OpenGroup", new { id = id, x = true });
                 }
 
             }
@@ -216,23 +271,29 @@ namespace Biz_collab.Controllers
         public async Task<IActionResult> Create(Group @group)
         {
             @group.Id = Guid.NewGuid().ToString();
-            if (ModelState.IsValid)
+            if (_db.Groups.Any(g => g.Name == group.Name && g.Id!=group.Id ) == true)
             {
-                //убедится что получает на вход текущего клиента
-                ClaimsPrincipal currentUser = this.User;
-                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-                //находим клиента который создает и добовляем его в группу ,даем роль создателя 
-                var client = _db.Clients.Include(c => c.MyGroups).FirstOrDefault(cr => cr.Id == currentUserID);
-                Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Создатель", P = _db.Groups.Find(@group.Id).Clients.Count() };//overkill value ;)
-                @group.Clients.Add(cl);
-                //у этого клиента вычитаем сумму которая выдалась на группу 
-                if (client.PersBudget >= @group.Budget) _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget -= @group.Budget;
-                //добавляем созданую группу к создателю клиенту
-                _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
-                _db.Entry(client).State = EntityState.Modified;
-                _db.Groups.Add(@group);
-                await _db.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("Name", "Такое имя занято!");
+            }
+                if (ModelState.IsValid)
+            {
+                
+                    //убедится что получает на вход текущего клиента
+                    ClaimsPrincipal currentUser = this.User;
+                    var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+                    //находим клиента который создает и добовляем его в группу ,даем роль создателя 
+                    var client = _db.Clients.Include(c => c.MyGroups).FirstOrDefault(cr => cr.Id == currentUserID);
+                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Создатель", P = 2 };
+                    @group.Clients.Add(cl);
+                    //у этого клиента вычитаем сумму которая выдалась на группу 
+                    if (client.PersBudget >= @group.Budget) _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget -= @group.Budget;
+                    //добавляем созданую группу к создателю клиенту
+                    _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
+                    _db.Entry(client).State = EntityState.Modified;
+                    _db.Groups.Add(@group);
+                    await _db.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                
             }
             return View(@group);
         }
@@ -262,6 +323,10 @@ namespace Biz_collab.Controllers
             if (id != @group.Id)
             {
                 return NotFound();
+            }
+            if (_db.Groups.Any(g => g.Name == group.Name && g.Id != group.Id) == true)
+            {
+                ModelState.AddModelError("Name", "Такое имя занято!");
             }
 
             if (ModelState.IsValid)

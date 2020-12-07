@@ -18,12 +18,12 @@
 <table class="table">
     <thead>
         <tr>
-            <td>
+            <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Название</a>
-            </td>
-            <td>
+            </th>
+            <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["BudgetSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Бюджет</a>
-            </td>
+            </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["ClientAmountSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Кол-во клиентов</a>
             </th>
@@ -92,9 +92,10 @@
                     @Html.DisplayFor(modelItem => item.MinMinus)
                 </td>
                 <td>
+                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-id="@item.Id">Открыть группу</a> |
+
                     <a asp-controller="Groups" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-controller="Groups" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-id="@item.Id">Открыть группу</a> |
                     <a asp-controller="Groups" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
@@ -109,12 +110,12 @@
 <table class="table">
     <thead>
         <tr>
-            <td>
+            <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Название</a>
-            </td>
-            <td>
+            </th>
+            <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["BudgetSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Бюджет</a>
-            </td>
+            </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["ClientAmountSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Кол-во клиентов</a>
             </th>

@@ -48,10 +48,15 @@ namespace Biz_collab.Controllers
         }
 
         // GET: Transactions/Create
-        public IActionResult Create()
-        {
-            ViewData["GroupId"] = new SelectList(_db.Groups, "Id", "Id");
-            return View();
+        public IActionResult Create(string id)
+        {   
+            var group = _db.Groups.Include(g=>g.Transactions).First(g => g.Id == id);
+            ViewBag.Budget =group.Budget;
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var client = _db.Clients.Find(currentUserID);
+            ViewBag.PersBudget = client.PersBudget;
+            Transaction transaction = new Transaction { ClientId= currentUserID, GroupId = id , Client=client,Group=group, Id=group.Transactions.Count+1 };
+            return View(transaction);
         }
 
         // POST: Transactions/Create
@@ -71,7 +76,7 @@ namespace Biz_collab.Controllers
                 // ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
                 // по данному id группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
                 var gc = _db.Role_Powers.Include(rp=>rp.Client).Include(rp=>rp.Group).First(cr => cr.ClientId == transaction.ClientId && cr.GroupId == transaction.GroupId);
-                if (gc.Group.Type == 1 || gc.P > Convert.ToInt32(Math.Ceiling(Convert.ToDouble(gc.Group.Clients.Count() / 2))))
+                if (gc.Group.Type == 1 || gc.R == "Создатель")
                 {
                     transaction.StartTime = DateTime.Now;
                     transaction.Status = true;
@@ -80,6 +85,7 @@ namespace Biz_collab.Controllers
                     if (transaction.OperationType == 1 && transaction.Amount <= gc.Group.Budget)
                     {
                         gc.Group.Budget -= transaction.Amount;
+                        gc.Group.Transactions.Add(transaction);
                         _db.Entry(gc.Group).State = EntityState.Modified;
                         _db.Transactions.Add(transaction);
                     }
@@ -87,8 +93,10 @@ namespace Biz_collab.Controllers
                     else if (transaction.OperationType == 2 && transaction.Amount <= gc.Group.Budget && gc.Client.PersBudget+ transaction.Amount < 2147483647)
                     {
                         gc.Group.Budget -= transaction.Amount;
+                        gc.Group.Transactions.Add(transaction);
                         _db.Entry(gc.Group).State = EntityState.Modified;
                         gc.Client.PersBudget += transaction.Amount;
+                        gc.Client.MyTransactions.Add(transaction);
                         _db.Entry(gc.Client).State = EntityState.Modified;
                         _db.Transactions.Add(transaction);
                     }
@@ -96,8 +104,10 @@ namespace Biz_collab.Controllers
                     else if (transaction.OperationType == 3 && transaction.Amount <= gc.Client.PersBudget)
                     {
                         gc.Group.Budget += transaction.Amount;
+                        gc.Group.Transactions.Add(transaction);
                         _db.Entry(gc.Group).State = EntityState.Modified;
                         gc.Client.PersBudget -= transaction.Amount;
+                        gc.Client.MyTransactions.Add(transaction);
                         _db.Entry(gc.Client).State = EntityState.Modified;
                         _db.Transactions.Add(transaction);
                     }
@@ -109,6 +119,8 @@ namespace Biz_collab.Controllers
                         transaction.Status = false;
                         transaction.YesPercent = gc.P / _db.Role_Powers.Where(rp => rp.GroupId == transaction.GroupId).Count() * 100;
                         transaction.NoPercent = 0;
+                        gc.Group.Transactions.Add(transaction);
+                        gc.Client.MyTransactions.Add(transaction);
                         _db.Transactions.Add(transaction);
                     }
                     //перевод с счета группы на счет пользователя
@@ -117,6 +129,8 @@ namespace Biz_collab.Controllers
                         transaction.Status = false;
                         transaction.YesPercent = gc.P / _db.Role_Powers.Where(rp => rp.GroupId == transaction.GroupId).Count() * 100;
                         transaction.NoPercent = 0;
+                        gc.Group.Transactions.Add(transaction);
+                        gc.Client.MyTransactions.Add(transaction);
                         _db.Transactions.Add(transaction);
                     }
                     if (transaction.OperationType == 3 && transaction.Amount <= gc.Client.PersBudget)
@@ -124,8 +138,10 @@ namespace Biz_collab.Controllers
                         transaction.StartTime = DateTime.Now;
                         transaction.Status = true;
                         gc.Group.Budget += transaction.Amount;
+                        gc.Group.Transactions.Add(transaction);                        
                         _db.Entry(gc.Group).State = EntityState.Modified;
                         gc.Client.PersBudget -= transaction.Amount;
+                        gc.Client.MyTransactions.Add(transaction);
                         _db.Entry(gc.Client).State = EntityState.Modified;
                         _db.Transactions.Add(transaction);
                     }

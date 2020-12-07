@@ -57,6 +57,8 @@ function VoteCountShow() {
     console.log("done");
 }
 
+
+
 /*var myInput = document.querySelectorAll("input[type=number]")[0];
 myInput.addEventListener('keypress', function (e) {
     var key = !isNaN(e.charCode) ? e.charCode : e.keyCode;

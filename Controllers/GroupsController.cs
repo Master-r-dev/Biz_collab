@@ -61,6 +61,7 @@ namespace Biz_collab.Controllers
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client = await _db.Clients.FirstAsync(c=>c.Id== currentUserID);
+            
             var @group = await _db.Groups.Include(g=>g.Transactions).ThenInclude(t=>t.Votes).ThenInclude(v=>v.Client).Include(g => g.Clients).ThenInclude(rp=>rp.Client).FirstAsync(g => g.Id == id);            
             if (@group == null)
             {
@@ -119,21 +120,28 @@ namespace Biz_collab.Controllers
                     trans = trans.OrderByDescending(s => s.Status);
                     break;
             }
-            int pageSize = 6;
-            ViewBag.MyGroups = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
+            int pageSize = 5;
+            ViewBag.Transaction = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
             if (x)
             {
+                foreach (var i in @group.Transactions)
+                {
+                    int YesCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == true).Sum(v => v.P);
+                    int NoCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == false).Sum(v => v.P);
+                    i.YesPercent = ((float)YesCounter / @group.Clients.Count()) * 100.0f;
+                    i.NoPercent = ((float)NoCounter / @group.Clients.Count()) * 100.0f;
+                }
                 foreach (var i in @group.Clients.Where(rp => rp.R == "VIP"))
                 {
-                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() * 0.25)));
+                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(@group.Clients.Count() * 0.25)));
                     _db.Entry(i).State = EntityState.Modified;
                 }
                 foreach (var i in @group.Clients.Where(rp => rp.R == "Mod"))
                 {
-                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() * 0.5)));
+                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(@group.Clients.Count() * 0.5)));
                     _db.Entry(i).State = EntityState.Modified;
                 }
-                @group.Clients.FirstOrDefault(rp =>rp.R == "Создатель").P = _db.Groups.Find(id).Clients.Count();
+                @group.Clients.FirstOrDefault(rp =>rp.R == "Создатель").P = @group.Clients.Count();
                 _db.Entry(group).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
             }
@@ -162,7 +170,7 @@ namespace Biz_collab.Controllers
                     return View(@group);
                 } 
             }
-            return RedirectToAction(nameof(Index)); 
+            return Redirect("~/Home/Index");
         }
         [Authorize]
         [HttpPost]
@@ -236,15 +244,16 @@ namespace Biz_collab.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> EditRoleClient(string Login,string id,string role,int power)
+        public async Task<IActionResult> EditRoleClient(string Login,string name,string role,int power)
         {   /*код изменение роли клиента*/
-            var client = await _db.Role_Powers.Include(rp=>rp.Client).FirstAsync(rp => rp.Client.Login == Login && rp.GroupId==id);
+            var client = await _db.Role_Powers.Include(rp=>rp.Client).Include(rp=>rp.Group).FirstAsync(rp => rp.Client.Login == Login && rp.Group.Name==name);
             client.R = role;
             client.P = power;
             _db.Entry(client).State = EntityState.Modified;
             await _db.SaveChangesAsync();
             return View();
         }
+
        [Authorize]
         public async Task<IActionResult> BanClient(string Login, string id)
         {   /*код бан клиента*/
@@ -318,7 +327,7 @@ namespace Biz_collab.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Budget,Type,CloseCall,EntryFeeDon,EntryFeeUser,EntryFeeVIP,EntryFeeMod,MinPlus,MinMinus")] Group @group)
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Type,CloseCall,EntryFeeDon,EntryFeeUser,EntryFeeVIP,EntryFeeMod,MinPlus,MinMinus")] Group @group)
         {
             if (id != @group.Id)
             {

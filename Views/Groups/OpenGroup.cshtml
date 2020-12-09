@@ -6,7 +6,13 @@
 <h1>Container</h1>
 <dl class="row">
     <dt class="col-sm-2">
-        Количество клиентов
+        Бюджет:
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Budget)
+    </dd>
+    <dt class="col-sm-2">
+        Количество клиентов:
     </dt>
     <dd class="col-sm-10">
         @Html.DisplayFor(model => model.Clients.Count)
@@ -15,23 +21,44 @@
     {
         @foreach (var c in Model.Clients)
         {
-            <dd class="col-sm-10">
-                @c.Client.Login | @c.R | @c.P
-            </dd>
-            <dd>
-                <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка изменить роль</a> |
-                <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка забанить</a>
-                @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Groups" asp-action="DeleteClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка удалить</a> *@
-            </dd>
+            if (c.Client.Login == User.Identity.Name)
+            {
+                <dd class="col-sm-10">
+                    <b style="background-color:tomato;">   @c.Client.Login | @c.R | @c.P </b> @*Желательно поместить где-то сбоку для пользователя*@
+                </dd>
+            }
+            else
+            {
+                <dd class="col-sm-10">
+                    @c.Client.Login | @c.R | @c.P
+                </dd>
+            }
+            @if (Model.Clients.FirstOrDefault(rp => rp.GroupId == Model.Id && rp.Client.Login == User.Identity.Name && rp.R == "Создатель") == null)
+            {
+                <dd>
+                    <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка изменить роль</a> |
+                    <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка забанить</a>
+                    @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Groups" asp-action="DeleteClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка удалить</a> *@
+                </dd>
+            }
         }
     }
     else
     {
         @foreach (var c in Model.Clients)
         {
-            <dd class="col-sm-10">
-                @c.Client.Login | @c.R | @c.P
-            </dd>
+            if (c.Client.Login == User.Identity.Name)
+            {
+                <dd class="col-sm-10">
+                    <b style="background-color:tomato;">   @c.Client.Login | @c.R | @c.P </b>
+                </dd>
+            }
+            else
+            {
+                <dd class="col-sm-10">
+                    @c.Client.Login | @c.R | @c.P
+                </dd>
+            }
         }
     }
 </dl>
@@ -41,9 +68,9 @@
     </dt>
     <dd class="col-sm-10">
         Количество: @Html.DisplayFor(model => model.Transactions.Count)
-        @if (Model.Clients.FirstOrDefault(rp => rp.GroupId == Model.Id && rp.Client.Login == User.Identity.Name && (rp.R == "Донатер" || rp.R == "Забанен")) == null)
+        @if (Model.Clients.FirstOrDefault(rp => rp.GroupId == Model.Id && rp.Client.Login == User.Identity.Name && (rp.R == "Забанен")) == null)
         {
-            <a asp-controller="Transactions" asp-action="Create" asp-route-id="@Model.Id">+Новая транзакция</a>
+            <a asp-controller="Transactions" asp-action="Create" asp-route-name="@Model.Name">+Новая транзакция</a>
         }
     </dd>
 </dl>
@@ -117,7 +144,7 @@
                         <td>
                             @Html.DisplayFor(modelItem => t.Status)
                         </td>
-                        @if (User.Identity.Name != t.Client.Login || t.Votes.Where(v => v.Client.Login == User.Identity.Name) != null)
+                        @if (User.Identity.Name != t.Client.Login || t.Votes.Where(v => v.Client.Login == User.Identity.Name) == null)
                         {
                             <td>
                                 <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@t.Id">VoteYes</a> |
@@ -135,7 +162,6 @@
                         @if (User.Identity.Name == t.Client.Login)
                         {
                             <td>
-                                <a asp-controller="Transactions" asp-action="Edit" asp-route-id="@t.Id">Edit</a> |
                                 <a asp-controller="Transactions" asp-action="Delete" asp-route-id="@t.Id">Delete</a>
                             </td>
                         }
@@ -153,6 +179,7 @@
 }
 else
 {
+
     <table class="table">
         <thead>
             <tr>
@@ -174,7 +201,7 @@ else
             @foreach (var t in Model.Transactions)
             {
                 <tr>
-                    <td>
+                    <td style="word-break:break-all;">
                         @Html.DisplayFor(modelItem => t.Explanation)
                     </td>
                     @if (t.OperationType == 3)
@@ -208,24 +235,33 @@ else
                             <b>перевод с счета пользователя  на счет группы</b>@*Заменить на glyphicon !!!*@
                         </td>
                     }
-                    @if (t.Status == false)
-                    {
-                        <td>
-                            @Html.DisplayFor(modelItem => t.Status)
-                        </td>                        
-                    }
-                    else
-                    {
-                        <td>
-                            @Html.DisplayFor(modelItem => t.StartTime)
-                        </td>
-                    }
+                    <td>
+                        @Html.DisplayFor(modelItem => t.StartTime)
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+@{
+    var prevDisabled = !ViewBag.Transaction.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !ViewBag.Transaction.HasNextPage ? "disabled" : "";
+}
 
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(ViewBag.Transaction.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(ViewBag.Transaction.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
 
 <dl class="row">
     <dt class="col-sm-2">

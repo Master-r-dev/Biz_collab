@@ -28,7 +28,7 @@ namespace Biz_collab.Controllers
         }
 
         // GET: Transactions/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
@@ -48,15 +48,21 @@ namespace Biz_collab.Controllers
         }
 
         // GET: Transactions/Create
-        public IActionResult Create(string id)
-        {   
-            var group = _db.Groups.Include(g=>g.Transactions).First(g => g.Id == id);
-            ViewBag.Budget =group.Budget;
+        public IActionResult Create(string name)
+        {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var client = _db.Clients.Find(currentUserID);
-            ViewBag.PersBudget = client.PersBudget;
-            Transaction transaction = new Transaction { ClientId= currentUserID, GroupId = id , Client=client,Group=group, Id=group.Transactions.Count+1 };
-            return View(transaction);
+            var rp = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp=>rp.ClientId== currentUserID && rp.Group.Name== name);
+            if (rp.R == "Забанен")
+            {
+                return Redirect("~/Home/Index");
+            }
+            ViewBag.MinPlus = rp.Group.MinPlus;
+            ViewBag.MinMinus = rp.Group.MinMinus;
+            ViewBag.Name =name;
+            ViewBag.Budget =rp.Group.Budget;
+            ViewBag.PersBudget = rp.Client.PersBudget;
+            ViewBag.Role = rp.R;            
+            return View();
         }
 
         // POST: Transactions/Create
@@ -64,19 +70,21 @@ namespace Biz_collab.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Transaction transaction)
+        public async Task<IActionResult> Create(string name, [Bind("Amount,OperationType,Explanation")] Transaction transaction)
         {
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var gc = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name);
+            transaction.ClientId = currentUserID;
+            transaction.GroupId = gc.GroupId;
+            transaction.Client = gc.Client;
+            transaction.Group = gc.Group;
+            transaction.Id= Guid.NewGuid().ToString();
             if (ModelState.IsValid)
             {
-                ClaimsPrincipal currentUser = this.User;
-                var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-                var currentUserLog = currentUser.FindFirst(ClaimTypes.Name).Value;
-                transaction.ClientId = currentUserID;
-
                 // ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
                 // по данному id группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
-                var gc = _db.Role_Powers.Include(rp=>rp.Client).Include(rp=>rp.Group).First(cr => cr.ClientId == transaction.ClientId && cr.GroupId == transaction.GroupId);
-                if (gc.Group.Type == 1 || gc.R == "Создатель")
+               
+                if (gc.R == "Создатель")
                 {
                     transaction.StartTime = DateTime.Now;
                     transaction.Status = true;
@@ -96,7 +104,6 @@ namespace Biz_collab.Controllers
                         gc.Group.Transactions.Add(transaction);
                         _db.Entry(gc.Group).State = EntityState.Modified;
                         gc.Client.PersBudget += transaction.Amount;
-                        gc.Client.MyTransactions.Add(transaction);
                         _db.Entry(gc.Client).State = EntityState.Modified;
                         _db.Transactions.Add(transaction);
                     }
@@ -107,7 +114,6 @@ namespace Biz_collab.Controllers
                         gc.Group.Transactions.Add(transaction);
                         _db.Entry(gc.Group).State = EntityState.Modified;
                         gc.Client.PersBudget -= transaction.Amount;
-                        gc.Client.MyTransactions.Add(transaction);
                         _db.Entry(gc.Client).State = EntityState.Modified;
                         _db.Transactions.Add(transaction);
                     }
@@ -117,23 +123,41 @@ namespace Biz_collab.Controllers
                     if (transaction.OperationType == 1 && transaction.Amount <= gc.Group.Budget)
                     {
                         transaction.Status = false;
-                        transaction.YesPercent = gc.P / _db.Role_Powers.Where(rp => rp.GroupId == transaction.GroupId).Count() * 100;
+                        transaction.YesPercent = ((float)gc.P / _db.Groups.Include(g => g.Clients).First(rp => rp.Id == transaction.GroupId).Clients.Count()) * 100.0f;
                         transaction.NoPercent = 0;
+                        var vote = new Vote
+                        {
+                            ClientId = transaction.ClientId,
+                            Client = transaction.Client,
+                            TransactionId = transaction.Id,
+                            Transaction = transaction,
+                            V = true,
+                            P = _db.Role_Powers.First(rp => rp.ClientId == transaction.ClientId && rp.GroupId == transaction.GroupId).P
+                        };
+                        _db.Votes.Add(vote);
                         gc.Group.Transactions.Add(transaction);
-                        gc.Client.MyTransactions.Add(transaction);
                         _db.Transactions.Add(transaction);
                     }
                     //перевод с счета группы на счет пользователя
-                    else if (transaction.OperationType == 2 && transaction.Amount <= gc.Group.Budget)
+                    else if (transaction.OperationType == 2 && transaction.Amount <= gc.Group.Budget && gc.Client.PersBudget + transaction.Amount < 2147483647)
                     {
                         transaction.Status = false;
-                        transaction.YesPercent = gc.P / _db.Role_Powers.Where(rp => rp.GroupId == transaction.GroupId).Count() * 100;
-                        transaction.NoPercent = 0;
+                        transaction.YesPercent = ((float)gc.P / _db.Groups.Include(g => g.Clients).First(rp => rp.Id == transaction.GroupId).Clients.Count()) * 100.0f;
+                        transaction.NoPercent = 0.0f;
+                        var vote = new Vote
+                        {
+                            ClientId = transaction.ClientId,
+                            Client = transaction.Client,
+                            TransactionId = transaction.Id,
+                            Transaction = transaction,
+                            V = true,
+                            P = _db.Role_Powers.First(rp => rp.ClientId == transaction.ClientId && rp.GroupId == transaction.GroupId).P
+                        };
+                        _db.Votes.Add(vote);
                         gc.Group.Transactions.Add(transaction);
-                        gc.Client.MyTransactions.Add(transaction);
                         _db.Transactions.Add(transaction);
                     }
-                    if (transaction.OperationType == 3 && transaction.Amount <= gc.Client.PersBudget)
+                    else if (transaction.OperationType == 3 && transaction.Amount <= gc.Client.PersBudget)
                     {
                         transaction.StartTime = DateTime.Now;
                         transaction.Status = true;
@@ -141,75 +165,138 @@ namespace Biz_collab.Controllers
                         gc.Group.Transactions.Add(transaction);                        
                         _db.Entry(gc.Group).State = EntityState.Modified;
                         gc.Client.PersBudget -= transaction.Amount;
-                        gc.Client.MyTransactions.Add(transaction);
                         _db.Entry(gc.Client).State = EntityState.Modified;
                         _db.Transactions.Add(transaction);
+
                     }
                 }
                 await _db.SaveChangesAsync();
-                return Redirect("~/Home/Index");
+                return RedirectToAction("OpenGroup", "Groups", new { id = transaction.GroupId });
 
             }
             return View(transaction);
         }
 
-        // GET: Transactions/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> VoteYes(string id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            var transaction = await _db.Transactions.FindAsync(id);
+            var transaction = await _db.Transactions
+                .Include(t => t.Client)
+                .Include(t => t.Group)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (transaction == null)
             {
                 return NotFound();
             }
-            ViewData["ClientId"] = new SelectList(_db.Clients, "Id", "Id", transaction.ClientId);
-            ViewData["GroupId"] = new SelectList(_db.Groups, "Id", "Id", transaction.GroupId);
-            return View(transaction);
+            if (transaction.Status==false) {
+                var vote = new Vote
+                {
+                    ClientId = transaction.ClientId,
+                    Client = transaction.Client,
+                    TransactionId = transaction.Id,
+                    Transaction = transaction,
+                    V = true,
+                    P = _db.Role_Powers.First(rp => rp.ClientId == transaction.ClientId && rp.GroupId == transaction.GroupId).P
+                };
+                _db.Votes.Add(vote);
+                int YesCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == true).Sum(v => v.P);
+                int NoCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == false).Sum(v => v.P);
+                YesCounter += vote.P;
+                transaction.YesPercent = YesCounter / transaction.Group.Clients.Count() * 100;
+                transaction.NoPercent = NoCounter / transaction.Group.Clients.Count() * 100;
+                if (transaction.YesPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == true))
+                {
+                    //перевод с счета группы на причину снятия
+                    if (transaction.OperationType == 1 && transaction.Amount <= transaction.Group.Budget)
+                    {
+                        transaction.StartTime = DateTime.Now;
+                        transaction.Status = true;
+                        transaction.Group.Budget -= transaction.Amount;
+                        transaction.Group.Transactions.Add(transaction);
+                        _db.Entry(transaction.Group).State = EntityState.Modified;
+                        _db.Entry(transaction).State = EntityState.Modified;
+
+                    }
+                    //перевод с счета группы на счет пользователя
+                    else if (transaction.OperationType == 2 && transaction.Amount <= transaction.Group.Budget)
+                    {
+                        transaction.StartTime = DateTime.Now;
+                        transaction.Status = true;
+                        transaction.Group.Budget -= transaction.Amount;
+                        transaction.Group.Transactions.Add(transaction);
+                        _db.Entry(transaction.Group).State = EntityState.Modified;
+                        transaction.Client.PersBudget += transaction.Amount;
+                        transaction.Client.MyTransactions.Add(transaction);
+                        _db.Entry(transaction.Client).State = EntityState.Modified;
+                        _db.Entry(transaction).State = EntityState.Modified;
+                    }
+                    //перевод с счета пользователя  на счет группы
+                    else if (transaction.OperationType == 3 && transaction.Amount <= transaction.Client.PersBudget)
+                    {
+                        transaction.StartTime = DateTime.Now;
+                        transaction.Status = true;
+                        transaction.Group.Budget += transaction.Amount;
+                        transaction.Group.Transactions.Add(transaction);
+                        _db.Entry(transaction.Group).State = EntityState.Modified;
+                        transaction.Client.PersBudget -= transaction.Amount;
+                        transaction.Client.MyTransactions.Add(transaction);
+                        _db.Entry(transaction.Client).State = EntityState.Modified;
+                        _db.Entry(transaction).State = EntityState.Modified;
+                    }
+                }
+                else if (transaction.YesPercent ==50 && transaction.NoPercent == 50 && transaction.Group.CloseCall==false)
+                {
+                    _db.Entry(transaction).State = EntityState.Deleted;
+                    _db.Transactions.Remove(transaction);
+                }
+                await _db.SaveChangesAsync();
+            }
+                return RedirectToAction("OpenGroup", "Groups", new { id = transaction.GroupId });
+            
         }
 
-        // POST: Transactions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,GroupId,Amount,OperationType,Explanation")] Transaction transaction)
+        public async Task<IActionResult> VoteNo(string id)
         {
-            if (id != transaction.Id)
+            if (id == null)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var transaction = await _db.Transactions
+                .Include(t => t.Client)
+                .Include(t => t.Group)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (transaction == null)
             {
-                try
-                {
-                    _db.Update(transaction);
-                    await _db.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TransactionExists(transaction.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            ViewData["ClientId"] = new SelectList(_db.Clients, "Id", "Id", transaction.ClientId);
-            ViewData["GroupId"] = new SelectList(_db.Groups, "Id", "Id", transaction.GroupId);
-            return View(transaction);
+            if (transaction.Status == false)
+            {
+                var vote = new Vote
+                {
+                    ClientId = transaction.ClientId,
+                    Client = transaction.Client,
+                    TransactionId = transaction.Id,
+                    Transaction = transaction,
+                    V = false,
+                    P = _db.Role_Powers.First(rp => rp.ClientId == transaction.ClientId && rp.GroupId == transaction.GroupId).P
+                };
+                int NoCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == false).Sum(v => v.P);
+                NoCounter += vote.P;
+                double NoPercent = NoCounter / transaction.Group.Clients.Count() * 100;
+                if (NoPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == false))
+                {
+                    _db.Entry(transaction).State = EntityState.Deleted;
+                    _db.Transactions.Remove(transaction);
+                }
+                await _db.SaveChangesAsync();
+            }
+            return RedirectToAction("OpenGroup", "Groups", new { id = transaction.GroupId });
         }
-
         // GET: Transactions/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
@@ -231,55 +318,13 @@ namespace Biz_collab.Controllers
         // POST: Transactions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var transaction = await _db.Transactions.FindAsync(id);
             _db.Transactions.Remove(transaction);
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("OpenGroup", "Groups", new { id = transaction.GroupId });
         }
-
-        private bool TransactionExists(int id)
-        {
-            return _db.Transactions.Any(e => e.Id == id);
-        }
-
-        public async Task<IActionResult> VoteYes(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var transaction = await _db.Transactions
-                .Include(t => t.Client)
-                .Include(t => t.Group)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-
-            return View(transaction);
-        }
-
-        public async Task<IActionResult> VoteNo(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var transaction = await _db.Transactions
-                .Include(t => t.Client)
-                .Include(t => t.Group)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-
-            return View(transaction);
-        }
+     
     }
 }

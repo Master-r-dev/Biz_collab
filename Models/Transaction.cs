@@ -10,11 +10,9 @@ namespace Biz_collab.Models
     public class Transaction
     {
         [Key]
-        public int Id { get; set; }
-        [Required]
+        public string Id { get; set; }
         public string ClientId { get; set; }
         public Client Client { get; set; }
-        [Required]
         public string GroupId { get; set; }
         public Group Group { get; set; }
         [Required]

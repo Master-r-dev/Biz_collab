@@ -2,7 +2,7 @@
 @using Biz_collab.Data
 @inject ApplicationDbContext _db
 @{
-
+    ViewData["B"]= _db.Clients.FirstOrDefault(m => m.Login == User.Identity.Name).PersBudget;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -12,21 +12,21 @@
     <title>@ViewData["Title"] - Biz_collab</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-    
-        <style>
-            table {
-                border-collapse: collapse;
-                table-layout: fixed;
-                width: 310px;
-            }
 
-                table td {
-                    border: solid 1px #fab;
-                    width: 100px;
-                    word-wrap: break-word;
-                }
-        </style>
-    
+    <style>
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 310px;
+        }
+
+            table td {
+                border: solid 1px #fab;
+                width: 100px;
+                word-wrap: break-word;
+            }
+    </style>
+
 </head>
 <body>
     <header>
@@ -41,7 +41,7 @@
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
                         </li>
                         @if (User.Identity.Name != null)
                         {
@@ -49,9 +49,9 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Groups" asp-action="Create">Создать группу</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddBalance">Пополнить баланс:    @_db.Clients.FirstOrDefault(m => m.Login == User.Identity.Name).PersBudget</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddBalance">Пополнить баланс: @ViewData["B"]</a>
                             </li>
-}
+                        }
                     </ul>
                 </div>
             </div>
@@ -65,7 +65,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2020 - Biz_collab - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2020 - Biz_collab
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

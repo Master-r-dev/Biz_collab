@@ -28,7 +28,7 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            var transaction = await _db.Transactions
+            var transaction = await _db.Transactions.AsNoTracking()
                 .Include(t => t.Client)
                 .Include(t => t.Group)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -37,11 +37,6 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
-            if (transaction.Status == true)
-            {
-                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
-            }
-
             return View(transaction);
         }
 
@@ -49,7 +44,7 @@ namespace Biz_collab.Controllers
         public IActionResult Create(string name)
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var rp = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp=>rp.ClientId== currentUserID && rp.Group.Name== name);
+            var rp = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).First(rp=>rp.ClientId== currentUserID && rp.Group.Name== name);
             if (rp.R == "Забанен")
             {
                 return Redirect("~/Home/Index");
@@ -188,12 +183,15 @@ namespace Biz_collab.Controllers
             var transaction = await _db.Transactions
                 .Include(t => t.Client)
                 .Include(t => t.Group)
+                .ThenInclude(g=>g.Clients)
+                .ThenInclude(rp=>rp.Client)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (transaction == null)
             {
                 return NotFound();
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var client = await _db.Clients.FindAsync(currentUserID);
             if (_db.Groups.First(g=>g.Id==transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
             {
                 return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
@@ -201,19 +199,19 @@ namespace Biz_collab.Controllers
             if (transaction.Status==false) {
                 var vote = new Vote
                 {
-                    ClientId = transaction.ClientId,
-                    Client = transaction.Client,
+                    ClientId = currentUserID,
+                    Client = client,
                     TransactionId = transaction.Id,
                     Transaction = transaction,
                     V = true,
-                    P = _db.Role_Powers.First(rp => rp.ClientId == transaction.ClientId && rp.GroupId == transaction.GroupId).P
+                    P = _db.Role_Powers.First(rp => rp.ClientId == currentUserID && rp.GroupId == transaction.GroupId).P
                 };
                 _db.Votes.Add(vote);
                 int YesCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == true).Sum(v => v.P);
                 int NoCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == false).Sum(v => v.P);
                 YesCounter += vote.P;
-                transaction.YesPercent = YesCounter / transaction.Group.Clients.Count() * 100;
-                transaction.NoPercent = NoCounter / transaction.Group.Clients.Count() * 100;
+                transaction.YesPercent = ((float)YesCounter / transaction.Group.Clients.Count()) * 100.0f;
+                transaction.NoPercent = ((float)NoCounter / transaction.Group.Clients.Count()) * 100.0f;
                 if (transaction.YesPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == true))
                 {
                     //перевод с счета группы на причину снятия
@@ -222,7 +220,6 @@ namespace Biz_collab.Controllers
                         transaction.StartTime = DateTime.Now;
                         transaction.Status = true;
                         transaction.Group.Budget -= transaction.Amount;
-                        transaction.Group.Transactions.Add(transaction);
                         _db.Entry(transaction.Group).State = EntityState.Modified;
                         _db.Entry(transaction).State = EntityState.Modified;
 
@@ -232,27 +229,11 @@ namespace Biz_collab.Controllers
                     {
                         transaction.StartTime = DateTime.Now;
                         transaction.Status = true;
-                        transaction.Group.Budget -= transaction.Amount;
-                        transaction.Group.Transactions.Add(transaction);
+                        transaction.Group.Budget -= transaction.Amount;                        
                         _db.Entry(transaction.Group).State = EntityState.Modified;
                         transaction.Client.PersBudget += transaction.Amount;
-                        transaction.Client.MyTransactions.Add(transaction);
-                        _db.Entry(transaction.Client).State = EntityState.Modified;
-                        _db.Entry(transaction).State = EntityState.Modified;
-                    }
-                    //перевод с счета пользователя  на счет группы
-                    else if (transaction.OperationType == 3 && transaction.Amount <= transaction.Client.PersBudget)
-                    {
-                        transaction.StartTime = DateTime.Now;
-                        transaction.Status = true;
-                        transaction.Group.Budget += transaction.Amount;
-                        transaction.Group.Transactions.Add(transaction);
-                        _db.Entry(transaction.Group).State = EntityState.Modified;
-                        transaction.Client.PersBudget -= transaction.Amount;
-                        transaction.Client.MyTransactions.Add(transaction);
-                        _db.Entry(transaction.Client).State = EntityState.Modified;
-                        _db.Entry(transaction).State = EntityState.Modified;
-                    }
+                        _db.Entry(transaction.Client).State = EntityState.Modified;                       
+                    }                   
                 }
                 else if (transaction.YesPercent ==50 && transaction.NoPercent == 50 && transaction.Group.CloseCall==false)
                 {
@@ -274,12 +255,15 @@ namespace Biz_collab.Controllers
             var transaction = await _db.Transactions
                 .Include(t => t.Client)
                 .Include(t => t.Group)
+                .ThenInclude(g => g.Clients)
+                .ThenInclude(rp => rp.Client)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (transaction == null)
             {
                 return NotFound();
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var client = await _db.Clients.FindAsync(currentUserID);
             if (_db.Groups.First(g => g.Id == transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
             {
                 return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
@@ -288,17 +272,20 @@ namespace Biz_collab.Controllers
             {
                 var vote = new Vote
                 {
-                    ClientId = transaction.ClientId,
-                    Client = transaction.Client,
+                    ClientId = currentUserID,
+                    Client = client,
                     TransactionId = transaction.Id,
                     Transaction = transaction,
                     V = false,
-                    P = _db.Role_Powers.First(rp => rp.ClientId == transaction.ClientId && rp.GroupId == transaction.GroupId).P
+                    P = _db.Role_Powers.First(rp => rp.ClientId == currentUserID && rp.GroupId == transaction.GroupId).P
                 };
+                _db.Votes.Add(vote);
+                int YesCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == true).Sum(v => v.P);
                 int NoCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == false).Sum(v => v.P);
                 NoCounter += vote.P;
-                double NoPercent = NoCounter / transaction.Group.Clients.Count() * 100;
-                if (NoPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == false))
+                transaction.YesPercent = ((float)YesCounter / transaction.Group.Clients.Count()) * 100.0f;
+                transaction.NoPercent = ((float)NoCounter / transaction.Group.Clients.Count()) * 100.0f;
+                if (transaction.NoPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == false))
                 {
                     _db.Entry(transaction).State = EntityState.Deleted;
                     _db.Transactions.Remove(transaction);

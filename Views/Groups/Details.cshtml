@@ -85,9 +85,9 @@
     </dl>
 </div>
 <div>
+    @if (ViewBag.Pass) {
     <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@Model.Name">[Открыть группу]</a>
-    <a asp-controller="Groups" asp-action="Edit" asp-route-name="@Model.Name">{Изменить]</a> |
-    <a asp-controller="Groups" asp-action="Delete" asp-route-name="@Model.Name">[Удалить]</a>
+    }
 </div>
 <div>
 <a asp-controller="Home" asp-action="Index">Назад на главную</a>

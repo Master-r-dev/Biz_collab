@@ -5,13 +5,12 @@
 
 <h1>EditRoleClient</h1>
 
-@Html.HiddenFor(rp => rp.ClientId)
-@Html.HiddenFor(rp => rp.GroupId)
+
 <h3>Выберите готовые роли или создайте новую</h3>
 
 @*Радио кнопки между донатером участником и модером*@
 @*поле для новой роли(название) и 2 поля для ввода силы(число или процент от количества пользователей)(радио кнопка выбора режима скрывает другое поле))*@
-@if (ViewBag.Role == "Модератор" || ViewBag.Role == "Создатель")
+@if (ViewBag.Role == "Mod" || ViewBag.Role == "Создатель")
 {
     <div class="row">
         <div class="col-md-4">
@@ -69,7 +68,7 @@
                                         <div>
                                             <label for="4">
                                                 <span class="glyphicon glyphicon-cloud-upload">
-                                                    <input type="radio" asp-for="R" id="4" value="Модератор">
+                                                    <input type="radio" asp-for="R" id="4" value="Mod">
                                                 </span>
                                                 Модератор
                                             </label>
@@ -103,7 +102,7 @@
                     <span asp-validation-for="P" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Save" asp-route-name="@ViewBag.Name" class="btn btn-primary" />
+                    <input type="submit" value="Save" asp-route-name="@ViewBag.Name" asp-route-login="@ViewBag.Login" class="btn btn-primary" />
                 </div>
             </form>
         </div>

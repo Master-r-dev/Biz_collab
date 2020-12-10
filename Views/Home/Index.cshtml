@@ -31,7 +31,7 @@
                 Тип
             </th>
             <th>
-                Выбор
+                Спор
             </th>
             <th>
                 Вход Дона
@@ -58,53 +58,62 @@
         @foreach (var item in Model)
         {
             
-            <tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Budget)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Clients.Count)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            @if (item.CloseCall == true)
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    Принять
                 </td>
+            }
+            else
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.Budget)
+                   Удалить
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Clients.Count)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Type)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CloseCall)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeDon)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeUser)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeVIP)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeMod)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MinPlus)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MinMinus)
-                </td>
-                <td>
-                    @if (ViewBag.PersBudget >= item.EntryFeeDon || ViewBag.PersBudget >= item.EntryFeeUser || ViewBag.PersBudget >= item.EntryFeeMod || ViewBag.PersBudget >= item.EntryFeeVIP)
-                    {
-                        <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-                    }
-                    @if (item.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
-                    {
-                        <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить] </a> 
-                        <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]   </a>
-                    }
-                    <a asp-controller="Groups" asp-action="Details" asp-route-name="@item.Name">[Параметры]</a>
-                </td>
-            </tr>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeDon)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeUser)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeVIP)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryFeeMod)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinPlus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MinMinus)
+            </td>
+            <td>
+                @if (ViewBag.PersBudget >= item.EntryFeeDon || ViewBag.PersBudget >= item.EntryFeeUser || ViewBag.PersBudget >= item.EntryFeeMod || ViewBag.PersBudget >= item.EntryFeeVIP)
+                {
+                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
+                }
+                @if (item.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                {
+                    <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить] </a>
+                    <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]   </a>
+                }
+                <a asp-controller="Groups" asp-action="Details" asp-route-name="@item.Name">[Параметры]</a>
+            </td>
+        </tr>
             }
         
     </tbody>
@@ -129,7 +138,7 @@
                 Тип
             </th>
             <th>
-                Выбор
+                Спор
             </th>
             <th>
                 Вход Дона
@@ -155,47 +164,56 @@
     <tbody>
         @foreach (var item in ViewBag.MyCreatedGroups)
         {
-            <tr>
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.Budget
+            </td>
+            <td>
+                @item.Clients.Count
+            </td>
+            <td>
+                @item.Type
+            </td>
+            @if (item.CloseCall == true)
+            {
                 <td>
-                    @item.Name
+                    Принять
                 </td>
+            }
+            else
+            {
                 <td>
-                    @item.Budget
+                    Удалить
                 </td>
-                <td>
-                    @item.Clients.Count
-                </td>
-                <td>
-                    @item.Type
-                </td>
-                <td>
-                    @item.CloseCall
-                </td>
-                <td>
-                    @item.EntryFeeDon
-                </td>
-                <td>
-                    @item.EntryFeeUser
-                </td>
-                <td>
-                    @item.EntryFeeVIP
-                </td>
-                <td>
-                    @item.EntryFeeMod
-                </td>
-                <td>
-                    @item.MinPlus
-                </td>
-                <td>
-                    @item.MinMinus
-                </td>
-                <td>
-                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-                    <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить]   </a>
-                    <a asp-controller="Groups" asp-action="Details" asp-route-name="@item.Name">[Параметры]   </a>
-                    <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]</a>
-                </td>
-            </tr>
+            }
+            <td>
+                @item.EntryFeeDon
+            </td>
+            <td>
+                @item.EntryFeeUser
+            </td>
+            <td>
+                @item.EntryFeeVIP
+            </td>
+            <td>
+                @item.EntryFeeMod
+            </td>
+            <td>
+                @item.MinPlus
+            </td>
+            <td>
+                @item.MinMinus
+            </td>
+            <td>
+                <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
+                <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить]   </a>
+                <a asp-controller="Groups" asp-action="Details" asp-route-name="@item.Name">[Параметры]   </a>
+                <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]</a>
+            </td>
+        </tr>
         }
         @foreach (var item in ViewBag.MyGroups)
         {
@@ -212,9 +230,18 @@
                 <td>
                     @item.Type
                 </td>
-                <td>
-                    @item.CloseCall
-                </td>
+                @if (item.CloseCall == true)
+                {
+                    <td>
+                        Принять
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        Удалить
+                    </td>
+                }
                 <td>
                     @item.EntryFeeDon
                 </td>

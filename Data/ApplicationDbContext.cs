@@ -35,8 +35,8 @@ namespace Biz_collab.Data
             builder.Entity<Role_Power>()
                 .HasOne(x => x.Group)
                 .WithMany(m => m.Clients)
-                .HasForeignKey(x => x.GroupId);
-               // .OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Transaction>()
                 .HasKey(x => x.Id);
             builder.Entity<Transaction>()

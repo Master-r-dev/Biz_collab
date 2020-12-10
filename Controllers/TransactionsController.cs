@@ -182,6 +182,7 @@ namespace Biz_collab.Controllers
             }
             var transaction = await _db.Transactions
                 .Include(t => t.Client)
+                .Include(t => t.Votes)
                 .Include(t => t.Group)
                 .ThenInclude(g=>g.Clients)
                 .ThenInclude(rp=>rp.Client)
@@ -235,9 +236,9 @@ namespace Biz_collab.Controllers
                         _db.Entry(transaction.Client).State = EntityState.Modified;                       
                     }                   
                 }
-                else if (transaction.YesPercent ==50 && transaction.NoPercent == 50 && transaction.Group.CloseCall==false)
+                else if (transaction.NoPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == false))
                 {
-                    _db.Entry(transaction).State = EntityState.Deleted;
+                    _db.Votes.RemoveRange(transaction.Votes);
                     _db.Transactions.Remove(transaction);
                 }
                 await _db.SaveChangesAsync();
@@ -254,7 +255,8 @@ namespace Biz_collab.Controllers
             }
             var transaction = await _db.Transactions
                 .Include(t => t.Client)
-                .Include(t => t.Group)
+                .Include(t => t.Votes)
+                .Include(t => t.Group)                
                 .ThenInclude(g => g.Clients)
                 .ThenInclude(rp => rp.Client)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -286,9 +288,32 @@ namespace Biz_collab.Controllers
                 transaction.YesPercent = ((float)YesCounter / transaction.Group.Clients.Count()) * 100.0f;
                 transaction.NoPercent = ((float)NoCounter / transaction.Group.Clients.Count()) * 100.0f;
                 if (transaction.NoPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == false))
-                {
-                    _db.Entry(transaction).State = EntityState.Deleted;
+                {                   
+                    _db.Votes.RemoveRange(transaction.Votes);                    
                     _db.Transactions.Remove(transaction);
+                }
+                else if (transaction.YesPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == true))
+                {
+                    //перевод с счета группы на причину снятия
+                    if (transaction.OperationType == 1 && transaction.Amount <= transaction.Group.Budget)
+                    {
+                        transaction.StartTime = DateTime.Now;
+                        transaction.Status = true;
+                        transaction.Group.Budget -= transaction.Amount;
+                        _db.Entry(transaction.Group).State = EntityState.Modified;
+                        _db.Entry(transaction).State = EntityState.Modified;
+
+                    }
+                    //перевод с счета группы на счет пользователя
+                    else if (transaction.OperationType == 2 && transaction.Amount <= transaction.Group.Budget)
+                    {
+                        transaction.StartTime = DateTime.Now;
+                        transaction.Status = true;
+                        transaction.Group.Budget -= transaction.Amount;
+                        _db.Entry(transaction.Group).State = EntityState.Modified;
+                        transaction.Client.PersBudget += transaction.Amount;
+                        _db.Entry(transaction.Client).State = EntityState.Modified;
+                    }
                 }
                 await _db.SaveChangesAsync();
             }
@@ -330,7 +355,13 @@ namespace Biz_collab.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var transaction = _db.Transactions.Include(t=>t.Group).First(t=>t.Id==id);
+            var transaction = await _db.Transactions
+                .Include(t => t.Client)
+                .Include(t => t.Votes)
+                .Include(t => t.Group)
+                .ThenInclude(g => g.Clients)
+                .ThenInclude(rp => rp.Client)
+                .FirstOrDefaultAsync(m => m.Id == id);
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             if (_db.Groups.First(g => g.Id == transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
             {
@@ -341,6 +372,7 @@ namespace Biz_collab.Controllers
                 return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
             }
             var name = transaction.Group.Name;
+            _db.Votes.RemoveRange(transaction.Votes);
             _db.Transactions.Remove(transaction);
             await _db.SaveChangesAsync();
             return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });

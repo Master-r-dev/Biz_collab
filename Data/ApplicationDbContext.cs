@@ -60,7 +60,7 @@ namespace Biz_collab.Data
                 .HasOne(x => x.Transaction)
                 .WithMany(m => m.Votes)
                 .HasForeignKey(x => x.TransactionId)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(builder);
         }

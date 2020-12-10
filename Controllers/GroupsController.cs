@@ -69,7 +69,7 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
-            if (@group.Clients.FirstOrDefault(rp=>rp.Client == client) ==null)
+            if (@group.Clients.FirstOrDefault(rp=>rp.ClientId == client.Id) ==null)
             {
                 return RedirectToAction("JoinGroup",new { name });
             }

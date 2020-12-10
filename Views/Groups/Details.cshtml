@@ -4,32 +4,32 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Параметры</h1>
 
 <div>
-    <h4>Group</h4>
+    <h4>Группа</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            Название
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Budget)
+            Бюджет
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Budget)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Type)
+            Тип
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Type)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EntryFeeDon)
+            Вход Дона
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.EntryFeeDon)
@@ -37,52 +37,65 @@
         @if (Model.Type != 1)
         {
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.MinPlus)
+                Мин Плюс
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.MinPlus)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.CloseCall)
+                Спор
             </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.CloseCall)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.MinMinus)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.MinMinus)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.EntryFeeUser)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.EntryFeeUser)
-            </dd>
-            @if (Model.EntryFeeVIP != -1)
+            @if (Model.CloseCall == true)
             {
-
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.EntryFeeVIP)
-                </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.EntryFeeVIP)
+                    Принять
                 </dd>
             }
-            @if (Model.EntryFeeMod != -1)
+            else
             {
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.EntryFeeMod)
-                </dt>
                 <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.EntryFeeMod)
+                    Удалить
                 </dd>
             }
+                @if (Model.MinMinus != -1)
+                {
+                    <dt class="col-sm-2">
+                        Мин Вычет
+                    </dt>
+                }
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.MinMinus)
+                </dd>
+                <dt class="col-sm-2">
+                    Вход Юзера
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.EntryFeeUser)
+                </dd>
 
-        }
+                @if (Model.EntryFeeVIP != -1)
+                {
 
-    </dl>
+                    <dt class="col-sm-2">
+                        Вход VIP
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.EntryFeeVIP)
+                    </dd>
+                }
+                @if (Model.EntryFeeMod != -1)
+                {
+                    <dt class="col-sm-2">
+                        Вход Модера
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.EntryFeeMod)
+                    </dd>
+                }
+
+            }
+
+        </dl>
 </div>
 <div>
     @if (ViewBag.Pass) {

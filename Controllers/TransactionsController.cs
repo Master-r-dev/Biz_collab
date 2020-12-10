@@ -19,17 +19,10 @@ namespace Biz_collab.Controllers
         {
             _db = context;
         }
-
-        // GET: Transactions
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _db.Transactions.Include(t => t.Client).Include(t => t.Group);
-            return View(await applicationDbContext.ToListAsync());
-        }
-
         // GET: Transactions/Details/5
         public async Task<IActionResult> Details(string id)
         {
+
             if (id == null)
             {
                 return NotFound();
@@ -39,9 +32,14 @@ namespace Biz_collab.Controllers
                 .Include(t => t.Client)
                 .Include(t => t.Group)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            ViewBag.Name = transaction.Group.Name;
             if (transaction == null)
             {
                 return NotFound();
+            }
+            if (transaction.Status == true)
+            {
+                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
             }
 
             return View(transaction);
@@ -79,6 +77,10 @@ namespace Biz_collab.Controllers
             transaction.Client = gc.Client;
             transaction.Group = gc.Group;
             transaction.Id= Guid.NewGuid().ToString();
+            if (gc.R == "Забанен")
+            {
+                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
+            }
             if (ModelState.IsValid)
             {
                 // ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
@@ -171,7 +173,7 @@ namespace Biz_collab.Controllers
                     }
                 }
                 await _db.SaveChangesAsync();
-                return RedirectToAction("OpenGroup", "Groups", new { id = transaction.GroupId });
+                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
 
             }
             return View(transaction);
@@ -190,6 +192,11 @@ namespace Biz_collab.Controllers
             if (transaction == null)
             {
                 return NotFound();
+            }
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (_db.Groups.First(g=>g.Id==transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
+            {
+                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
             }
             if (transaction.Status==false) {
                 var vote = new Vote
@@ -254,7 +261,7 @@ namespace Biz_collab.Controllers
                 }
                 await _db.SaveChangesAsync();
             }
-                return RedirectToAction("OpenGroup", "Groups", new { id = transaction.GroupId });
+                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
             
         }
 
@@ -271,6 +278,11 @@ namespace Biz_collab.Controllers
             if (transaction == null)
             {
                 return NotFound();
+            }
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (_db.Groups.First(g => g.Id == transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
+            {
+                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
             }
             if (transaction.Status == false)
             {
@@ -293,11 +305,12 @@ namespace Biz_collab.Controllers
                 }
                 await _db.SaveChangesAsync();
             }
-            return RedirectToAction("OpenGroup", "Groups", new { id = transaction.GroupId });
+            return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
         }
         // GET: Transactions/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
+
             if (id == null)
             {
                 return NotFound();
@@ -307,9 +320,19 @@ namespace Biz_collab.Controllers
                 .Include(t => t.Client)
                 .Include(t => t.Group)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (_db.Groups.First(g => g.Id == transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
+            {
+                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
+            }
+            ViewBag.Name = transaction.Group.Name;
             if (transaction == null)
             {
                 return NotFound();
+            }
+            if (transaction.Status == true)
+            {
+                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
             }
 
             return View(transaction);
@@ -320,10 +343,20 @@ namespace Biz_collab.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var transaction = await _db.Transactions.FindAsync(id);
+            var transaction = _db.Transactions.Include(t=>t.Group).First(t=>t.Id==id);
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (_db.Groups.First(g => g.Id == transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
+            {
+                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
+            }
+            if (transaction.Status == true)
+            {
+                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
+            }
+            var name = transaction.Group.Name;
             _db.Transactions.Remove(transaction);
             await _db.SaveChangesAsync();
-            return RedirectToAction("OpenGroup", "Groups", new { id = transaction.GroupId });
+            return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
         }
      
     }

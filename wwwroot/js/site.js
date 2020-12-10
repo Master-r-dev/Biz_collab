@@ -3,6 +3,24 @@
 
 // Write your JavaScript code.
 
+function Regime() {
+    if (document.getElementById("s_mode").checked) {
+        document.getElementById("Standart").style.display = "block";
+        document.getElementById("Number").style.display = "none";
+        document.getElementById("Percent").style.display = "none";  
+    }
+    else if (document.getElementById("n_mode").checked) {
+        document.getElementById("Standart").style.display = "none";
+        document.getElementById("Number").style.display = "block";
+        document.getElementById("Percent").style.display = "none";  
+    }
+    else if (document.getElementById("p_mode").checked) {
+        document.getElementById("Standart").style.display = "none";
+        document.getElementById("Number").style.display = "none";
+        document.getElementById("Percent").style.display = "block";          
+    }
+    console.log("done");
+}
 function ShowCreateGroupSettings() {
     if (document.getElementById("1").checked) {
         document.getElementById("Settings").style.display = "none";

@@ -37,6 +37,12 @@
         @if (Model.Type != 1)
         {
             <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.MinPlus)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.MinPlus)
+            </dd>
+            <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.CloseCall)
             </dt>
             <dd class="col-sm-10">
@@ -54,7 +60,7 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.EntryFeeUser)
             </dd>
-            @if (Model.Type != 2)
+            @if (Model.EntryFeeVIP != -1)
             {
 
                 <dt class="col-sm-2">
@@ -63,42 +69,26 @@
                 <dd class="col-sm-10">
                     @Html.DisplayFor(model => model.EntryFeeVIP)
                 </dd>
-
-                @if (Model.Type != 3)
-                {
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.EntryFeeMod)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.EntryFeeMod)
-                    </dd>
-                }
-                else
-                {
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.EntryFeeVIP)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.EntryFeeVIP)
-                    </dd>
-                    <dt class="col-sm-2">
-                        @Html.DisplayNameFor(model => model.EntryFeeMod)
-                    </dt>
-                    <dd class="col-sm-10">
-                        @Html.DisplayFor(model => model.EntryFeeMod)
-                    </dd>
-                }
             }
+            @if (Model.EntryFeeMod != -1)
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.EntryFeeMod)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.EntryFeeMod)
+                </dd>
+            }
+
         }
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.MinPlus)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MinPlus)
-        </dd>
+
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@Model.Name">[Открыть группу]</a>
+    <a asp-controller="Groups" asp-action="Edit" asp-route-name="@Model.Name">{Изменить]</a> |
+    <a asp-controller="Groups" asp-action="Delete" asp-route-name="@Model.Name">[Удалить]</a>
+</div>
+<div>
+<a asp-controller="Home" asp-action="Index">Назад на главную</a>
 </div>

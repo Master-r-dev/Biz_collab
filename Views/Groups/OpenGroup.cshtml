@@ -24,7 +24,7 @@
             if (c.Client.Login == User.Identity.Name)
             {
                 <dd class="col-sm-10">
-                    <b style="background-color:tomato;">   @c.Client.Login | @c.R | @c.P </b> @*Желательно поместить где-то сбоку для пользователя*@
+                    <b style="background-color:rebeccapurple;">   @c.Client.Login | @c.R | @c.P </b> @*Желательно поместить где-то сбоку для пользователя*@
                 </dd>
             }
             else
@@ -33,12 +33,15 @@
                     @c.Client.Login | @c.R | @c.P
                 </dd>
             }
-            @if (Model.Clients.FirstOrDefault(rp => rp.GroupId == Model.Id && rp.Client.Login == User.Identity.Name && rp.R == "Создатель") == null)
+            @if (c.R != "Создатель")
             {
                 <dd>
-                    <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка изменить роль</a> |
-                    <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка забанить</a>
-                    @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Groups" asp-action="DeleteClient" asp-route-Login="@c.Client.Login" asp-route-id="@Model.Id">Кнопка удалить</a> *@
+                    <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-Login="@c.Client.Login" asp-route-name="@Model.Name">Кнопка изменить роль</a> |
+                    @if (c.R != "Забанен")
+                    {
+                    <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@c.Client.Login" asp-route-name="@Model.Name">Кнопка забанить</a>
+                    }
+                    @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Groups" asp-action="DeleteClient" asp-route-Login="@c.Client.Login" asp-route-name="@Model.Id">Кнопка удалить</a> *@
                 </dd>
             }
         }
@@ -101,85 +104,100 @@
         <tbody>
             @foreach (var t in Model.Transactions)
             {
-                <tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => t.Explanation)
+                </td>
+                @if (t.OperationType == 3)
+                {
                     <td>
-                        @Html.DisplayFor(modelItem => t.Explanation)
+                        <b>+ </b> @Html.DisplayFor(modelItem => t.Amount)
                     </td>
-                    @if (t.OperationType == 3)
-                    {
-                        <td>
-                            <b>+ </b> @Html.DisplayFor(modelItem => t.Amount)
-                        </td>
-                    }
-                    else
-                    {
-                        <td>
-                            <b>- </b> @Html.DisplayFor(modelItem => t.Amount)
-                        </td>
-                    }
+                }
+                else
+                {
+                    <td>
+                        <b>- </b> @Html.DisplayFor(modelItem => t.Amount)
+                    </td>
+                }
 
-                    @if (t.OperationType == 1)
-                    {
-                        <td>
-                            <b>трата бюджета  на внешние источники </b>@*Заменить на glyphicon !!!*@
-                        </td>
-                    }
-                    else if (t.OperationType == 2)
-                    {
-                        <td>
-                            <b>перевод с счета группы на счет пользователя</b>@*Заменить на glyphicon !!!*@
-                        </td>
-                    }
-                    else if (t.OperationType == 3)
-                    {
-                        <td>
-                            <b>перевод с счета пользователя  на счет группы</b>@*Заменить на glyphicon !!!*@
-                        </td>
-                    }
+                @if (t.OperationType == 1)
+                {
                     <td>
-                        @Html.DisplayFor(modelItem => t.Client.Login)
+                        <b>трата бюджета  на внешние источники </b>@*Заменить на glyphicon !!!*@
                     </td>
-                    @if (t.Status == false)
+                }
+                else if (t.OperationType == 2)
+                {
+                    <td>
+                        <b>перевод с счета группы на счет пользователя</b>@*Заменить на glyphicon !!!*@
+                    </td>
+                }
+                else if (t.OperationType == 3)
+                {
+                    <td>
+                        <b>перевод с счета пользователя  на счет группы</b>@*Заменить на glyphicon !!!*@
+                    </td>
+                }
+            <td>
+                @Html.DisplayFor(modelItem => t.Client.Login) -- @Html.DisplayFor(modelItem => t.Client.MyGroups.First(rp=>rp.GroupId==t.GroupId).R)
+            </td>
+                @if (t.Status == false)
+                {
+                    <td>
+                        Ожидание@*Заменить на значок часов или подобное*@
+                    </td>
+                    @if (User.Identity.Name != t.Client.Login || t.Votes.Where(v => v.Client.Login == User.Identity.Name) == null)
                     {
+                        @*Заменить на иконки!*@
                         <td>
-                            @Html.DisplayFor(modelItem => t.Status)
+                            <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@t.Id">За</a> |
+                            <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@t.Id">Против</a>
                         </td>
-                        @if (User.Identity.Name != t.Client.Login || t.Votes.Where(v => v.Client.Login == User.Identity.Name) == null)
-                        {
-                            <td>
-                                <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@t.Id">VoteYes</a> |
-                                <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@t.Id">VoteNo</a>
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                @*display votes that are already in*/*@
-                                @Html.DisplayFor(modelItem => t.YesPercent) |
-                                @Html.DisplayFor(modelItem => t.NoPercent)
-                            </td>
-                        }
-                        @if (User.Identity.Name == t.Client.Login)
-                        {
-                            <td>
-                                <a asp-controller="Transactions" asp-action="Delete" asp-route-id="@t.Id">Delete</a>
-                            </td>
-                        }
                     }
                     else
                     {
                         <td>
-                            @Html.DisplayFor(modelItem => t.StartTime)
+                            @*Отражение процента голосов*@
+                            <b style="background-color:limegreen;"> @Html.DisplayFor(modelItem => t.YesPercent)</b> |
+                            <b style="background-color:tomato;"> @Html.DisplayFor(modelItem => t.NoPercent)</b>
                         </td>
                     }
-                </tr>
+                    @if (User.Identity.Name == t.Client.Login && t.Status == false)
+                    {
+                        <td>
+                            <a asp-controller="Transactions" asp-action="Delete" asp-route-id="@t.Id">Удалить</a>
+                            <a asp-controller="Transactions" asp-action="Details" asp-route-id="@t.Id">Детали</a>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <a asp-controller="Transactions" asp-action="Details" asp-route-id="@t.Id">Детали</a>
+                        </td>
+                    }
+                }
+                else
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => t.StartTime)
+                    </td>
+                    <td>
+                        @*Отражение процента голосов*@
+                        <b style="background-color:limegreen;"> @Html.DisplayFor(modelItem => t.YesPercent)</b> |
+                        <b style="background-color:tomato;"> @Html.DisplayFor(modelItem => t.NoPercent)</b>
+                    </td>
+                    <td>
+                        <a asp-controller="Transactions" asp-action="Details" asp-route-id="@t.Id">Детали</a>
+                    </td>
+                }
+            </tr>
             }
         </tbody>
     </table>
 }
 else
 {
-
     <table class="table">
         <thead>
             <tr>
@@ -243,6 +261,15 @@ else
         </tbody>
     </table>
 }
+
+<dl class="row">
+    <dt class="col-sm-2">
+        Графики
+    </dt>
+    @* canvas and bla bla draw
+                }*@
+</dl>
+
 @{
     var prevDisabled = !ViewBag.Transaction.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !ViewBag.Transaction.HasNextPage ? "disabled" : "";
@@ -253,26 +280,18 @@ else
    asp-route-pageNumber="@(ViewBag.Transaction.PageIndex - 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @prevDisabled">
-    Previous
+    <<
 </a>
 <a asp-action="Index"
    asp-route-sortOrder="@ViewData["CurrentSort"]"
    asp-route-pageNumber="@(ViewBag.Transaction.PageIndex + 1)"
    asp-route-currentFilter="@ViewData["CurrentFilter"]"
    class="btn btn-default @nextDisabled">
-    Next
+    >>
 </a>
 
-<dl class="row">
-    <dt class="col-sm-2">
-        Графики
-    </dt>
-    @* canvas and bla bla draw
-        @foreach (var c in ViewBag.Clients)
-        {
-            <dd class="col-sm-10">
-                @c.Client.Login @c.R @c.P
-            </dd>
 
-        }*@
-</dl>
+
+<div>
+    <a asp-action="Index" asp-controller="Home">Назад на главную</a>
+</div>

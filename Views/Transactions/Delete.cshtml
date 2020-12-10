@@ -4,65 +4,56 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
+<h1>Удалить транзакцию</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Вы уверены что хотите удалить транзакцию? Голоса пропадут</h3>
 <div>
-    <h4>Transaction</h4>
+    <h4>Транзакция</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Client)
+        <dt class="col-sm-2">
+            Cумма
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Client.Id)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Group)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Group.Id)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Amount)
-        </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Amount)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OperationType)
+        <dt class="col-sm-2">
+            Вид транзакции
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OperationType)
+            @if (Model.OperationType==1)
+            {
+        <dd class="col-sm-10">
+            Потратить из группового бюджета
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Explanation)
+            }
+            else if (Model.OperationType == 2)
+            {
+        <dd class="col-sm-10">
+            Перевести на свой счет
+        </dd>
+            }
+        <dt class="col-sm-2">
+            Описание
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Explanation)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
+        <dt class="col-sm-2">
+            Статус
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Status)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.YesPercent)
+        <dt class="col-sm-2">
+            Процент За
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.YesPercent)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NoPercent)
+        <dt class="col-sm-2">
+            Процент Против
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NoPercent)
         </dd>
     </dl>
@@ -70,6 +61,6 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@ViewBag.Name">Вернуться в группу</a>
     </form>
 </div>

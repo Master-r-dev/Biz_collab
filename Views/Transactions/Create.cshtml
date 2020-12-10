@@ -16,7 +16,7 @@
             @if (ViewBag.Role != "Донатер")
             {
                 <div class="form-group form-check">
-                    <label asp-for="OperationType" class="control-label">Вид Транзакции</label>
+                    <label asp-for="OperationType" class="control-label">Вид Транзакции: </label>
                     <label for="1">
                         <span class="glyphicon glyphicon-plus">
                             <input type="radio" asp-for="OperationType" id="1" value="1">
@@ -56,13 +56,13 @@
                     <span asp-validation-for="OperationType" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Amount" class="control-label"></label>
+                    <label asp-for="Amount" class="control-label">Сумма</label>
                     <input oninput="Trans2()" id="input" type="number" asp-for="Amount" class="form-control" />
                     <span asp-validation-for="Amount" class="text-danger"></span>
                 </div>
             }
             <div class="form-group">
-                <label asp-for="Explanation" class="control-label"></label>
+                <label asp-for="Explanation" class="control-label">Описание</label>
                 <input asp-for="Explanation" class="form-control" />
                 <span asp-validation-for="Explanation" class="text-danger"></span>
             </div>
@@ -82,11 +82,11 @@
           document.getElementById("input").setAttribute("min", @ViewBag.MinMinus);
           document.getElementById("input").value = Math.abs(x);
     }
-      else if (document.getElementById("2").checked && Math.abs(x) <= y && Math.abs(x) + z < 2147483647) {
+      else if (document.getElementById("2").checked && Math.abs(x) <= y && Math.abs(x) + z < 2000000000) {
           document.getElementById("input").setAttribute("min", @ViewBag.MinMinus);
           document.getElementById("input").value = Math.abs(x);
       }
-      else if (document.getElementById("3").checked && Math.abs(x) <= z && Math.abs(x) + y < 2147483647) {
+      else if (document.getElementById("3").checked && Math.abs(x) <= z && Math.abs(x) + y < 2000000000) {
           document.getElementById("input").setAttribute("min", @ViewBag.MinPlus);
           document.getElementById("input").value = Math.abs(x);
     }
@@ -97,7 +97,7 @@
     var y =@ViewBag.Budget;
     var z =@ViewBag.PersBudget;
         document.getElementById("input").setAttribute("min", @ViewBag.MinPlus);
-        if (Math.abs(x) <= z && Math.abs(x) + y < 2147483647)
+        if (Math.abs(x) <= z && Math.abs(x) + y < 2000000000)
         {
           document.getElementById("input").value = Math.abs(x);
         }
@@ -105,7 +105,7 @@
     }
 </script>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@ViewBag.Name">Вернуться в группу</a>
 </div>
 
 @section Scripts {

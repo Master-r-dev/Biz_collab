@@ -4,69 +4,78 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Детали транзакции</h1>
 
 <div>
-    <h4>Transaction</h4>
+    <h4>Транзакция</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Client)
+        <dt class="col-sm-2">
+            Cумма
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Client.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Group)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Group.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Amount)
-        </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Amount)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OperationType)
+        <dt class="col-sm-2">
+            Вид транзакции
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OperationType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Explanation)
+        @if (Model.OperationType == 1)
+        {
+            <dd class="col-sm-10">
+                Потратить из группового бюджета
+            </dd>
+        }
+        else if (Model.OperationType == 2)
+        {
+            <dd class="col-sm-10">
+                Перевести на свой счет
+            </dd>
+        }
+        else if (Model.OperationType == 3)
+        {
+            <dd class="col-sm-10">
+                Перевести на счет группы
+            </dd>
+        }
+        <dt class="col-sm-2">
+            Описание
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Explanation)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
+        @if (Model.Status == false)
+        {
+            <dt class="col-sm-2">
+                Статус:
+            </dt>
+            <dd class="col-sm-10">
+                Ожидание
+            </dd>
+        }
+        else
+        {
+            <dt class="col-sm-2">
+               Время принятия:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.StartTime)
+            </dd>
+        }
+        <dt class="col-sm-2">
+            Процент За
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.YesPercent)
-        </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.YesPercent)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NoPercent)
+        <dt class="col-sm-2">
+            Процент Против
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NoPercent)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id">Удалить</a> |
+    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@ViewBag.Name">Вернуться в группу</a>
 </div>

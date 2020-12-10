@@ -20,25 +20,17 @@ namespace Biz_collab.Controllers
         {
             _db = context;
         }
-
-        // GET: Groups
-        [Authorize]
-        public async Task<IActionResult> Index()
-        {
-            return View(await _db.Groups.ToListAsync());
-        }
-
         // GET: Groups/Details/5
         [Authorize]
-        public async Task<IActionResult> Details(string id) //характеристики группы
+        public async Task<IActionResult> Details(string name) //характеристики группы
         {
-            if (id == null)
+            if (name == null)
             {
                 return NotFound();
             }
 
             var @group = await _db.Groups
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Name == name);
             if (@group == null)
             {
                 return NotFound();
@@ -48,30 +40,30 @@ namespace Biz_collab.Controllers
         }
         [Authorize]
 
-        public async Task<IActionResult> OpenGroup(string id,
+        public async Task<IActionResult> OpenGroup(string name,
             bool x, 
             string sortOrder,
             string currentFilter,
             string searchString,
             int? pageNumber) //Сама группа
         {            
-            if (id == null)
+            if (name == null)
             {
                 return NotFound();
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client = await _db.Clients.FirstAsync(c=>c.Id== currentUserID);
             
-            var @group = await _db.Groups.Include(g=>g.Transactions).ThenInclude(t=>t.Votes).ThenInclude(v=>v.Client).Include(g => g.Clients).ThenInclude(rp=>rp.Client).FirstAsync(g => g.Id == id);            
+            var @group = await _db.Groups.Include(g=>g.Transactions).ThenInclude(t=>t.Votes).ThenInclude(v=>v.Client).Include(g => g.Clients).ThenInclude(rp=>rp.Client).FirstAsync(g => g.Name == name);            
             if (@group == null)
             {
                 return NotFound();
             }
             if (@group.Clients.FirstOrDefault(rp=>rp.Client == client) ==null)
             {
-                return RedirectToAction("JoinGroup",new { id=id });
+                return RedirectToAction("JoinGroup",new { name=name });
             }
-            var trans = _db.Transactions.Include(t=>t.Client).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == id);
+            var trans = _db.Transactions.Include(t=>t.Client).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == @group.Id);
             ViewData["CurrentSort"] = sortOrder;
             if (searchString != null)
             {
@@ -126,19 +118,26 @@ namespace Biz_collab.Controllers
             {
                 foreach (var i in @group.Transactions)
                 {
-                    int YesCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == true).Sum(v => v.P);
-                    int NoCounter = _db.Votes.Where(v => v.TransactionId == id && v.V == false).Sum(v => v.P);
-                    i.YesPercent = ((float)YesCounter / @group.Clients.Count()) * 100.0f;
-                    i.NoPercent = ((float)NoCounter / @group.Clients.Count()) * 100.0f;
+                    if (i.Status==false) {
+                        int YesCounter = _db.Votes.Where(v => v.TransactionId == i.Id && v.V == true).Sum(v => v.P);
+                        int NoCounter = _db.Votes.Where(v => v.TransactionId == i.Id && v.V == false).Sum(v => v.P);
+                        i.YesPercent = ((float)YesCounter / @group.Clients.Count()) * 100.0f;
+                        i.NoPercent = ((float)NoCounter / @group.Clients.Count()) * 100.0f;
+                    }
                 }
                 foreach (var i in @group.Clients.Where(rp => rp.R == "VIP"))
                 {
-                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(@group.Clients.Count() * 0.25)));
+                    i.P = Convert.ToInt32(Math.Floor(Convert.ToDouble(@group.Clients.Count() * 0.25)));
                     _db.Entry(i).State = EntityState.Modified;
                 }
                 foreach (var i in @group.Clients.Where(rp => rp.R == "Mod"))
                 {
-                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(@group.Clients.Count() * 0.5)));
+                    i.P = Convert.ToInt32(Math.Floor(Convert.ToDouble(@group.Clients.Count() * 0.5)));
+                    _db.Entry(i).State = EntityState.Modified;
+                }
+                foreach (var i in @group.Clients.Where(rp => rp.R != "VIP" && rp.R != "Mod" && rp.R == "Создатель" && rp.R!="Участник" && rp.R != "Донатер" && rp.R != "Забанен"))
+                {
+                    i.P = Convert.ToInt32(Math.Floor(Convert.ToDouble(@group.Clients.Count() * i.Percent)));
                     _db.Entry(i).State = EntityState.Modified;
                 }
                 @group.Clients.FirstOrDefault(rp =>rp.R == "Создатель").P = @group.Clients.Count();
@@ -147,24 +146,24 @@ namespace Biz_collab.Controllers
             }
             if (@group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Забанен") != null)
             {
-                return RedirectToAction("BannedInGroup", new { id = id });
+                return RedirectToAction("BannedInGroup", new { name = name });
             }
             return View(@group);
         }
         [Authorize]
-        public IActionResult BannedInGroup(string id)
+        public IActionResult BannedInGroup(string name)
         {
-            ViewBag.groupName = _db.Groups.First(g => g.Id == id).Name;
+            ViewBag.groupName = _db.Groups.First(g => g.Name == name).Name;
             return View();
         }
         [Authorize]
         [HttpGet]
-        public IActionResult JoinGroup(string id)
+        public IActionResult JoinGroup(string name)
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client =  _db.Clients.First(c => c.Id == currentUserID);
             ViewBag.PersBudget =  client.PersBudget;
-            var @group =  _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Id == id);
+            var @group =  _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name);
             if (group.EntryFeeDon!=-1) {
                 if (client.PersBudget >= group.EntryFeeDon || client.PersBudget >= group.EntryFeeUser || client.PersBudget >= group.EntryFeeMod || client.PersBudget >= group.EntryFeeVIP) {
                     return View(@group);
@@ -174,11 +173,11 @@ namespace Biz_collab.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> JoinGroup(string id,int sum)
+        public async Task<IActionResult> JoinGroup(string name,int sum)
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client = await _db.Clients.Include(c => c.MyGroups).FirstAsync(c => c.Id == currentUserID);
-            var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).FirstAsync(g => g.Id == id);            
+            var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).FirstAsync(g => g.Name == name);            
             if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 1 && sum==1)
             {
                 Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Донатер", P = 1 };
@@ -189,7 +188,7 @@ namespace Biz_collab.Controllers
                 _db.Entry(client).State = EntityState.Modified;
                 _db.Entry(group).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
-                return RedirectToAction("OpenGroup", new { id = id ,x=true });
+                return RedirectToAction("OpenGroup", new { name = name ,x=true });
             }
             else if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 2)
             {
@@ -202,7 +201,7 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
-                    return RedirectToAction("OpenGroup", new { id = id,x=true });
+                    return RedirectToAction("OpenGroup", new { name = name,x=true });
                 }
                 if (sum == 2 && client.PersBudget >= group.EntryFeeUser) {
                     Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Участник", P = 1 }; 
@@ -213,10 +212,10 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
-                    return RedirectToAction("OpenGroup", new { id = id,x=true });
+                    return RedirectToAction("OpenGroup", new { name = name,x=true });
                 }
                 if (sum == 3 && client.PersBudget >= group.EntryFeeVIP) {
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "VIP", P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() *0.25))) };
+                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "VIP", P = Convert.ToInt32(Math.Floor(Convert.ToDouble(_db.Groups.Find(name).Clients.Count() *0.25))) };
                     @group.Clients.Add(cl);
                     _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                     client.PersBudget -= group.EntryFeeVIP;
@@ -224,10 +223,10 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
-                    return RedirectToAction("OpenGroup", new { id = id, x = true });
+                    return RedirectToAction("OpenGroup", new { name = name, x = true });
                 }
                 if (sum == 4 && client.PersBudget >= group.EntryFeeMod) {
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Mod", P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(_db.Groups.Find(id).Clients.Count() *0.5))) };
+                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Mod", P = Convert.ToInt32(Math.Floor(Convert.ToDouble(_db.Groups.Find(name).Clients.Count() *0.5))) };
                     @group.Clients.Add(cl);
                     _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                     client.PersBudget -= group.EntryFeeMod;
@@ -235,7 +234,7 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
-                    return RedirectToAction("OpenGroup", new { id = id, x = true });
+                    return RedirectToAction("OpenGroup", new { name = name, x = true });
                 }
 
             }
@@ -244,32 +243,75 @@ namespace Biz_collab.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> EditRoleClient(string Login,string name,string role,int power)
+        public IActionResult EditRoleClient(string Login,string name)
         {   /*код изменение роли клиента*/
-            var client = await _db.Role_Powers.Include(rp=>rp.Client).Include(rp=>rp.Group).FirstAsync(rp => rp.Client.Login == Login && rp.Group.Name==name);
-            client.R = role;
-            client.P = power;
-            _db.Entry(client).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
-            return View();
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var client = _db.Role_Powers.Include(rp=>rp.Client).Include(rp=>rp.Group).First(rp => rp.Client.Login == Login && rp.Group.Name==name);
+            if (client == null)
+            {
+                return NotFound();
+            }
+            ViewBag.Count = _db.Groups.Find(name).Clients.Count();
+            ViewBag.Role= _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            return View(client);
         }
 
-       [Authorize]
-        public async Task<IActionResult> BanClient(string Login, string id)
+        [Authorize]
+        [HttpPost]
+        public  IActionResult EditRoleClient([Bind("P,R,Percent")] Role_Power rp)
+        {   /*код изменение роли клиента*/
+            
+            if (rp == null || rp.GroupId==null || rp.ClientId==null)
+            {
+                return NotFound();
+            }
+            if (rp.Percent != null)
+            {
+                rp.Percent /= 100;
+                rp.P = Convert.ToInt32(Math.Floor(Convert.ToDouble(_db.Groups.Find(rp.GroupId).Clients.Count() * rp.Percent)));
+            }         
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _db.Update(rp);
+                    _db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ClientExists(rp.ClientId,rp.GroupId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                var name = _db.Groups.First(g => g.Id == rp.GroupId).Name;
+                return RedirectToAction("OpenGroup", new { name = name });
+            }
+            return View(rp);
+        }
+        private bool ClientExists(string id,string groupId)
+        {
+            return _db.Groups.First(g => g.Id == groupId).Clients.Any(e => e.ClientId == id);
+        }
+        [Authorize]
+        public async Task<IActionResult> BanClient(string Login, string name)
         {   /*код бан клиента*/
-            var client = await _db.Role_Powers.Include(rp => rp.Client).FirstAsync(rp => rp.Client.Login == Login && rp.GroupId == id);
+            var client = await _db.Role_Powers.Include(rp => rp.Client).FirstAsync(rp => rp.Client.Login == Login && rp.GroupId == name);
             client.R = "Забанен";
             client.P = 0;
             _db.Entry(client).State = EntityState.Modified;
             await _db.SaveChangesAsync();
-            return RedirectToAction("OpenGroup", new { id = id });
+            return RedirectToAction("OpenGroup", new { name = name });
         }
         [Authorize]
         // GET: Groups/Create
         public IActionResult Create()
-        {
-            ClaimsPrincipal currentUser = this.User;
-            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+        {            
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             ViewBag.PersBudget = Convert.ToInt32(_db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget);
             return View();
         }
@@ -287,9 +329,8 @@ namespace Biz_collab.Controllers
                 if (ModelState.IsValid)
             {
                 
-                    //убедится что получает на вход текущего клиента
-                    ClaimsPrincipal currentUser = this.User;
-                    var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+                    //убедится что получает на вход текущего клиента                    
+                    var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                     //находим клиента который создает и добовляем его в группу ,даем роль создателя 
                     var client = _db.Clients.Include(c => c.MyGroups).FirstOrDefault(cr => cr.Id == currentUserID);
                     Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Создатель", P = 2 };
@@ -301,35 +342,36 @@ namespace Biz_collab.Controllers
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Groups.Add(@group);
                     await _db.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                
+                    return Redirect("~/Home/Index");
+
             }
             return View(@group);
         }
 
         // GET: Groups/Edit/5
         [Authorize]
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string name)
         {
-            if (id == null)
+            if (name == null)
             {
                 return NotFound();
             }
 
-            var @group = await _db.Groups.FindAsync(id);
+            var @group = await _db.Groups.FirstAsync(g=>g.Name==name);
             if (@group == null)
             {
                 return NotFound();
             }
+            ViewBag.Name = group.Name;
             return View(@group);
         }
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Type,CloseCall,EntryFeeDon,EntryFeeUser,EntryFeeVIP,EntryFeeMod,MinPlus,MinMinus")] Group @group)
+        public async Task<IActionResult> Edit(string name, [Bind("Name,Type,CloseCall,EntryFeeDon,EntryFeeUser,EntryFeeVIP,EntryFeeMod,MinPlus,MinMinus")] Group @group)
         {
-            if (id != @group.Id)
+            if (name != @group.Name)
             {
                 return NotFound();
             }
@@ -337,7 +379,7 @@ namespace Biz_collab.Controllers
             {
                 ModelState.AddModelError("Name", "Такое имя занято!");
             }
-
+            @group.Budget =_db.Groups.First(g=>g.Name==name).Budget;
             if (ModelState.IsValid)
             {
                 try
@@ -356,22 +398,22 @@ namespace Biz_collab.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return Redirect("~/Home/Index");
             }
             return View(@group);
         }
 
         // GET: Groups/Delete/5
         [Authorize]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string name)
         {
-            if (id == null)
+            if (name == null)
             {
                 return NotFound();
             }
 
             var @group = await _db.Groups
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Name == name);
             if (@group == null)
             {
                 return NotFound();
@@ -384,17 +426,26 @@ namespace Biz_collab.Controllers
         [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(string name)
         {
-            var @group = await _db.Groups.FindAsync(id);
-            _db.Groups.Remove(@group);
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var @group = await _db.Groups.FirstAsync(g=>g.Name==name);
+            var client = _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).First(g => g.Name == name)
+                .Clients.FirstOrDefault(rp=>rp.ClientId== currentUserID && rp.R=="Создатель").Client;
+
+            if (client != null)
+            {
+                client.PersBudget += group.Budget;
+                _db.Entry(client).State = EntityState.Modified;
+                _db.Groups.Remove(@group);
+                await _db.SaveChangesAsync();
+            }
+            return Redirect("~/Home/Index");
         }
 
-        private bool GroupExists(string id)
+        private bool GroupExists(string name)
         {
-            return _db.Groups.Any(e => e.Id == id);
+            return _db.Groups.Any(e => e.Name == name);
         }
     }
 }

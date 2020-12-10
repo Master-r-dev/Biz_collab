@@ -26,8 +26,10 @@ namespace Biz_collab.Models
                                                                     Роль="Участник" сила голоса=1
                                                                     Роль="VIP" сила голоса=25% от кол-ва пользователей
                                                                     Роль="Модератор" сила голоса=50% от кол-ва пользователей
+                                                                    Роль="Создатель" сила глооса=100% все возможности.            
                                                                 }
                                    (опять же изменяемо модератором и создателем)*/
+        public float? Percent { get; set; }
         public Client Client { get; set; }
         public Group Group { get; set; }
         [Required]

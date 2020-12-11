@@ -117,6 +117,7 @@ namespace Biz_collab.Controllers
                 }
                 else
                 {
+                    //перевод с счета группы на внешние от сайта нужды
                     if (transaction.OperationType == 1 && transaction.Amount <= gc.Group.Budget)
                     {
                         transaction.Status = false;

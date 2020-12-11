@@ -88,7 +88,7 @@
         Транзакции
     </dt>
     <dd class="col-sm-10">
-        Количество: @ViewBag.Transactions.Count
+        Количество: @ViewBag.Count
         @if (Model.Clients.FirstOrDefault(rp => rp.GroupId == Model.Id && rp.Client.Login == User.Identity.Name && (rp.R == "Забанен")) == null)
         {
             <a asp-controller="Transactions" asp-action="Create" asp-route-name="@Model.Name">+Новая транзакция</a>
@@ -165,7 +165,7 @@
                     <td>
                         Ожидание@*Заменить на значок часов или подобное*@
                     </td>
-                    @if (User.Identity.Name != t.Client.Login || t.Votes.Where(v => v.Client.Login == User.Identity.Name) == null)
+                    @if (t.Votes.FirstOrDefault(v => v.Client.Login == User.Identity.Name) == null)
                     {
                         @*Заменить на иконки!*@
                         <td>

@@ -75,6 +75,7 @@ namespace Biz_collab.Controllers
                 return RedirectToAction("JoinGroup",new { name });
             }
             var trans = _db.Transactions.Include(t=>t.Client).ThenInclude(c=>c.MyGroups).ThenInclude(rp=>rp.Group).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == @group.Id);
+            ViewBag.Count = trans.Count();
             ViewData["CurrentSort"] = sortOrder;
             if (searchString != null)
             {

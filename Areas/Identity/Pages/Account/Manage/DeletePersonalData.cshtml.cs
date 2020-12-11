@@ -75,24 +75,7 @@ namespace Biz_collab.Areas.Identity.Pages.Account.Manage
             var result = await _userManager.DeleteAsync(user);           
             var userId = await _userManager.GetUserIdAsync(user);
             var client = await _db.Clients.FindAsync(userId);
-            /* Если не происходит автоматически-вернуть,иначе-удалить!
-            //удалить его группы
-            
-            var groups =  _db.Groups.Include(m => m.Clients.Where(m=>m.Client.Id ==client.Id && m.ClientRole == "Создатель"));
-            foreach ( var g in groups)
-            {
-                var transaction = _db.Transactions.Include(t => t.GroupId == g.Id);
-                _db.Remove(transaction);
-            }
-            //убрать его из участников в других группах
-            var groups_s=  _db.Groups.Include(m => m.Clients.Where(p => p.Client.Id == client.Id));
-            foreach (var g in groups_s)
-            {
-                var transaction = _db.Transactions.Include(t => t.GroupId == g.Id && t.ClientId == client.Id);
-                _db.Remove(transaction);
-            }
-            _db.Remove(groups);
-            _db.Remove(groups_s);*/            
+                      
             _db.Clients.Remove(client);
             if (!result.Succeeded)
             {

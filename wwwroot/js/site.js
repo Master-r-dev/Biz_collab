@@ -6,20 +6,35 @@
 function Regime() {
     if (document.getElementById("s_mode").checked) {
         document.getElementById("Standart").style.display = "block";
-        document.getElementById("Number").style.display = "none";
+        document.getElementById("Role").style.display = "none";
+        document.getElementById("Power").style.display = "none";
         document.getElementById("Percent").style.display = "none";  
+        document.getElementById("perc").value = null;
+        document.getElementById("R").value = null;
     }
     else if (document.getElementById("n_mode").checked) {
         document.getElementById("Standart").style.display = "none";
-        document.getElementById("Number").style.display = "block";
+        document.getElementById("Role").style.display = "block";
+        document.getElementById("Power").style.display = "block";
         document.getElementById("Percent").style.display = "none";  
+        document.getElementById("perc").value = null;
+        document.getElementById("1").checked = false;
+        document.getElementById("2").checked = false;
+        document.getElementById("3").checked = false;
+        document.getElementById("4").checked = false;
+
     }
     else if (document.getElementById("p_mode").checked) {
         document.getElementById("Standart").style.display = "none";
-        document.getElementById("Number").style.display = "none";
+        document.getElementById("Role").style.display = "block";
+        document.getElementById("Power").style.display = "none";
         document.getElementById("Percent").style.display = "block";          
+        document.getElementById("power").value = 0;
+        document.getElementById("1").checked = false;
+        document.getElementById("2").checked = false;
+        document.getElementById("3").checked = false;
+        document.getElementById("4").checked = false;
     }
-    console.log("done");
 }
 function ShowCreateGroupSettings() {
     if (document.getElementById("1").checked) {
@@ -37,7 +52,6 @@ function ShowCreateGroupSettings() {
         document.getElementById("InputEntryFeeVIP").value = "";
         document.getElementById("InputEntryFeeMod").value = "";
     }    
-    console.log("done");
 } 
 
 function VIPShow() {

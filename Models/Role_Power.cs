@@ -11,6 +11,7 @@ namespace Biz_collab.Models
         [Required]
         public string ClientId { get; set; }
         [Required]
+        [StringLength(20)]
         public string R { get; set; } /*Роль(изменяемо модератором и создателем)
                                        * { Создатель - голос 100% также является модератором
                                             модератор-управляет всеми участниками кроме владельца его голос 50%) 
@@ -21,6 +22,6 @@ namespace Biz_collab.Models
                                          }*/
         [Required]
         public int P { get; set; }/* Сила голоса (изменяемо)*/
-        public float? Percent { get; set; }       
+        public double? Percent { get; set; }       
     }
 }

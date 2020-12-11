@@ -9,6 +9,7 @@ using Biz_collab.Data;
 using Biz_collab.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Globalization;
 
 namespace Biz_collab.Controllers
 {
@@ -119,7 +120,7 @@ namespace Biz_collab.Controllers
                 }
                 foreach (var i in @group.Clients.Where(rp => rp.R == "VIP"))
                 {
-                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(@group.Clients.Count() * 0.25)));
+                    i.P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() * 0.25)));
                     _db.Entry(i).State = EntityState.Modified;
                 }
                 foreach (var i in @group.Clients.Where(rp => rp.R == "Mod"))
@@ -127,9 +128,9 @@ namespace Biz_collab.Controllers
                     i.P = Convert.ToInt32(Math.Floor(Convert.ToDouble(@group.Clients.Count() * 0.5)));
                     _db.Entry(i).State = EntityState.Modified;
                 }
-                foreach (var i in @group.Clients.Where(rp => rp.R != "VIP" && rp.R != "Mod" && rp.R == "Создатель" && rp.R!="Участник" && rp.R != "Донатер" && rp.R != "Забанен"))
+                foreach (var i in @group.Clients.Where(rp => rp.Percent!=null))
                 {
-                    i.P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(@group.Clients.Count() * i.Percent)));
+                    i.P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() * i.Percent)));
                     _db.Entry(i).State = EntityState.Modified;
                 }
                 @group.Clients.FirstOrDefault(rp =>rp.R == "Создатель").P = @group.Clients.Count();
@@ -152,7 +153,7 @@ namespace Biz_collab.Controllers
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client =  _db.Clients.AsNoTracking().First(c => c.Id == currentUserID);
             ViewBag.PersBudget =  client.PersBudget;
-            var @group =  _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name);
+            var @group =  _db.Groups.AsNoTracking().First(g => g.Name == name);
             if (group.EntryFeeDon!=-1) {
                 if (client.PersBudget >= group.EntryFeeDon || client.PersBudget >= group.EntryFeeUser || client.PersBudget >= group.EntryFeeMod || client.PersBudget >= group.EntryFeeVIP) {
                     return View(@group);
@@ -204,7 +205,7 @@ namespace Biz_collab.Controllers
                     return RedirectToAction("OpenGroup", new { name,x=true });
                 }
                 if (sum == 3 && client.PersBudget >= group.EntryFeeVIP) {
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "VIP", P = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(@group.Clients.Count() *0.25))) };
+                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "VIP", P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() *0.25))) };
                     @group.Clients.Add(cl);
                     _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                     client.PersBudget -= group.EntryFeeVIP;
@@ -235,43 +236,69 @@ namespace Biz_collab.Controllers
         public IActionResult EditRoleClient(string Login,string name)
         {   /*код изменение роли клиента*/
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var client = _db.Role_Powers.Include(rp=>rp.Client).Include(rp=>rp.Group).First(rp => rp.Client.Login == Login && rp.Group.Name==name);
-            if (client == null)
+            var rp = _db.Role_Powers.Include(rp=>rp.Client).Include(rp=>rp.Group).First(rp => rp.Client.Login == Login && rp.Group.Name==name);
+            if (rp == null)
             {
                 return NotFound();
             }
-            ViewBag.Name = client.Group.Name;
-            ViewBag.Login = client.Client.Login;
-            ViewBag.Count = _db.Groups.Find(name).Clients.Count();
-            ViewBag.Role= _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
-            return View(client);
+            ViewBag.Name = rp.Group.Name;
+            ViewBag.Login = rp.Client.Login;
+            ViewBag.Count = _db.Groups.AsNoTracking().Include(g=>g.Clients).ThenInclude(rp=>rp.Client).First(g=>g.Name==name).Clients.Count();
+            ViewBag.EditorRole= _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            return View(rp);
         }
 
         [Authorize]
         [HttpPost]
-        public  IActionResult EditRoleClient(string name,string login,[Bind("P,R,Percent")] Role_Power rp)
+        public  IActionResult EditRoleClient(string name,string login,string Percent, [Bind("R,P")] Role_Power rp)
         {   /*код изменение роли клиента*/
-            
-            if (rp == null || rp.Group.Name==null || rp.Client.Login==null)
+            var c = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.Client.Login == login && rp.Group.Name == name);
+            if (rp.R==null )
+            {
+                ModelState.AddModelError("Role", "Заполнить!");
+                var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                ViewBag.Name = c.Group.Name;
+                ViewBag.Login = c.Client.Login;
+                ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
+                ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == ID && rp.Group.Name == name).R;
+                return View(c);
+            }
+            if (Percent == null && rp.P==0)
+            {
+                ModelState.AddModelError("P", "Заполнить!");
+                ModelState.AddModelError("Percent", "Заполнить!");
+                var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                ViewBag.Name = c.Group.Name;
+                ViewBag.Login = c.Client.Login;
+                ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
+                ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == ID && rp.Group.Name == name).R;
+                return View(c);
+            }
+
+            if (name == null || login==null )
             {
                 return NotFound();
             }
-            if (rp.Percent != null)
+            if (c == null)
             {
-                rp.Percent /= 100;
-                rp.P = Convert.ToInt32(Math.Floor(Convert.ToDouble(_db.Groups.Find(rp.GroupId).Clients.Count() * rp.Percent)));
-            }         
-            if (ModelState.IsValid)
+                return NotFound();
+            }
+            rp.ClientId = c.ClientId;
+            rp.GroupId = c.GroupId;
+            rp.Client = c.Client;
+            rp.Group = c.Group;
+            if (Percent != null)
+            {
+                rp.Percent = Math.Round(Convert.ToDouble(Percent, CultureInfo.InvariantCulture) *0.01,4);
+                rp.P = Convert.ToInt32(Math.Round(Convert.ToDouble(_db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g=>g.Id==rp.GroupId).Clients.Count() * rp.Percent)));
+            }                  
+            
+            _db.Entry<Role_Power>(c).State = EntityState.Detached;
+            if (rp.R != null || rp.P >= 0)
             {
                 try
                 {
-                    var client = _db.Clients.First(c => c.Login == login);
-                    var group = _db.Groups.First(g => g.Name == name);
-                    rp.ClientId=client.Id;
-                    rp.GroupId = group.Id;
-                    rp.Client = client;
-                    rp.Group = group;
-                    _db.Update(rp);
+                    _db.Entry(rp).State = EntityState.Modified;
                     _db.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -285,9 +312,15 @@ namespace Biz_collab.Controllers
                         throw;
                     }
                 }
+                _db.Entry<Role_Power>(rp).State = EntityState.Detached;
                 return RedirectToAction("OpenGroup", new { name });
             }
-            return View(rp);
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ViewBag.Name = c.Group.Name;
+            ViewBag.Login = c.Client.Login;
+            ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
+            ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            return View(c);
         }
         private bool ClientExists(string login,string name)
         {

@@ -1,8 +1,11 @@
 ﻿@using Biz_collab.Models
 @using Biz_collab.Data
-@inject ApplicationDbContext _db
 @{
-    ViewData["B"]= _db.Clients.FirstOrDefault(m => m.Login == User.Identity.Name).PersBudget;
+    @if (User.Identity.Name != null)
+    {
+        @inject ApplicationDbContext _db
+        ViewData["B"] = _db.Clients.FirstOrDefault(m => m.Login == User.Identity.Name).PersBudget;
+    }
 }
 <!DOCTYPE html>
 <html lang="en">

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Biz_collab.Models
 {
@@ -18,7 +15,7 @@ namespace Biz_collab.Models
         [Required]
         public int Amount { get; set; }
         [Required]
-        public byte OperationType { get; set; }  // Вычет или пополнение(между счетами группы и клиента). здесь должен быть enum     
+        public byte OperationType { get; set; }  // Вычет или пополнение(между счетами группы и клиента).     
         [Required]
         [StringLength(100)]
         public string Explanation { get; set; }

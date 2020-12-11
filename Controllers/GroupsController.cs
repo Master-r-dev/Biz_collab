@@ -60,9 +60,9 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var client = await _db.Clients.AsNoTracking().FirstAsync(c=>c.Id== currentUserID);            
+            var client = await _db.Clients.AsNoTracking().Include(c=>c.MyGroups).FirstAsync(c=>c.Id== currentUserID);            
             var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).FirstAsync(g => g.Name == name);
-            if (@group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Забанен") != null)
+            if (@group.Clients.FirstOrDefault(rp => rp.ClientId == client.Id && rp.R == "Забанен") != null)
             {
                 return RedirectToAction("BannedInGroup", new { name });
             }
@@ -329,9 +329,10 @@ namespace Biz_collab.Controllers
         [Authorize]
         public async Task<IActionResult> BanClient(string Login, string name)
         {   /*код бан клиента*/
-            var client = await _db.Role_Powers.Include(rp => rp.Client).FirstAsync(rp => rp.Client.Login == Login && rp.GroupId == name);
+            var client = await _db.Role_Powers.Include(rp => rp.Client).Include(rp=>rp.Group).FirstAsync(rp => rp.Client.Login == Login && rp.Group.Name == name);
             client.R = "Забанен";
             client.P = 0;
+            client.Percent = 0;
             _db.Entry(client).State = EntityState.Modified;
             await _db.SaveChangesAsync();
             return RedirectToAction("OpenGroup", new { name });

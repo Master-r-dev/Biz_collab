@@ -1,116 +1,60 @@
 ﻿@model Biz_collab.Models.Group
 
-@{
-    ViewData["Title"] = "Details";
-}
+@{ ViewData["Title"] = "Details"; }
 
-<h1>Параметры</h1>
+<div class="modal-content">
+    <div class="modal-header">
+        <h4>Инфо</h4>
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+    </div>
+    <div class="modal-body">
+        <dl class="dl-horizontal">
+            <dt>Название</dt>
+            <dd>@Html.DisplayFor(model => model.Name)</dd>
 
-<div>
-    <h4>Группа</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Название
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            Бюджет
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Budget)
-        </dd>
-        <dt class="col-sm-2">
-            Тип
-        </dt>
-        @if (Model.Type == 1)
-        {
-            <dd class="col-sm-10">
-                Для пожертвований
-            </dd>
-        }
-        else
-        {
-            <dd class="col-sm-10">
-                С голосованием
-            </dd>
-        }
-        <dt class="col-sm-2">
-            Вход Дона
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EntryFeeDon)
-        </dd>
-        @if (Model.Type != 1)
-        {
-            <dt class="col-sm-2">
-                Мин Плюс
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.MinPlus)
-            </dd>
-            <dt class="col-sm-2">
-                Спор
-            </dt>
-            @if (Model.CloseCall == true)
-            {
-                <dd class="col-sm-10">
-                    Принять
-                </dd>
-            }
-            else
-            {
-                <dd class="col-sm-10">
-                    Удалить
-                </dd>
-            }
-            @if (Model.MinMinus != -1)
-            {
-                <dt class="col-sm-2">
-                    Мин Вычет
-                </dt>
-            }
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.MinMinus)
-            </dd>
-            <dt class="col-sm-2">
-                Вход Юзера
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.EntryFeeUser)
-            </dd>
+            <dt>Бюджет</dt>
+            <dd>@Html.DisplayFor(model => model.Budget)</dd>
 
-            @if (Model.EntryFeeVIP != -1)
-            {
-
-                <dt class="col-sm-2">
-                    Вход VIP
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.EntryFeeVIP)
-                </dd>
-            }
-            @if (Model.EntryFeeMod != -1)
-            {
-                <dt class="col-sm-2">
-                    Вход Модера
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.EntryFeeMod)
-                </dd>
+            <dt>Тип</dt>
+            @if (Model.Type == 1) { 
+                <dd>Для пожертвований</dd>
+            } else {
+                <dd>С голосованием</dd>
             }
 
-        }
+            <dt>Вход Дона</dt>
+            <dd>@Html.DisplayFor(model => model.EntryFeeDon)</dd>
+    
+            @if (Model.Type != 1) {
+                <dt>Мин Плюс</dt>
+                <dd>@Html.DisplayFor(model => model.MinPlus)</dd>
 
-    </dl>
-</div>
-<div>
-    @if (ViewBag.Pass) {
-    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@Model.Name">[Открыть группу]</a>
-    }
-</div>
-<div>
-<a asp-controller="Home" asp-action="Index">Назад на главную</a>
+                <dt>Спор</dt>
+                @if (Model.CloseCall == true) {
+                    <dd>Принять</dd>
+                } else {
+                    <dd>Удалить</dd>
+                }
+                @if (Model.MinMinus != -1) {
+                    <dt>Мин Вычет</dt>
+                }
+                <dd>@Html.DisplayFor(model => model.MinMinus)</dd>
+
+                <dt>Вход Юзера</dt>
+                <dd>@Html.DisplayFor(model => model.EntryFeeUser)</dd>
+
+                @if (Model.EntryFeeVIP != -1) { 
+                    <dt>Вход VIP</dt>
+                    <dd>@Html.DisplayFor(model => model.EntryFeeVIP)</dd>
+                }
+                @if (Model.EntryFeeMod != -1) {
+                <dt>Вход Модера</dt>
+                <dd>@Html.DisplayFor(model => model.EntryFeeMod)</dd>
+                }
+            }
+                @if (ViewBag.Pass) {
+                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@Model.Name">[Открыть группу]</a>
+                }
+        </dl>
+    </div>
 </div>

@@ -20,7 +20,7 @@ namespace Biz_collab.Controllers
             _db = context;
         }
         // GET: Transactions/Details/5
-        public async Task<IActionResult> Details(string id)
+        public IActionResult Details(string id)
         {
 
             if (id == null)
@@ -28,21 +28,22 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            var transaction = await _db.Transactions.AsNoTracking()
+            var transaction = _db.Transactions.AsNoTracking()
                 .Include(t => t.Client)
                 .Include(t => t.Group)
-                .ThenInclude(g=>g.Clients)
+				.ThenInclude(g=>g.Clients)
                 .Include(t=>t.Votes)
                 .ThenInclude(v=>v.Client)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            ViewBag.Name = transaction.Group.Name;            
+                .FirstOrDefault(m => m.Id == id);
+				
+			ViewBag.Name = transaction.Group.Name;
             if (transaction == null)
             {
-                return NotFound();
+                return  NotFound();
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             ViewBag.Role = transaction.Group.Clients.First(rp=>rp.ClientId== currentUserID).R;
-            return View(transaction);
+            return PartialView(transaction);
         }
 
         // GET: Transactions/Create

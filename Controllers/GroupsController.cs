@@ -33,7 +33,7 @@ namespace Biz_collab.Controllers
             var group = _db.Groups.AsNoTracking().FirstOrDefault(m => m.Name == name);
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client = _db.Clients.AsNoTracking().First(c => c.Id == currentUserID);
-            if (client.PersBudget >= group.EntryFeeDon || client.PersBudget >= group.EntryFeeUser || client.PersBudget >= group.EntryFeeMod || client.PersBudget >= group.EntryFeeVIP)
+            if (client.PersBudget >= group.EntryFeeDon || (client.PersBudget >= group.EntryFeeUser && group.EntryFeeUser!=-1) || (client.PersBudget >= group.EntryFeeMod && group.EntryFeeMod != -1) || (client.PersBudget >= group.EntryFeeVIP && group.EntryFeeVIP != -1))
                 ViewBag.Pass = true;
             else
                 ViewBag.Pass = false;

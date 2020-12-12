@@ -53,8 +53,10 @@
                 }
             }
                 @if (ViewBag.Pass) {
+                <dd>
                     <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@Model.Name">[Открыть группу]</a>
-                }
-        </dl>
+                </dd>
+                    }
+</dl>
     </div>
 </div>

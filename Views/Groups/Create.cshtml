@@ -18,6 +18,7 @@
             <div class="form-group">
                 <label asp-for="Budget" class="control-label"></label>
                 <input min="1"  type="number" asp-for="Budget" oninput="this.value = !!this.value && Math.abs(this.value) >= 1  && Math.abs(this.value) <= @ViewBag.PersBudget ? Math.abs(this.value) : null " class="form-control" />
+                <input min="1" oninput="this.value = !!this.value && Math.abs(this.value) >= 1  && Math.abs(this.value) <= @ViewBag.PersBudget ? Math.abs(this.value) : null "  type="number" asp-for="Budget" class="form-control" />
                 <span asp-validation-for="Budget" class="text-danger"></span>
             </div>
             <div class="form-group">

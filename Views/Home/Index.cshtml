@@ -57,21 +57,105 @@
     <tbody>
         @foreach (var item in Model)
         {
-
-            <tr>
+       <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Budget)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Clients.Count)
+            </td>
+            @if (item.Type == 1)
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    Донат
                 </td>
+            }
+            else
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.Budget)
+                    Голос
                 </td>
+            }
+            @if (item.CloseCall == true)
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.Clients.Count)
+                    Принять
                 </td>
+            }
+            else
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.Type)
+                    Удалить
                 </td>
-                @if (item.CloseCall == true)
+            }
+            @if (item.EntryFeeDon == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntryFeeDon)
+                </td>
+            }
+            @if (item.EntryFeeUser == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntryFeeUser)
+                </td>
+            }
+            @if (item.EntryFeeVIP == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntryFeeVIP)
+                </td>
+            }
+            @if (item.EntryFeeMod == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntryFeeMod)
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.MinPlus)
+            </td>
+            @if (item.MinMinus == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.MinMinus)
+                </td>
+            }
+            <td>
+                @if (ViewBag.PersBudget >= item.EntryFeeDon || ViewBag.PersBudget >= item.EntryFeeUser || ViewBag.PersBudget >= item.EntryFeeMod || ViewBag.PersBudget >= item.EntryFeeVIP)
                 {
                     <td>
                         Принять
@@ -167,107 +251,215 @@
     <tbody>
         @foreach (var item in ViewBag.MyCreatedGroups)
         {
-            <tr>
+        <tr>
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.Budget
+            </td>
+            <td>
+                @item.Clients.Count
+            </td>
+            @if (item.Type == 1)
+            {
                 <td>
-                    @item.Name
+                    Донат
                 </td>
+            }
+            else
+            {
                 <td>
-                    @item.Budget
+                   Голос
                 </td>
+            }
+            @if (item.CloseCall == true)
+            {
                 <td>
-                    @item.Clients.Count
+                    Принять
                 </td>
+            }
+            else
+            {
                 <td>
-                    @item.Type
+                    Удалить
                 </td>
-                @if (item.CloseCall == true)
-                {
-                    <td>
-                        Принять
-                    </td>
-                }
-                else
-                {
-                    <td>
-                        Удалить
-                    </td>
-                }
+            }
+            @if (item.EntryFeeDon == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
                 <td>
                     @item.EntryFeeDon
                 </td>
+            }
+            @if (item.EntryFeeUser == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
                 <td>
                     @item.EntryFeeUser
                 </td>
+            }
+            @if (item.EntryFeeVIP == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
                 <td>
                     @item.EntryFeeVIP
                 </td>
+            }
+            @if (item.EntryFeeMod == -1)
+            {
+                <td>
+                    Нету @*Иконка отсутствия*@
+                </td>
+            }
+            else
+            {
                 <td>
                     @item.EntryFeeMod
                 </td>
+            }
+            <td>
+                @item.MinPlus
+            </td>
+            @if (item.MinMinus == -1)
+            {
                 <td>
-                    @item.MinPlus
+                    Нету @*Иконка отсутствия*@
                 </td>
+            }
+            else
+            {
                 <td>
                     @item.MinMinus
                 </td>
-                <td>
-                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-                    <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить]   </a>
-                    @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "details" })
-                    <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]</a>
-                </td>
-            </tr>
+            }
+            <td>
+                <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
+                <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить]   </a>
+                @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "details" })
+                <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]</a>
+            </td>
+        </tr>
         }
         @foreach (var item in ViewBag.MyGroups)
         {
-            <tr>
-                <td>
-                    @item.Name
-                </td>
-                <td>
-                    @item.Budget
-                </td>
-                <td>
-                    @item.Clients.Count
-                </td>
-                <td>
-                    @item.Type
-                </td>
-                @if (item.CloseCall == true)
-                {
-                    <td>
-                        Принять
-                    </td>
-                }
-                else
-                {
-                    <td>
-                        Удалить
-                    </td>
-                }
-                <td>
-                    @item.EntryFeeDon
-                </td>
-                <td>
-                    @item.EntryFeeUser
-                </td>
-                <td>
-                    @item.EntryFeeVIP
-                </td>
-                <td>
-                    @item.EntryFeeMod
-                </td>
-                <td>
-                    @item.MinPlus
-                </td>
-                <td>
-                    @item.MinMinus
-                </td>
-                <td>
-                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-                    @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "details" })
-                </td>
-            </tr>
+    <tr>
+        <td>
+            @item.Name
+        </td>
+        <td>
+            @item.Budget
+        </td>
+        <td>
+            @item.Clients.Count
+        </td>
+        @if (item.Type == 1)
+        {
+            <td>
+                Донат
+            </td>
+        }
+        else
+        {
+            <td>
+                 Голос
+            </td>
+        }
+        @if (item.CloseCall == true)
+        {
+            <td>
+                Принять
+            </td>
+        }
+        else
+        {
+            <td>
+                Удалить
+            </td>
+        }
+        @if (item.EntryFeeDon == -1)
+        {
+            <td>
+                Нету @*Иконка отсутствия*@
+            </td>
+        }
+        else
+        {
+            <td>
+                @item.EntryFeeDon
+            </td>
+        }
+        @if (item.EntryFeeUser == -1)
+        {
+            <td>
+                Нету @*Иконка отсутствия*@
+            </td>
+        }
+        else
+        {
+            <td>
+                @item.EntryFeeUser
+            </td>
+        }
+        @if (item.EntryFeeVIP == -1)
+        {
+            <td>
+                Нету @*Иконка отсутствия*@
+            </td>
+        }
+        else
+        {
+            <td>
+                @item.EntryFeeVIP
+            </td>
+        }
+        @if (item.EntryFeeMod == -1)
+        {
+            <td>
+                Нету @*Иконка отсутствия*@
+            </td>
+        }
+        else
+        {
+            <td>
+                @item.EntryFeeMod
+            </td>
+        }
+        <td>
+            @item.MinPlus
+        </td>
+        @if (item.MinMinus == -1)
+        {
+            <td>
+                Нету @*Иконка отсутствия*@
+            </td>
+        }
+        else
+        {
+            <td>
+                @item.MinMinus
+            </td>
+        }
+        <td>
+            <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
+            @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "details" })
+        </td>
+    </tr>
         }
     </tbody>
 </table>

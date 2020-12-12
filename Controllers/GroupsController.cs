@@ -58,9 +58,9 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var client = await _db.Clients.AsNoTracking().FirstAsync(c=>c.Id== currentUserID);            
+            var client = await _db.Clients.AsNoTracking().Include(c=>c.MyGroups).FirstAsync(c=>c.Id== currentUserID);            
             var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).FirstAsync(g => g.Name == name);
-            if (@group.Clients.FirstOrDefault(rp => rp.Client == client && rp.R == "Забанен") != null)
+            if (@group.Clients.FirstOrDefault(rp => rp.ClientId == client.Id && rp.R == "Забанен") != null)
             {
                 return RedirectToAction("BannedInGroup", new { name });
             }
@@ -73,6 +73,7 @@ namespace Biz_collab.Controllers
                 return RedirectToAction("JoinGroup",new { name });
             }
             var trans = _db.Transactions.Include(t=>t.Client).ThenInclude(c=>c.MyGroups).ThenInclude(rp=>rp.Group).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == @group.Id);
+            ViewBag.Count = trans.Count();
             ViewData["CurrentSort"] = sortOrder;
             if (searchString != null)
             {
@@ -87,21 +88,20 @@ namespace Biz_collab.Controllers
             {
                 trans = trans.Where(s => s.Client.Login.Contains(searchString) || s.Client.MyGroups.First(rp=>rp.GroupId==s.GroupId && rp.R==searchString)!=null || s.Explanation.Contains(searchString));
             }
-            ViewData["TimeSortParm"] = sortOrder == "Time" ? "time_desc" : "Time";
+            ViewData["TimeSortParm"] =String.IsNullOrEmpty(sortOrder) ? "" : "Time";
             ViewData["ClientNameSortParm"] = sortOrder == "Name" ? "name_desc" : "Name";
             ViewData["OperationTypeSortParm"] = sortOrder == "OperationType" ? "optype_desc" : "OperationType";
             ViewData["AmountSortParm"] = sortOrder == "Amount" ? "amount_desc" : "Amount";
             trans = sortOrder switch
             {
                 "OperationType" => trans.OrderBy(s => s.OperationType),
-                "Time" => trans.OrderBy(s => s.StartTime),
                 "Name" => trans.OrderBy(s => s.Client.Login),
                 "Amount" => trans.OrderBy(s => s.Amount),
                 "amount_desc" => trans.OrderByDescending(s => s.Amount),
-                "time_desc" => trans.OrderByDescending(s => s.StartTime),
+                "Time" => trans.OrderBy(s => s.StartTime),
                 "optype_desc" => trans.OrderByDescending(s => s.OperationType),
                 "name_desc" => trans.OrderByDescending(s => s.Client.Login),
-                _ => trans.OrderByDescending(s => s.Status),
+                _ => trans.OrderByDescending(s => s.StartTime),
             };
             int pageSize = 5;
             if (x)
@@ -242,7 +242,7 @@ namespace Biz_collab.Controllers
             ViewBag.Name = rp.Group.Name;
             ViewBag.Login = rp.Client.Login;
             ViewBag.Count = _db.Groups.AsNoTracking().Include(g=>g.Clients).ThenInclude(rp=>rp.Client).First(g=>g.Name==name).Clients.Count();
-            ViewBag.EditorRole= _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            ViewBag.EditorRole= _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
             return View(rp);
         }
 
@@ -327,9 +327,10 @@ namespace Biz_collab.Controllers
         [Authorize]
         public async Task<IActionResult> BanClient(string Login, string name)
         {   /*код бан клиента*/
-            var client = await _db.Role_Powers.Include(rp => rp.Client).FirstAsync(rp => rp.Client.Login == Login && rp.GroupId == name);
+            var client = await _db.Role_Powers.Include(rp => rp.Client).Include(rp=>rp.Group).FirstAsync(rp => rp.Client.Login == Login && rp.Group.Name == name);
             client.R = "Забанен";
             client.P = 0;
+            client.Percent = 0;
             _db.Entry(client).State = EntityState.Modified;
             await _db.SaveChangesAsync();
             return RedirectToAction("OpenGroup", new { name });

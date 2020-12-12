@@ -31,13 +31,19 @@ namespace Biz_collab.Controllers
             var transaction = _db.Transactions.AsNoTracking()
                 .Include(t => t.Client)
                 .Include(t => t.Group)
+				.ThenInclude(g=>g.Clients)
+                .Include(t=>t.Votes)
+                .ThenInclude(v=>v.Client)
                 .FirstOrDefault(m => m.Id == id);
-            ViewBag.Name = transaction.Group.Name;
-            if (transaction != null)
+				
+			ViewBag.Name = transaction.Group.Name;
+            if (transaction == null)
             {
-                return  PartialView(transaction);
+                return  NotFound();
             }
-            return NotFound();
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ViewBag.Role = transaction.Group.Clients.First(rp=>rp.ClientId== currentUserID).R;
+            return PartialView(transaction);
         }
 
         // GET: Transactions/Create
@@ -117,8 +123,11 @@ namespace Biz_collab.Controllers
                 }
                 else
                 {
+                    //перевод с счета группы на внешние от сайта нужды
                     if (transaction.OperationType == 1 && transaction.Amount <= gc.Group.Budget)
                     {
+                        transaction.StartTime = new DateTime(8841, 12, 23);
+                        transaction.StartTime = transaction.StartTime.Add(DateTime.MaxValue.TimeOfDay);
                         transaction.Status = false;
                         transaction.YesPercent = ((float)gc.P / _db.Groups.Include(g => g.Clients).First(rp => rp.Id == transaction.GroupId).Clients.Count()) * 100.0f;
                         transaction.NoPercent = 0;
@@ -138,9 +147,11 @@ namespace Biz_collab.Controllers
                     //перевод с счета группы на счет пользователя
                     else if (transaction.OperationType == 2 && transaction.Amount <= gc.Group.Budget && gc.Client.PersBudget + transaction.Amount < 2147483647)
                     {
+                        transaction.StartTime = new DateTime(8841, 12, 23);
+                        transaction.StartTime = transaction.StartTime.Add(DateTime.MaxValue.TimeOfDay);
                         transaction.Status = false;
                         transaction.YesPercent = ((float)gc.P / _db.Groups.Include(g => g.Clients).First(rp => rp.Id == transaction.GroupId).Clients.Count()) * 100.0f;
-                        transaction.NoPercent = 0.0f;
+                        transaction.NoPercent = 0;
                         var vote = new Vote
                         {
                             ClientId = transaction.ClientId,
@@ -193,7 +204,7 @@ namespace Biz_collab.Controllers
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client = await _db.Clients.FindAsync(currentUserID);
-            if (_db.Groups.First(g=>g.Id==transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
+            if (transaction.Group.Clients.First(rp => rp.ClientId == currentUserID).R == "Забанен")
             {
                 return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
             }
@@ -266,7 +277,7 @@ namespace Biz_collab.Controllers
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client = await _db.Clients.FindAsync(currentUserID);
-            if (_db.Groups.First(g => g.Id == transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
+            if (transaction.Group.Clients.First(rp => rp.ClientId == currentUserID).R == "Забанен")
             {
                 return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
             }
@@ -329,18 +340,23 @@ namespace Biz_collab.Controllers
             }
 
             var transaction = await _db.Transactions
-                .Include(t => t.Client)
-                .Include(t => t.Group)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                 .Include(t => t.Client)
+                 .Include(t => t.Votes)
+                 .Include(t => t.Group)
+                 .ThenInclude(g => g.Clients)
+                 .ThenInclude(rp => rp.Client)
+                 .FirstOrDefaultAsync(m => m.Id == id);
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            if (_db.Groups.First(g => g.Id == transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
-            {
-                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
-            }
+            
             ViewBag.Name = transaction.Group.Name;
             if (transaction == null)
             {
                 return NotFound();
+            }
+            ViewBag.Role = transaction.Group.Clients.First(rp => rp.ClientId == currentUserID).R;
+            if (ViewBag.Role == "Забанен")
+            {
+                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
             }
             if (transaction.Status == true)
             {
@@ -363,7 +379,7 @@ namespace Biz_collab.Controllers
                 .ThenInclude(rp => rp.Client)
                 .FirstOrDefaultAsync(m => m.Id == id);
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            if (_db.Groups.First(g => g.Id == transaction.GroupId).Clients.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.R == "Забанен") != null)
+            if (transaction.Group.Clients.First(rp => rp.ClientId == currentUserID).R == "Забанен")
             {
                 return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
             }

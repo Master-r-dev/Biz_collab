@@ -23,28 +23,19 @@ namespace Biz_collab.Controllers
         }
         // GET: Groups/Details/5
         [Authorize]
-        public async Task<IActionResult> Details(string name) //характеристики группы
+        public IActionResult Details(string name) //характеристики группы
         {
             if (name == null)
             {
                 return NotFound();
             }
 
-            var @group = await _db.Groups.AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Name == name);
-            if (@group == null)
+            Group group = _db.Groups.FirstOrDefault(m => m.Name == name);
+            if (group != null)
             {
-                return NotFound();
+                return PartialView(group);
             }
-            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var client = await _db.Clients.AsNoTracking().FirstAsync(c => c.Id == currentUserID);
-            if (client.PersBudget >= group.EntryFeeDon || client.PersBudget >= group.EntryFeeUser || client.PersBudget >= group.EntryFeeMod || client.PersBudget >= group.EntryFeeVIP)
-            {
-                ViewBag.Pass = true;
-            }
-            else ViewBag.Pass = false;
-
-            return View(@group);
+            return NotFound();
         }
         [Authorize]
 

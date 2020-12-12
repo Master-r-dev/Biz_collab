@@ -20,7 +20,7 @@ namespace Biz_collab.Controllers
             _db = context;
         }
         // GET: Transactions/Details/5
-        public async Task<IActionResult> Details(string id)
+        public IActionResult Details(string id)
         {
 
             if (id == null)
@@ -28,16 +28,16 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            var transaction = await _db.Transactions.AsNoTracking()
+            Transaction transaction = _db.Transactions
                 .Include(t => t.Client)
                 .Include(t => t.Group)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefault(m => m.Id == id);
             ViewBag.Name = transaction.Group.Name;
-            if (transaction == null)
+            if (transaction != null)
             {
-                return NotFound();
+                return  PartialView(transaction);
             }
-            return View(transaction);
+            return NotFound();
         }
 
         // GET: Transactions/Create

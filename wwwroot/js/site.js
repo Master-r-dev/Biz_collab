@@ -74,3 +74,15 @@ function ModShow() {
         document.getElementById("InputEntryFeeMod").style.display = "block";
     }
 }
+
+$(function () {
+    $.ajaxSetup({ cache: false });
+    $(".details").click(function (e) {
+
+        e.preventDefault();
+        $.get(this.href, function (data) {
+            $('#dialogContent').html(data);
+            $('#modDialog').modal('show');
+        });
+    });
+});

@@ -178,13 +178,13 @@
                     {
                         <td>
                             <a asp-controller="Transactions" asp-action="Delete" asp-route-id="@t.Id">Удалить</a>
-                            <a asp-controller="Transactions" asp-action="Details" asp-route-id="@t.Id">Детали</a>
+                            @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class="details"})
                         </td>
                     }
                     else
                     {
                         <td>
-                            <a asp-controller="Transactions" asp-action="Details" asp-route-id="@t.Id">Детали</a>
+                            @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class="details"})
                         </td>
                     }
                 }
@@ -199,7 +199,7 @@
                         <b style="background-color:tomato;"> @Math.Round((decimal)t.NoPercent, 2)</b>
                     </td>
                     <td>
-                        <a asp-controller="Transactions" asp-action="Details" asp-route-id="@t.Id">Детали</a>
+                        @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "details" })
                     </td>
                 }
             </tr>
@@ -269,7 +269,7 @@ else
                     @t.StartTime
                 </td>
                 <td>
-                    <a asp-controller="Transactions" asp-action="Details" asp-route-id="@t.Id">Детали</a>
+                    @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "details" })
                 </td>
             </tr>
             }
@@ -307,8 +307,10 @@ else
     >>
 </a>
 
-
-
 <div>
     <a asp-action="Index" asp-controller="Home">Назад на главную</a>
+</div>
+
+<div id="modDialog" class="modal fade">
+    <div id="dialogContent" class="modal-dialog"></div>
 </div>

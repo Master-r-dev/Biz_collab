@@ -139,9 +139,6 @@
                     @Html.DisplayFor(modelItem => item.EntryFeeMod)
                 </td>
             }
-            <td>
-                @Html.DisplayFor(modelItem => item.MinPlus)
-            </td>
             @if (item.MinMinus == -1)
             {
                 <td>
@@ -154,49 +151,30 @@
                     @Html.DisplayFor(modelItem => item.MinMinus)
                 </td>
             }
+            @if (ViewBag.PersBudget >= item.EntryFeeDon || ViewBag.PersBudget >= item.EntryFeeUser || ViewBag.PersBudget >= item.EntryFeeMod || ViewBag.PersBudget >= item.EntryFeeVIP)
+            {
+                <td>
+                    Принять
+                </td>
+            }
+            else
+            {
+                <td>
+                    Удалить
+                </td>
+            }
             <td>
                 @if (ViewBag.PersBudget >= item.EntryFeeDon || ViewBag.PersBudget >= item.EntryFeeUser || ViewBag.PersBudget >= item.EntryFeeMod || ViewBag.PersBudget >= item.EntryFeeVIP)
                 {
-                    <td>
-                        Принять
-                    </td>
+                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
                 }
-                else
+                @if (item.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
                 {
-                    <td>
-                        Удалить
-                    </td>
-                }
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeDon)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeUser)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeVIP)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeMod)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MinPlus)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MinMinus)
-                </td>
-                <td>
-                    @if (ViewBag.PersBudget >= item.EntryFeeDon || ViewBag.PersBudget >= item.EntryFeeUser || ViewBag.PersBudget >= item.EntryFeeMod || ViewBag.PersBudget >= item.EntryFeeVIP)
-                    {
-                        <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-                    }
-                    @if (item.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
-                    {
-                        <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить] </a>
-                        <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]   </a>
-                    }
+                    <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить] </a>
+                    <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]   </a>
                     @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "details" })
-                </td>
+                }
+            </td>
             </tr>
         }
 

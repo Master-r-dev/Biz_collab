@@ -55,7 +55,7 @@
         else
         {
             <dt class="col-sm-2">
-               Время принятия:
+                Время принятия:
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.StartTime)
@@ -73,6 +73,21 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.NoPercent)
         </dd>
+        @if (ViewBag.Role == "Mod" || ViewBag.Role == "Создатель" || ViewBag.Role == "VIP")
+        {
+            <dt class="col-sm-10">
+                Голоса
+            </dt>
+            foreach (var v in Model.Votes)
+            {
+                <dd class="col-sm-10">
+                    @v.Client.Login | @if (v.V == true)
+                    {<b>За</b> }
+                    else
+                    {<b>Против</b>} |Сила= @v.P
+                </dd>
+            }
+        }
     </dl>
 </div>
 <div>

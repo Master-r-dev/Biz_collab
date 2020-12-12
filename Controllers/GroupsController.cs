@@ -90,21 +90,20 @@ namespace Biz_collab.Controllers
             {
                 trans = trans.Where(s => s.Client.Login.Contains(searchString) || s.Client.MyGroups.First(rp=>rp.GroupId==s.GroupId && rp.R==searchString)!=null || s.Explanation.Contains(searchString));
             }
-            ViewData["TimeSortParm"] = sortOrder == "Time" ? "time_desc" : "Time";
+            ViewData["TimeSortParm"] =String.IsNullOrEmpty(sortOrder) ? "" : "Time";
             ViewData["ClientNameSortParm"] = sortOrder == "Name" ? "name_desc" : "Name";
             ViewData["OperationTypeSortParm"] = sortOrder == "OperationType" ? "optype_desc" : "OperationType";
             ViewData["AmountSortParm"] = sortOrder == "Amount" ? "amount_desc" : "Amount";
             trans = sortOrder switch
             {
                 "OperationType" => trans.OrderBy(s => s.OperationType),
-                "Time" => trans.OrderBy(s => s.StartTime),
                 "Name" => trans.OrderBy(s => s.Client.Login),
                 "Amount" => trans.OrderBy(s => s.Amount),
                 "amount_desc" => trans.OrderByDescending(s => s.Amount),
-                "time_desc" => trans.OrderByDescending(s => s.StartTime),
+                "Time" => trans.OrderBy(s => s.StartTime),
                 "optype_desc" => trans.OrderByDescending(s => s.OperationType),
                 "name_desc" => trans.OrderByDescending(s => s.Client.Login),
-                _ => trans.OrderByDescending(s => s.Status),
+                _ => trans.OrderByDescending(s => s.StartTime),
             };
             int pageSize = 5;
             if (x)
@@ -245,7 +244,7 @@ namespace Biz_collab.Controllers
             ViewBag.Name = rp.Group.Name;
             ViewBag.Login = rp.Client.Login;
             ViewBag.Count = _db.Groups.AsNoTracking().Include(g=>g.Clients).ThenInclude(rp=>rp.Client).First(g=>g.Name==name).Clients.Count();
-            ViewBag.EditorRole= _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            ViewBag.EditorRole= _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
             return View(rp);
         }
 

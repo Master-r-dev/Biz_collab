@@ -30,7 +30,14 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            Group group = _db.Groups.FirstOrDefault(m => m.Name == name);
+            var group = _db.Groups.AsNoTracking().FirstOrDefault(m => m.Name == name);
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var client = _db.Clients.AsNoTracking().First(c => c.Id == currentUserID);
+            if (client.PersBudget >= group.EntryFeeDon || client.PersBudget >= group.EntryFeeUser || client.PersBudget >= group.EntryFeeMod || client.PersBudget >= group.EntryFeeVIP)
+                ViewBag.Pass = true;
+            else
+                ViewBag.Pass = false;
+
             if (group != null)
             {
                 return PartialView(group);

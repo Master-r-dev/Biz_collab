@@ -28,7 +28,7 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            Transaction transaction = _db.Transactions
+            var transaction = _db.Transactions.AsNoTracking()
                 .Include(t => t.Client)
                 .Include(t => t.Group)
                 .FirstOrDefault(m => m.Id == id);

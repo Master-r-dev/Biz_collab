@@ -52,6 +52,9 @@
                 <dd>@Html.DisplayFor(model => model.EntryFeeMod)</dd>
                 }
             }
+                @if (ViewBag.Pass) {
+                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@Model.Name">[Открыть группу]</a>
+                }
         </dl>
     </div>
 </div>

@@ -1,50 +1,20 @@
 ﻿@model Biz_collab.Models.Group
 
-@{
-    ViewData["Title"] = "Delete";
-}
+@{ ViewData["Title"] = "Delete"; }
 
-<h1>Удалить группу</h1>
-
-<h3>Вы действительно хотите удалить группу?Все ее средства перейдут к вам и история пропадет</h3>
-<div>
-    <h4>Группа</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Название
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            Бюджет
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Budget)
-        </dd>
-        <dt class="col-sm-2">
-            Тип
-        </dt>
-        @if (Model.Type == 1)
-        {
-            <dd class="col-sm-10">
-                Для пожертвований
-            </dd>
-
-        }
-        else
-        {
-            <dd class="col-sm-10">
-                С голосованием
-            </dd>
-
-        }
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" name="name" value="@Model.Name" />
-        <input type="submit" value="Удалить" class="btn btn-danger" /> |
-        <a asp-controller="Home" asp-action="Index">Назад на главную</a>
-    </form>
+<div class="modal-content">
+    <div class="modal-header">
+        <h4>Вы действительно хотите удалить группу?</h4>
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+    </div>
+    <div class="modal-body">
+        <dl class="dl-horizontal">
+            <dt>Название</dt>
+            <dd>@Html.DisplayFor(model => model.Name)</dd>
+        </dl>
+        <form asp-action="Delete" method="post">
+            <input type="hidden" name="name" value="@Model.Name" />
+            <input type="submit" value="Удалить" class="btn btn-danger" />
+        </form>
+    </div>
 </div>

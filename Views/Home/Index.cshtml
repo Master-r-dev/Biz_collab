@@ -159,12 +159,12 @@
             @if (ViewBag.PersBudget >= item.EntryFeeDon || (ViewBag.PersBudget >= item.EntryFeeUser && item.EntryFeeUser != -1) || (ViewBag.PersBudget >= item.EntryFeeMod && item.EntryFeeMod != -1) || (ViewBag.PersBudget >= item.EntryFeeVIP && item.EntryFeeVIP != -1))
             {
                 <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-                @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "details" })
+                @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "modal-link" })
             }
             @if (item.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
             {
                 <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить] </a>
-                <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]   </a>
+                @Html.ActionLink("Удалить", "Delete", "Groups", new { name = item.Name }, new { @class = "modal-link" })
 
             }
         </td>
@@ -173,9 +173,6 @@
 
     </tbody>
 </table>
-<div id="modDialog" class="modal fade">
-    <div id="dialogContent" class="modal-dialog"></div>
-</div>
 <h1>Мои группы</h1>
 <p>
     <a asp-controller="Groups" asp-action="Create">Создать группу</a>
@@ -319,12 +316,12 @@
                     @item.MinMinus
                 </td>
             }
-            <td>
-                <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-                <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить]   </a>
-                @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "details" })
-                <a asp-controller="Groups" asp-action="Delete" asp-route-name="@item.Name">[Удалить]</a>
-            </td>
+        <td>
+            <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
+            <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить]   </a>
+            @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "modal-link" })
+            @Html.ActionLink("Удалить", "Delete", "Groups", new { name = item.Name }, new { @class = "modal-link" })
+        </td>
         </tr>
         }
         @foreach (var item in ViewBag.MyGroups)

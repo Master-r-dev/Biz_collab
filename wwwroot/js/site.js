@@ -77,7 +77,7 @@ function ModShow() {
 
 $(function () {
     $.ajaxSetup({ cache: false });
-    $(".details").click(function (e) {
+    $(".modal-link").click(function (e) {
 
         e.preventDefault();
         $.get(this.href, function (data) {

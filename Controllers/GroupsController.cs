@@ -439,21 +439,21 @@ namespace Biz_collab.Controllers
 
         // GET: Groups/Delete/5
         [Authorize]
-        public async Task<IActionResult> Delete(string name)
+        public IActionResult Delete(string name)
         {
             if (name == null)
             {
                 return NotFound();
             }
 
-            var @group = await _db.Groups
-                .FirstOrDefaultAsync(m => m.Name == name);
-            if (@group == null)
+            var group = _db.Groups
+                .FirstOrDefault(m => m.Name == name);
+            if (group == null)
             {
                 return NotFound();
             }
 
-            return View(@group);
+            return PartialView(group);
         }
 
         // POST: Groups/Delete/5

@@ -1,81 +1,57 @@
 ﻿@model Biz_collab.Models.Transaction
 
-@{
-    ViewData["Title"] = "Delete";
-}
+@{ ViewData["Title"] = "Delete"; }
 
-<h1>Удалить транзакцию</h1>
+<div class="modal-content">
+    <div class="modal-header">
+        <h4>Вы уверены что хотите удалить транзакцию?</h4>
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+    </div>
+    <div class="modal-body">
+        <dl class="dl-horizontal">
+            <dt>Cумма</dt>
+            <dd>@Html.DisplayFor(model => model.Amount)</dd>
 
-<h3>Вы уверены что хотите удалить транзакцию? Голоса пропадут</h3>
-<div>
-    <h4>Транзакция</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Cумма
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Amount)
-        </dd>
-        <dt class="col-sm-2">
-            Вид транзакции
-        </dt>
-        @if (Model.OperationType == 1)
-        {
-            <dd class="col-sm-10">
-                Потратить из группового бюджета
-            </dd>
-        }
-        else if (Model.OperationType == 2)
-        {
-            <dd class="col-sm-10">
-                Перевести на свой счет
-            </dd>
-        }
-        <dt class="col-sm-2">
-            Описание
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Explanation)
-        </dd>
-        <dt class="col-sm-2">
-            Статус:
-        </dt>
-        <dd class="col-sm-10">
-            Ожидание
-        </dd>
-        <dt class="col-sm-2">
-            Процент За
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.YesPercent)
-        </dd>
-        <dt class="col-sm-2">
-            Процент Против
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NoPercent)
-        </dd>
-        @if (ViewBag.Role == "Mod" || ViewBag.Role == "Создатель" || ViewBag.Role == "VIP")
-        {
-            <dt class="col-sm-10">
-                Голоса
-            </dt>
-            foreach (var v in Model.Votes)
-            {
-                <dd class="col-sm-10">
-                    @v.Client.Login | @if (v.V == true)
-                    {<b>За</b> }
-                    else
-                    {<b>Против</b>} |Сила= @v.P
-                </dd>
+            <dt>Вид транзакции</dt>
+            @if (Model.OperationType == 1) {
+                <dd>Потратить из группового бюджета</dd>
             }
-        }
-    </dl>
+            else if (Model.OperationType == 2) {
+                <dd>Перевести на свой счет</dd>
+            }
+
+            <dt>Описание</dt>
+            <dd>@Html.DisplayFor(model => model.Explanation)</dd>
+
+            <dt>Статус:</dt>
+            <dd>Ожидание</dd>
+
+            <dt>Процент За</dt>
+            <dd>@Html.DisplayFor(model => model.YesPercent)</dd>
+            
+            <dt>Процент Против</dt>
+            <dd>@Html.DisplayFor(model => model.NoPercent)</dd>
+
+            @if (ViewBag.Role == "Mod" || ViewBag.Role == "Создатель" || ViewBag.Role == "VIP"){
+                <dt class="col-sm-10">Голоса</dt>
+                foreach (var v in Model.Votes) {
+                    
+                    <dd> @v.Client.Login | 
+                        @if (v.V == true) {
+                            <b>За</b> 
+                        }
+                        else {
+                            <b>Против</b>
+                        }
+                        | Сила= @v.P
+                    </dd>
+                }
+            }
+        </dl>
     
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@ViewBag.Name">Вернуться в группу</a>
-    </form>
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Delete" class="btn btn-danger" /> |
+        </form>
+    </div>
 </div>

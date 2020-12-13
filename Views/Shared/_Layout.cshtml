@@ -59,9 +59,13 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Groups" asp-action="Create">Создать группу</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddBalance">Пополнить баланс: @ViewData["B"]</a>
+                            <li class="nav-item">  
+                                @Html.ActionLink("Пополнить баланс: ", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link text-dark" })
                             </li>
+                            <li class="nav-item">
+                                <p class="nav-link text-dark">@ViewBag.PersBudget</p>
+                            </li>
+
                         }
                     </ul>
                 </div>
@@ -72,6 +76,9 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
+    </div>
+    <div id="modDialog" class="modal fade">
+        <div id="dialogContent" class="modal-dialog"></div>
     </div>
 
     <footer class="border-top footer text-muted">

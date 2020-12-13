@@ -184,14 +184,14 @@
                     @if (User.Identity.Name == t.Client.Login && t.Status == false)
                     {
                         <td>
-                            <a asp-controller="Transactions" asp-action="Delete" asp-route-id="@t.Id">Удалить</a>
-                            @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class="details"})
+                            @Html.ActionLink("Удалить", "Delete", "Transactions", new { id = t.Id }, new { @class = "modal-link" })
+                            @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class= "modal-link" })
                         </td>
                     }
                     else
                     {
                         <td>
-                            @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class="details"})
+                            @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class= "modal-link" })
                         </td>
                     }
                 }
@@ -206,7 +206,7 @@
                         <b style="background-color:tomato;"> @Math.Round((decimal)t.NoPercent, 2)</b>
                     </td>
                     <td>
-                        @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "details" })
+                        @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "modal-link" })
                     </td>
                 }
             </tr>
@@ -276,7 +276,7 @@ else
                     @t.StartTime
                 </td>
                 <td>
-                    @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "details" })
+                    @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "modal-link" })
                 </td>
             </tr>
             }
@@ -316,8 +316,4 @@ else
 
 <div>
     <a asp-action="Index" asp-controller="Home">Назад на главную</a>
-</div>
-
-<div id="modDialog" class="modal fade">
-    <div id="dialogContent" class="modal-dialog"></div>
 </div>

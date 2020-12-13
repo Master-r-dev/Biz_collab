@@ -105,6 +105,7 @@ namespace Biz_collab.Controllers
             ViewBag.MyGroups = await PaginatedList<Group>.CreateAsync(mygroups, pageNumber ?? 1, pageSize2);
             ViewBag.MyCreatedGroups = await PaginatedList<Group>.CreateAsync(mycreatedgroups, pageNumber ?? 1, pageSize2);
             ViewBag.PersBudget = _db.Clients.First(c=>c.Id==currentUserID).PersBudget;
+            ViewBag.AddBalanceTitle = "Пополнить баланс: " + Convert.ToString(ViewBag.PersBudget);
             return View(await PaginatedList<Group>.CreateAsync(AllGroups, pageNumber ?? 1, pageSize));
         }
         public IActionResult About()
@@ -118,7 +119,7 @@ namespace Biz_collab.Controllers
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             ViewBag.PersBudget = _db.Clients.Find(currentUserID).PersBudget;
-            return View();
+            return PartialView();
         }
      
         [HttpPost]

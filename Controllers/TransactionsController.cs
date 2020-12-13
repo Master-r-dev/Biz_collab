@@ -331,7 +331,7 @@ namespace Biz_collab.Controllers
             return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
         }
         // GET: Transactions/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public IActionResult Delete(string id)
         {
 
             if (id == null)
@@ -339,13 +339,13 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            var transaction = await _db.Transactions
+            var transaction =  _db.Transactions
                  .Include(t => t.Client)
                  .Include(t => t.Votes)
                  .Include(t => t.Group)
                  .ThenInclude(g => g.Clients)
                  .ThenInclude(rp => rp.Client)
-                 .FirstOrDefaultAsync(m => m.Id == id);
+                 .FirstOrDefault(m => m.Id == id);
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             
             ViewBag.Name = transaction.Group.Name;
@@ -363,7 +363,7 @@ namespace Biz_collab.Controllers
                 return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
             }
 
-            return View(transaction);
+            return PartialView(transaction);
         }
 
         // POST: Transactions/Delete/5

@@ -1,113 +1,106 @@
 ﻿@model Biz_collab.Models.Role_Power
-@{
-    ViewData["Title"] = "EditRoleClient";
-}
 
-<h1>Изменить роль клиента</h1>
+@{ ViewData["Title"] = "EditRoleClient"; }
 
+<div class="modal-content">
+    <div class="modal-header">
+        <h3>Выберите готовые роли или создайте новую</h3>
+        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+    </div>
+    @if (ViewBag.EditorRole == "Mod" || ViewBag.EditorRole == "Создатель") {
+    <div class="modal-body">
+        <form name="EditRoleClient" asp-action="EditRoleClient">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <label for="f_mode">
+                <span class="glyphicon glyphicon-plus">
+                    <input type="radio" onclick="Regime()" id="s_mode" name="regime">
+                </span>
+                Выбор из стандартных ролей с стандартными силами
+            </label>
+            <label for="s_mode">
+                <span class="glyphicon glyphicon-plus">
+                    <input type="radio" onclick="Regime()" id="n_mode" name="regime">
+                </span>
+                Создание новой роли и силы(число)
+            </label>
+            <label for="t_mode">
+                <span class="glyphicon glyphicon-plus">
+                    <input type="radio" onclick="Regime()" id="p_mode" name="regime">
+                </span>
+                Создание новой роли и силы(процент от числа участников)
+            </label>
 
-<h3>Выберите готовые роли или создайте новую</h3>
-
-@if (ViewBag.EditorRole == "Mod" || ViewBag.EditorRole == "Создатель")
-{
-    <div class="row">
-        <div class="col-md-4">
-            <form name="EditRoleClient" asp-action="EditRoleClient">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <label for="f_mode">
-                    <span class="glyphicon glyphicon-plus">
-                        <input type="radio" onclick="Regime()" id="s_mode" name="regime">
-                    </span>
-                    Выбор из стандартных ролей с стандартными силами
-                </label>
-                <label for="s_mode">
-                    <span class="glyphicon glyphicon-plus">
-                        <input type="radio" onclick="Regime()" id="n_mode" name="regime">
-                    </span>
-                    Создание новой роли и силы(число)
-                </label>
-                <label for="t_mode">
-                    <span class="glyphicon glyphicon-plus">
-                        <input type="radio" onclick="Regime()" id="p_mode" name="regime">
-                    </span>
-                    Создание новой роли и силы(процент от числа участников)
-                </label>
-
-                <div class="" id="Standart" style="display:none">
-                    <div class="form-group form-radio">
-                        <label asp-for="R" class="control-label">Выбор из стандартных ролей</label>
-                        <div>
-                            <label for="1">
-                                <span class="glyphicon glyphicon-plus">
-                                    <input type="radio" onclick="SetP()" asp-for="R" id="1" value="Донатер">
-                                </span>
-                                Донатер
-                            </label>
-                        </div>
-                        <div>
-                            <label for="2">
-                                <span class="glyphicon glyphicon-cloud-download">
-                                    <input type="radio" onclick="SetP()" asp-for="R" id="2" value="Участник">
-                                </span>
-                                Участник
-                            </label>
-                        </div>
-                        <div>
-                            <label for="3">
-                                <span class="glyphicon glyphicon-cloud-upload">
-                                    <input type="radio" onclick="SetP()" asp-for="R" id="3" value="VIP">
-                                </span>
-                                VIP
-                            </label>
-                        </div>
-                        <div>
-                            <label for="4">
-                                <span class="glyphicon glyphicon-cloud-upload">
-                                    <input type="radio" onclick="SetP()" asp-for="R" id="4" value="Mod">
-                                </span>
-                                Модератор
-                            </label>
-                        </div>
-                        <span asp-validation-for="R" class="text-danger"></span>
+            <div class="" id="Standart" style="display:none">
+                <div class="form-group form-radio">
+                    <label asp-for="R" class="control-label">Выбор из стандартных ролей</label>
+                    <div>
+                        <label for="1">
+                            <span class="glyphicon glyphicon-plus">
+                                <input type="radio" onclick="SetP()" asp-for="R" id="1" value="Донатер">
+                            </span>
+                            Донатер
+                        </label>
                     </div>
+                    <div>
+                        <label for="2">
+                            <span class="glyphicon glyphicon-cloud-download">
+                                <input type="radio" onclick="SetP()" asp-for="R" id="2" value="Участник">
+                            </span>
+                            Участник
+                        </label>
+                    </div>
+                    <div>
+                        <label for="3">
+                            <span class="glyphicon glyphicon-cloud-upload">
+                                <input type="radio" onclick="SetP()" asp-for="R" id="3" value="VIP">
+                            </span>
+                            VIP
+                        </label>
+                    </div>
+                    <div>
+                        <label for="4">
+                            <span class="glyphicon glyphicon-cloud-upload">
+                                <input type="radio" onclick="SetP()" asp-for="R" id="4" value="Mod">
+                            </span>
+                            Модератор
+                        </label>
+                    </div>
+                    <span asp-validation-for="R" class="text-danger"></span>
                 </div>
-                <div class="" id="Role" style="display:none">
-                    <label for="Роль">
-                        Роль
-                        <input type="text" minlength="4" maxlength="20" id="R" asp-for="R">
+            </div>
+            <div class="" id="Role" style="display:none">
+                <label for="Роль">
+                    Роль
+                    <input type="text" minlength="4" maxlength="20" id="R" asp-for="R">
+                </label>
+                <div>
+                    <span asp-validation-for="R" class="text-danger"></span>
+                </div>
+                <div class="" id="Power" style="display:none">
+                    <label for="Сила">
+                        Сила
+                        <input id="power" max="@ViewBag.Count" oninput="this.value = !!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <=@ViewBag.Count ? Math.abs(this.value) : 0 " asp-for="P">
                     </label>
                     <div>
-                        <span asp-validation-for="R" class="text-danger"></span>
-                    </div>
-                    <div class="" id="Power" style="display:none">
-                        <label for="Сила">
-                            Сила
-                            <input id="power" max="@ViewBag.Count" oninput="this.value = !!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <=@ViewBag.Count ? Math.abs(this.value) : 0 " asp-for="P">
-                        </label>
-                        <div>
-                            <span asp-validation-for="P" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="" id="Percent" style="display:none">
-                        <label for="Процент">
-                            Процент
-                            <input id="perc" type="number" step=0.01 max="100.00" oninput="this.value = this.value >= 0.0 && this.value <=100.0 ? this.value.replace(/^0+(?=\d)/,'') : 0.0 " name="Percent">
-                        </label>
-                        <div>
-                            <span asp-validation-for="Percent" class="text-danger"></span>
-                        </div>
+                        <span asp-validation-for="P" class="text-danger"></span>
                     </div>
                 </div>
-                    <div class="form-group">
-                        <input type="submit" value="Save" asp-route-name="@ViewBag.Name" asp-route-login="@ViewBag.Login" class="btn btn-primary" />
+                <div class="" id="Percent" style="display:none">
+                    <label for="Процент">
+                        Процент
+                        <input id="perc" type="number" step=0.01 max="100.00" oninput="this.value = this.value >= 0.0 && this.value <=100.0 ? this.value.replace(/^0+(?=\d)/,'') : 0.0 " name="Percent">
+                    </label>
+                    <div>
+                        <span asp-validation-for="Percent" class="text-danger"></span>
                     </div>
-</form>
-        </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" asp-route-name="@ViewBag.Name" asp-route-login="@ViewBag.Login" class="btn btn-primary" />
+            </div>
+        </form>
     </div>
-}
-    
-<div>
-    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@ViewBag.Name">Вернуться в группу</a>
+    }
 </div>
 <script>
     function Perc() {

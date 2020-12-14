@@ -68,9 +68,11 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
-            if (@group.Clients.FirstOrDefault(rp=>rp.ClientId == client.Id) ==null)
+
+            ViewBag.is_in_group = false;
+            if (@group.Clients.FirstOrDefault(rp=>rp.ClientId == client.Id) != null)
             {
-                return RedirectToAction("JoinGroup",new { name });
+                ViewBag.is_in_group = true;
             }
             var trans = _db.Transactions.Include(t=>t.Client).ThenInclude(c=>c.MyGroups).ThenInclude(rp=>rp.Group).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == @group.Id);
             ViewBag.Count = trans.Count();
@@ -154,7 +156,7 @@ namespace Biz_collab.Controllers
             var @group =  _db.Groups.AsNoTracking().First(g => g.Name == name);
             if (group.EntryFeeDon!=-1) {
                 if (client.PersBudget >= group.EntryFeeDon || client.PersBudget >= group.EntryFeeUser || client.PersBudget >= group.EntryFeeMod || client.PersBudget >= group.EntryFeeVIP) {
-                    return View(@group);
+                    return PartialView(@group);
                 } 
             }
             return Redirect("~/Home/Index");
@@ -243,7 +245,7 @@ namespace Biz_collab.Controllers
             ViewBag.Login = rp.Client.Login;
             ViewBag.Count = _db.Groups.AsNoTracking().Include(g=>g.Clients).ThenInclude(rp=>rp.Client).First(g=>g.Name==name).Clients.Count();
             ViewBag.EditorRole= _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
-            return View(rp);
+            return PartialView(rp);
         }
 
         [Authorize]

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Globalization;
 using System.ComponentModel.DataAnnotations;
-
+using System.Text.Json;
 namespace Biz_collab.Controllers
 {
     public class GroupsController : Controller
@@ -149,23 +149,21 @@ namespace Biz_collab.Controllers
             
             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
 
-            var amounts = new int[trans.Count()];
-            var dates = new DateTime[trans.Count()];
+            var amounts = new int[trans.Where(t=>t.Status==true).Count()];
+            var dates = new DateTime[trans.Where(t => t.Status == true).Count()];
             int k = 0;
-            foreach (var t in trans.OrderByDescending(tr => tr.StartTime))
+            foreach (var t in trans.Where(t=>t.Status==true).OrderByDescending(tr => tr.StartTime))
             {
-                if (t.Status)
-                {
-                    if (t.OperationType == 3)
-                        amounts[k] = t.Amount;
-                    else
-                        amounts[k] = -t.Amount;
-                   dates[k++] = t.StartTime;
-                }
+                if (t.OperationType == 3)
+                    amounts[k] = t.Amount;
+                else
+                    amounts[k] = -t.Amount;
+                dates[k++] = t.StartTime;
+                
             }
+            ViewBag.trans_amounts = JsonSerializer.Serialize(amounts);
+            ViewBag.trans_dates  = JsonSerializer.Serialize(dates);
             
-            ViewBag.trans_amounts = amounts;
-            ViewBag.trans_dates = dates;
             return View(@group);
         }
         [Authorize]

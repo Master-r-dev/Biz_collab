@@ -69,10 +69,9 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
 
-            ViewBag.is_in_group = false;
-            if (@group.Clients.FirstOrDefault(rp=>rp.ClientId == client.Id) != null)
+            if (@group.Clients.FirstOrDefault(rp=>rp.ClientId == client.Id) == null)
             {
-                ViewBag.is_in_group = true;
+                return RedirectToAction("JoinGroup", new { name });
             }
             var trans = _db.Transactions.Include(t=>t.Client).ThenInclude(c=>c.MyGroups).ThenInclude(rp=>rp.Group).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == @group.Id);
             ViewBag.Count = trans.Count();
@@ -153,10 +152,10 @@ namespace Biz_collab.Controllers
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client =  _db.Clients.AsNoTracking().First(c => c.Id == currentUserID);
             ViewBag.PersBudget =  client.PersBudget;
-            var @group =  _db.Groups.AsNoTracking().First(g => g.Name == name);
+            var group =  _db.Groups.AsNoTracking().First(g => g.Name == name);
             if (group.EntryFeeDon!=-1) {
                 if (client.PersBudget >= group.EntryFeeDon || client.PersBudget >= group.EntryFeeUser || client.PersBudget >= group.EntryFeeMod || client.PersBudget >= group.EntryFeeVIP) {
-                    return PartialView(@group);
+                    return PartialView(group);
                 } 
             }
             return Redirect("~/Home/Index");

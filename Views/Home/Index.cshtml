@@ -158,7 +158,13 @@
         <td>
             @if (ViewBag.PersBudget >= item.EntryFeeDon || (ViewBag.PersBudget >= item.EntryFeeUser && item.EntryFeeUser != -1) || (ViewBag.PersBudget >= item.EntryFeeMod && item.EntryFeeMod != -1) || (ViewBag.PersBudget >= item.EntryFeeVIP && item.EntryFeeVIP != -1))
             {
-                <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
+                @if (item.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name) == null)
+                {
+                     @Html.ActionLink("Открыть группу", "OpenGroup", "Groups", new { name = item.Name }, new { @class = "modal-link" })
+                } else
+                {
+                     @Html.ActionLink("Открыть группу", "OpenGroup", "Groups", new { name = item.Name })
+                }
                 @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "modal-link" })
             }
             @if (item.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)

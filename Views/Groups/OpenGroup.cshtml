@@ -1,15 +1,9 @@
 ﻿@model Biz_collab.Models.Group
-@{
-    ViewData["Title"] = "Группа " + Model.Name;
-}
+
+@{ ViewData["Title"] = "Группа " + Model.Name; }
 
 <h1>Container</h1>
 
-@if (ViewBag.is_in_group) {
-   @Html.ActionLink("Выйти", "LeaveGroup", "Groups", new { name = Model.Name}, new { @class = "modal-link" })
-} else {
-    @Html.ActionLink("Вступить", "JoinGroup", "Groups", new { name = Model.Name }, new { @class = "modal-link" })
-}
 <dl class="row">
     <dt class="col-sm-2">
         Бюджет:

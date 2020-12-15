@@ -16,26 +16,34 @@
             <dd>@Html.DisplayFor(model => model.Budget)</dd>
 
             <dt>Тип</dt>
-            @if (Model.Type == 1) { 
+            @if (Model.Type == 1)
+            {
                 <dd>Для пожертвований</dd>
-            } else {
+            }
+            else
+            {
                 <dd>С голосованием</dd>
             }
 
             <dt>Вход Дона</dt>
             <dd>@Html.DisplayFor(model => model.EntryFeeDon)</dd>
-    
-            @if (Model.Type != 1) {
+
+            @if (Model.Type != 1)
+            {
                 <dt>Мин Плюс</dt>
                 <dd>@Html.DisplayFor(model => model.MinPlus)</dd>
 
                 <dt>Спор</dt>
-                @if (Model.CloseCall == true) {
+                @if (Model.CloseCall == true)
+                {
                     <dd>Принять</dd>
-                } else {
+                }
+                else
+                {
                     <dd>Удалить</dd>
                 }
-                @if (Model.MinMinus != -1) {
+                @if (Model.MinMinus != -1)
+                {
                     <dt>Мин Вычет</dt>
                 }
                 <dd>@Html.DisplayFor(model => model.MinMinus)</dd>
@@ -43,20 +51,17 @@
                 <dt>Вход Юзера</dt>
                 <dd>@Html.DisplayFor(model => model.EntryFeeUser)</dd>
 
-                @if (Model.EntryFeeVIP != -1) { 
+                @if (Model.EntryFeeVIP != -1)
+                {
                     <dt>Вход VIP</dt>
                     <dd>@Html.DisplayFor(model => model.EntryFeeVIP)</dd>
                 }
-                @if (Model.EntryFeeMod != -1) {
-                <dt>Вход Модера</dt>
-                <dd>@Html.DisplayFor(model => model.EntryFeeMod)</dd>
+                @if (Model.EntryFeeMod != -1)
+                {
+                    <dt>Вход Модера</dt>
+                    <dd>@Html.DisplayFor(model => model.EntryFeeMod)</dd>
                 }
-             }
-            @if (ViewBag.Pass) {
-                <dd>
-                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@Model.Name">[Открыть группу]</a>
-                </dd>
-             }
+            }
         </dl>
     </div>
 </div>

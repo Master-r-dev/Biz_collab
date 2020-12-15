@@ -1,6 +1,8 @@
 ﻿@model Biz_collab.Models.Group
 
-@{ ViewData["Title"] = "Группа " + Model.Name; }
+@{ 
+    ViewData["Title"] = "Группа " + Model.Name;
+}
 
 <h1>Container</h1>
 
@@ -284,14 +286,6 @@ else
         </tbody>
     </table>
 }
-
-<dl class="row">
-    <dt class="col-sm-2">
-        Графики
-    </dt>
-    @* canvas and bla bla draw
-                }*@
-</dl>
 
 @{
     var prevDisabled = !ViewBag.Transactions.HasPreviousPage ? "disabled" : "";

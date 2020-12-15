@@ -10,6 +10,7 @@ using Biz_collab.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Globalization;
+using System.ComponentModel.DataAnnotations;
 
 namespace Biz_collab.Controllers
 {
@@ -73,7 +74,47 @@ namespace Biz_collab.Controllers
             {
                 return RedirectToAction("JoinGroup", new { name });
             }
-            var trans = _db.Transactions.Include(t=>t.Client).ThenInclude(c=>c.MyGroups).ThenInclude(rp=>rp.Group).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == @group.Id);
+            var trans = _db.Transactions.Include(t => t.Client).ThenInclude(c => c.MyGroups).ThenInclude(rp => rp.Group).Include(t => t.Votes).ThenInclude(v => v.Client).Where(t => t.GroupId == @group.Id);
+            if (x)
+            {
+                if (trans != null)
+                {
+                    foreach (var i in trans)
+                    {
+                        if (i.Status == false)
+                        {
+                            int YesCounter = _db.Votes.Where(v => v.TransactionId == i.Id && v.V == true).Sum(v => v.P);
+                            int NoCounter = _db.Votes.Where(v => v.TransactionId == i.Id && v.V == false).Sum(v => v.P);
+                            i.YesPercent = ((float)YesCounter / @group.Clients.Count()) * 100.0f;
+                            i.NoPercent = ((float)NoCounter / @group.Clients.Count()) * 100.0f;
+                            _db.Entry(i).State = EntityState.Modified;
+                        }
+                    }
+                }
+                foreach (var i in @group.Clients.Where(rp => rp.R == "VIP"))
+                {
+                    i.P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() * 0.25)));
+                    _db.Entry(i).State = EntityState.Modified;
+                }
+                foreach (var i in @group.Clients.Where(rp => rp.R == "Mod"))
+                {
+                    i.P = Convert.ToInt32(Math.Floor(Convert.ToDouble(@group.Clients.Count() * 0.5)));
+                    _db.Entry(i).State = EntityState.Modified;
+                }
+                foreach (var i in @group.Clients.Where(rp => rp.Percent != null))
+                {
+                    i.P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() * i.Percent)));
+                    _db.Entry(i).State = EntityState.Modified;
+                }
+                @group.Clients.FirstOrDefault(rp => rp.R == "Создатель").P = @group.Clients.Count();
+                _db.Entry(group).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
+            }
+
+            if (trans == null)
+            {
+                return View();
+            }
             ViewBag.Count = trans.Count();
             ViewData["CurrentSort"] = sortOrder;
             if (searchString != null)
@@ -105,39 +146,27 @@ namespace Biz_collab.Controllers
                 _ => trans.OrderByDescending(s => s.StartTime),
             };
             int pageSize = 5;
-            if (x)
+            
+            ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
+
+            var amounts = new int[trans.Count()];
+            var dates = new DateTime[trans.Count()];
+            int k = 0;
+            foreach (var t in trans.OrderByDescending(tr => tr.StartTime))
             {
-                foreach (var i in trans)
+                if (t.Status)
                 {
-                    if (i.Status==false) {
-                        int YesCounter = _db.Votes.Where(v => v.TransactionId == i.Id && v.V == true).Sum(v => v.P);
-                        int NoCounter = _db.Votes.Where(v => v.TransactionId == i.Id && v.V == false).Sum(v => v.P);
-                        i.YesPercent = ((float)YesCounter / @group.Clients.Count()) * 100.0f;
-                        i.NoPercent = ((float)NoCounter / @group.Clients.Count()) * 100.0f;
-                        _db.Entry(i).State = EntityState.Modified;
-                    }
+                    if (t.OperationType == 3)
+                        amounts[k] = t.Amount;
+                    else
+                        amounts[k] = -t.Amount;
+                   dates[k++] = t.StartTime;
                 }
-                foreach (var i in @group.Clients.Where(rp => rp.R == "VIP"))
-                {
-                    i.P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() * 0.25)));
-                    _db.Entry(i).State = EntityState.Modified;
-                }
-                foreach (var i in @group.Clients.Where(rp => rp.R == "Mod"))
-                {
-                    i.P = Convert.ToInt32(Math.Floor(Convert.ToDouble(@group.Clients.Count() * 0.5)));
-                    _db.Entry(i).State = EntityState.Modified;
-                }
-                foreach (var i in @group.Clients.Where(rp => rp.Percent!=null))
-                {
-                    i.P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() * i.Percent)));
-                    _db.Entry(i).State = EntityState.Modified;
-                }
-                @group.Clients.FirstOrDefault(rp =>rp.R == "Создатель").P = @group.Clients.Count();
-                _db.Entry(group).State = EntityState.Modified;
-                await _db.SaveChangesAsync();
             }
-             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);            
-             return View(@group);
+            
+            ViewBag.trans_amounts = amounts;
+            ViewBag.trans_dates = dates;
+            return View(@group);
         }
         [Authorize]
         public IActionResult BannedInGroup(string name)

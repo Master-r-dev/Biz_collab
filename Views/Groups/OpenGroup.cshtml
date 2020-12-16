@@ -368,15 +368,33 @@ else
         chart.draw(data, options);
     }
 
+    function drawResChart() {
+        var data = google.visualization.arrayToDataTable([
+            ["Описание", "Сумма"],
+            ["ПОТРАЧЕНО", @ViewBag.total_spent],
+            ["Получено", @ViewBag.total_recieved]
+        ]);
+
+        var options = {
+            title: 'Придумать название'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById("res_chart"));
+        chart.draw(data, options);
+    }
+
     function drawCharts() {
         drawBudgetChart();
         drawClientChart();
+        drawResChart();
     }
 
 </script>
 
 <div id="budget_chart" style="width: 900px; height: 500px"></div>
 <div id="client_chart" style="width: 900px; height: 500px;"></div>
+<div id="res_chart" style="width: 900px; height: 500px;"></div>
+
 
 
 @{

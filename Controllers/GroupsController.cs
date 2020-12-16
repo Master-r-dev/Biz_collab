@@ -151,18 +151,26 @@ namespace Biz_collab.Controllers
 
             var amounts = new int[trans.Where(t=>t.Status==true).Count()];
             var dates = new int[trans.Where(t => t.Status == true).Count()][];
+            var total_spent = 0;
+            var total_recieved = 0;
             int k = 0;
             foreach (var t in trans.Where(t=>t.Status==true).OrderBy(tr => tr.StartTime))
             {
-                if (t.OperationType == 3)
+                if (t.OperationType == 3) {
                     amounts[k] = t.Amount;
-                else
+                    total_recieved += t.Amount;
+
+                } else {
                     amounts[k] = -t.Amount;
+                    total_spent += t.Amount;
+                }
                 dates[k++] = new int[] { t.StartTime.Year, t.StartTime.Month, t.StartTime.Day};
 
             }
             ViewBag.trans_amounts = JsonSerializer.Serialize(amounts);
             ViewBag.trans_dates  = JsonSerializer.Serialize(dates);
+            ViewBag.total_spent = total_spent;
+            ViewBag.total_recieved = total_recieved;
 
             var clients = new string[group.Clients.Count()];
             var clients_trans = new int[group.Clients.Count()];

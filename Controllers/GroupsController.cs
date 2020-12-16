@@ -163,7 +163,17 @@ namespace Biz_collab.Controllers
             }
             ViewBag.trans_amounts = JsonSerializer.Serialize(amounts);
             ViewBag.trans_dates  = JsonSerializer.Serialize(dates);
-            
+
+            var clients = new string[group.Clients.Count()];
+            var clients_trans = new int[group.Clients.Count()];
+            k = 0;
+            foreach (var c in group.Clients)
+            {
+                clients[k] = c.Client.Login;
+                clients_trans[k++] = trans.Where(t => t.ClientId == c.Client.Id && t.Status == true).Count();
+            }
+            ViewBag.clients = JsonSerializer.Serialize(clients);
+            ViewBag.clients_trans = JsonSerializer.Serialize(clients_trans);
             return View(@group);
         }
         [Authorize]

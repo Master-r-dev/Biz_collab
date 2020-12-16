@@ -287,16 +287,63 @@ else
     </table>
 }
 
-<dt class="col-sm-2">
-    Графики:
-</dt>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-    var a = @ViewBag.trans_amounts;
-    console.log(a);
-    var d = JSON.parse(@ViewBag.trans_dates); 
-    console.log(d);
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function get_data() {
+
+        var amounts = @ViewBag.trans_amounts;
+        var dates = @ViewBag.trans_dates;
+        var curbudget = @Model.Budget;
+        var today = (new Date()).toLocaleDateString();
+
+        var data = [
+            ["Дата", "Бюджет"],
+        ];
+
+        for (let i = 0; i < amounts.length; i++) {
+
+            let date = dates[i];
+            date = new Date(date[0], date[1] - 1, date[2]).toLocaleDateString();
+
+            if (data[data.length - 1][0] != date) {
+                data.push([date, amounts[i]]);
+            } else {
+                data[data.length - 1][1] += amounts[i];
+            }
+        }
+        for (let i = data.length - 1; i > 0; i--) {
+            curbudget -= data[i][1];
+            data[i][1] = curbudget;
+        }
+        if (data[data.length - 1][0] != today)
+            data.push([(new Date()).toLocaleDateString(), @Model.Budget]);
+        else
+            data[data.length - 1][1] = @Model.Budget;
+
+        return data;
+    }
+
+    function drawChart() {
+
+
+        data = google.visualization.arrayToDataTable(get_data());
+
+        var options = {
+            title: 'Бюджет',
+            curveType: 'function',
+            legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('budget_chart'));
+
+        chart.draw(data, options);
+    }
 </script>
 
+<div id="budget_chart" style="width: 900px; height: 500px"></div>
 @{
     var prevDisabled = !ViewBag.Transactions.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !ViewBag.Transactions.HasNextPage ? "disabled" : "";

@@ -150,16 +150,16 @@ namespace Biz_collab.Controllers
             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
 
             var amounts = new int[trans.Where(t=>t.Status==true).Count()];
-            var dates = new string[trans.Where(t => t.Status == true).Count()];
+            var dates = new int[trans.Where(t => t.Status == true).Count()][];
             int k = 0;
-            foreach (var t in trans.Where(t=>t.Status==true).OrderByDescending(tr => tr.StartTime))
+            foreach (var t in trans.Where(t=>t.Status==true).OrderBy(tr => tr.StartTime))
             {
                 if (t.OperationType == 3)
                     amounts[k] = t.Amount;
                 else
                     amounts[k] = -t.Amount;
-                dates[k++] = t.StartTime.ToString();
-                
+                dates[k++] = new int[] { t.StartTime.Year, t.StartTime.Month, t.StartTime.Day};
+
             }
             ViewBag.trans_amounts = JsonSerializer.Serialize(amounts);
             ViewBag.trans_dates  = JsonSerializer.Serialize(dates);

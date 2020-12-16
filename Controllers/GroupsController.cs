@@ -150,7 +150,7 @@ namespace Biz_collab.Controllers
             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
 
             var amounts = new int[trans.Where(t=>t.Status==true).Count()];
-            var dates = new int[trans.Where(t => t.Status == true).Count()][];
+            var dates = new string[trans.Where(t => t.Status == true).Count()];
             var total_spent = 0;
             var total_recieved = 0;
             int k = 0;
@@ -164,7 +164,7 @@ namespace Biz_collab.Controllers
                     amounts[k] = -t.Amount;
                     total_spent += t.Amount;
                 }
-                dates[k++] = new int[] { t.StartTime.Year, t.StartTime.Month, t.StartTime.Day};
+                dates[k++] = t.StartTime.ToString();
 
             }
             ViewBag.trans_amounts = JsonSerializer.Serialize(amounts);

@@ -295,7 +295,7 @@ else
     function get_budget_data() {
 
         var amounts = @ViewBag.trans_amounts;
-        var dates = @ViewBag.trans_dates;
+        var dates =@Html.Raw(ViewBag.trans_dates);
         var curbudget = @Model.Budget;
         var today = (new Date()).toLocaleDateString();
 
@@ -306,8 +306,6 @@ else
         for (let i = 0; i < amounts.length; i++) {
 
             let date = dates[i];
-            date = new Date(date[0], date[1] - 1, date[2]).toLocaleDateString();
-
             if (data[data.length - 1][0] != date) {
                 data.push([date, amounts[i]]);
             } else {
@@ -327,7 +325,7 @@ else
     }
 
     function get_client_data() {
-        var clients = JSON.parse('@ViewBag.clients'.replace(/&quot;/g, '"'));
+        var clients = @Html.Raw(ViewBag.clients);
         var clients_trans = @ViewBag.clients_trans;
         var data = [
             ["Пользователь", "Количество транзакций"],
@@ -376,7 +374,7 @@ else
         ]);
 
         var options = {
-            title: 'Придумать название'
+            title: 'Расходы/Прибыль'
         };
 
         var chart = new google.visualization.PieChart(document.getElementById("res_chart"));

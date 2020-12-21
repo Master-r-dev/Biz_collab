@@ -61,7 +61,7 @@ namespace Biz_collab.Controllers
             ViewBag.Budget =rp.Group.Budget;
             ViewBag.PersBudget = rp.Client.PersBudget;
             ViewBag.Role = rp.R;            
-            return View();
+            return PartialView();
         }
 
         // POST: Transactions/Create
@@ -254,7 +254,7 @@ namespace Biz_collab.Controllers
                 }
                 await _db.SaveChangesAsync();
             }
-                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
+            return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
             
         }
 

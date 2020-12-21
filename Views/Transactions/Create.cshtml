@@ -1,76 +1,67 @@
 ﻿@model Biz_collab.Models.Transaction
 
-@{ ViewData["Title"] = "Create"; }
+@{ ViewData["Title"] = "Создать транзакцию"; }
 
-<h1>Create</h1>
-
-<h4>Transaction</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="col-md-4">
-                Бюджет:@ViewBag.Budget
+<div class="modal-content mdl">
+    <form  asp-action="Create"class="login100-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (ViewBag.Role != "Донатер")
+        {
+            <div class="form-group form-check">
+                <label asp-for="OperationType" class="control-label">Вид Транзакции: </label>
+                <br />
+                <label for="1">
+                    <span class="glyphicon glyphicon-plus">
+                        <input type="radio" asp-for="OperationType" id="1" value="1">
+                    </span>
+                    Потратить из группового бюджета
+                </label>
+                <br />
+                <label for="2">
+                    <span class="glyphicon glyphicon-cloud-download">
+                        <input type="radio" asp-for="OperationType" id="2" value="2">
+                    </span>
+                    Перевести на свой счет
+                </label>
+                <br />
+                <label for="3">
+                    <span class="glyphicon glyphicon-cloud-upload">
+                        <input type="radio" asp-for="OperationType" id="3" value="3">
+                    </span>
+                    Перевести на счет группы
+                </label>
+                <br />
+                <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
-            @if (ViewBag.Role != "Донатер")
-            {
-                <div class="form-group form-check">
-                    <label asp-for="OperationType" class="control-label">Вид Транзакции: </label>
-                    <label for="1">
-                        <span class="glyphicon glyphicon-plus">
-                            <input type="radio" asp-for="OperationType" id="1" value="1">
-                        </span>
-                        Потратить из группового бюджета
-                    </label>
-                    <label for="2">
-                        <span class="glyphicon glyphicon-cloud-download">
-                            <input type="radio" asp-for="OperationType" id="2" value="2">
-                        </span>
-                        Перевести на свой счет
-                    </label>
-                    <label for="3">
-                        <span class="glyphicon glyphicon-cloud-upload">
-                            <input type="radio" asp-for="OperationType" id="3" value="3">
-                        </span>
-                        Перевести на счет группы
-                    </label>
-                    <span asp-validation-for="OperationType" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Amount" class="control-label"></label>
-                    <input oninput="Trans()" id="input" type="number" asp-for="Amount" class="form-control" />
-                    <span asp-validation-for="Amount" class="text-danger"></span>
-                </div>
-            }
-            else
-            {
-                <div class="form-group form-check">
-                    <label asp-for="OperationType" class="control-label">Вид Транзакции:    </label>
-                    <label for="3">
-                        <span class="glyphicon glyphicon-cloud-upload">
-                            <input type="hidden" asp-for="OperationType" id="3" value="3">
-                        </span>
-                        Перевести на счет группы
-                    </label>
-                    <span asp-validation-for="OperationType" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Amount" class="control-label">Сумма</label>
-                    <input oninput="Trans2()" id="input" type="number" asp-for="Amount" class="form-control" />
-                    <span asp-validation-for="Amount" class="text-danger"></span>
-                </div>
-            }
-            <div class="form-group">
-                <label asp-for="Explanation" class="control-label">Описание</label>
-                <input asp-for="Explanation" class="form-control" />
-                <span asp-validation-for="Explanation" class="text-danger"></span>
+        }
+        else
+        {
+            <div class="form-group form-check">
+                <label asp-for="OperationType" class="control-label">Вид Транзакции:</label>
+                <br />
+                <label for="3">
+                    <span class="glyphicon glyphicon-cloud-upload">
+                        <input class="input100" type="hidden" asp-for="OperationType" id="3" value="3">
+                    </span>
+                    Перевести на счет группы
+                </label>
+                <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" asp-route-name="@ViewBag.Name" class="btn btn-primary" />
+        }
+        <div class="form-group wrap-input100 m-b-20">
+                <label asp-for="Amount" class="control-label">Сумма</label>
+                <input oninput="Trans2()" id="input" type="number" asp-for="Amount" class="input100" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
-        </form>
-    </div>
+        <div class="form-group wrap-input100 m-b-20">
+            <label asp-for="Explanation" class="control-label">Описание</label>
+            <input asp-for="Explanation" class="input100" />
+            <span asp-validation-for="Explanation" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Создать" asp-route-name="@ViewBag.Name" class="btn btn-primary" />
+        </div>
+    </form>
 </div>
 
 <script>
@@ -104,10 +95,6 @@
          else  document.getElementById("input").value = 0;
     }
 </script>
-<div>
-    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@ViewBag.Name">Вернуться в группу</a>
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

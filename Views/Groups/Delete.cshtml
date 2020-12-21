@@ -1,16 +1,17 @@
 ﻿@model Biz_collab.Models.Group
 
-@{ ViewData["Title"] = "Delete"; }
-
-<div class="modal-content">
+<div class="modal-content mdl">
     <div class="modal-header">
         <h4>Вы действительно хотите удалить группу?</h4>
-        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+        <button class="close" data-dismiss="modal" area-hidden="true"><i class="fas fa-times-circle"></i></button>
     </div>
     <div class="modal-body">
         <dl class="dl-horizontal">
             <dt>Название</dt>
             <dd>@Html.DisplayFor(model => model.Name)</dd>
+
+            <dt>Бюджет</dt>
+            <dd>@Html.DisplayFor(model => model.Budget)</dd>
         </dl>
         <form asp-action="Delete" method="post">
             <input type="hidden" name="name" value="@Model.Name" />

@@ -1,11 +1,11 @@
 ﻿@model Biz_collab.Models.Transaction
 
-@{ ViewData["Title"] = "Details"; }
+@{ ViewData["Title"] = "Детали транзакции"; }
 
-<div class="modal-content">
+<div class="modal-content mdl">
     <div class="modal-header">
         <h4>Детали</h4>
-        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+        <button class="close" data-dismiss="modal" area-hidden="true"><i class="fas fa-times-circle"></i></button>
     </div>
     <div class="modal-body">
         <dl class="dl-horizontal">
@@ -52,5 +52,6 @@
 					</dd>
 				}
 			}
-    </dl>
+        </dl>
+    </div>
 </div>

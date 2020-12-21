@@ -1,9 +1,8 @@
-﻿
-@{
-    ViewData["Title"] = "BannedInGroup";
-}
-
-<h1>Вы были заблокированы в группе с названием:@ViewBag.groupName</h1>
-<div>
-    <a asp-controller="Home" asp-action="Index">Вернуться на главную</a>
+﻿<div class="modal-content mdl">
+    <div class="modal-header">
+        <button class="close" data-dismiss="modal" area-hidden="true"><i class="fas fa-times-circle"></i></button>
+    </div>
+    <div class="modal-body">
+        <p style="color: #ff0000">Вы были заблокированы в группе с названием: @ViewBag.Name</p>
+    </div>
 </div>

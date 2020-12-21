@@ -1,91 +1,65 @@
 ﻿@using Biz_collab.Models
 @using Biz_collab.Data
-@{
-    @if (User.Identity.Name != null)
-    {
-        @inject ApplicationDbContext _db
-        ViewData["B"] = _db.Clients.FirstOrDefault(m => m.Login == User.Identity.Name).PersBudget;
-    }
-}
+@{ }  
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Biz_collab</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="" />
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="~/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="~/fonts/iconic/css/material-design-iconic-font.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/site.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/util.css">
+    <link rel="stylesheet" type="text/css" href="~/css/main.css">
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
-    <style>
-        table {
-            border-collapse: collapse;
-            table-layout: fixed;
-            width: 310px;
-        }
-
-            table td {
-                border: solid 1px #fab;
-                width: 100px;
-                word-wrap: break-word;
-            }
-
-        body {
-            font-family: sans-serif;
-        }
-    </style>
-    <script>
-    </script>
+    <script src="~/js/main.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biz_collab</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial" />
-                    <ul class="navbar-nav flex-grow-1">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                <ul class="navbar-nav mr-auto">
+                    <li>
+                        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biz_collab</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link modal-link" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
+                    </li>
+                    @if (User.Identity.Name != null)
+                    {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
+                            @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
                         </li>
-                        @if (User.Identity.Name != null)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Groups" asp-action="Create">Создать группу</a>
-                            </li>
-                            <li class="nav-item">  
-                                @Html.ActionLink("Пополнить баланс: ", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link text-dark" })
-                            </li>
-                            <li class="nav-item">
-                                <p class="nav-link text-dark">@ViewBag.PersBudget</p>
-                            </li>
-
-                        }
-                    </ul>
-                </div>
+                    }
+                </ul>
+            </div>
+            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                <partial name="_LoginPartial" />
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+    <div class="content">
+        @RenderBody()
     </div>
     <div id="modDialog" class="modal fade">
         <div id="dialogContent" class="modal-dialog"></div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
+    <footer class="footer text-muted">
+        <div align="right" style="margin-right: 100px">
             &copy; 2020 - Biz_collab
         </div>
     </footer>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

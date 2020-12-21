@@ -1,458 +1,113 @@
 ﻿@model PaginatedList<Biz_collab.Models.Group>
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Главная";
 }
+<div class="wrap-login100 search bg-b b-r-10 p-l-50 p-r-50 p-t-10 p-b-10">
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color search-box" style="width: auto">
+            <input class="search-text c-g" type="text" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
+            <button class="search-text-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
 
-<form asp-action="Index" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Найти по названию группы: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
-            <input type="submit" value="Search" class="btn btn-default" /> |
-            <a asp-action="Index">Вернуться к полному списку</a>
-        </p>
-    </div>
-</form>
-
-<h1>Топ-5 популярных групп</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Название</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["BudgetSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Бюджет</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["ClientAmountSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Кол-во клиентов</a>
-            </th>
-            <th>
-                Тип
-            </th>
-            <th>
-                Спор
-            </th>
-            <th>
-                Вход Дона
-            </th>
-            <th>
-                Вход Юзера
-            </th>
-            <th>
-                Вход VIP
-            </th>
-            <th>
-                Вход Модера
-            </th>
-            <th>
-                Мин Плюс
-            </th>
-            <th>
-                Мин Вычет
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+<div class="wrap-login100 tr-80 top-groups bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
+    <h2 class="c-g"><a class="f-s-1rem">ТОП групп</a></h2>
+    <table class="default-table">
+        @foreach (var group in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Budget)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Clients.Count)
-            </td>
-            @if (item.Type == 1)
-            {
-                <td>
-                    Донат
-                </td>
-            }
-            else
-            {
-                <td>
-                    Голос
-                </td>
-            }
-            @if (item.CloseCall == true)
-            {
-                <td>
-                    Принять
-                </td>
-            }
-            else
-            {
-                <td>
-                    Удалить
-                </td>
-            }
-            @if (item.EntryFeeDon == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeDon)
-                </td>
-            }
-            @if (item.EntryFeeUser == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeUser)
-                </td>
-            }
-            @if (item.EntryFeeVIP == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeVIP)
-                </td>
-            }
-            @if (item.EntryFeeMod == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryFeeMod)
-                </td>
-            }
-            <td>
-                @Html.DisplayFor(modelItem => item.MinPlus)
-            </td>
-            @if (item.MinMinus == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @Html.DisplayFor(modelItem => item.MinMinus)
-                </td>
-            }
+            <tr>
+                @if (ViewBag.PersBudget >= group.EntryFeeDon || (ViewBag.PersBudget >= group.EntryFeeUser && group.EntryFeeUser != -1) || (ViewBag.PersBudget >= group.EntryFeeMod && group.EntryFeeMod != -1) || (ViewBag.PersBudget >= group.EntryFeeVIP && group.EntryFeeVIP != -1))
+                {
 
-        <td>
-            @if (ViewBag.PersBudget >= item.EntryFeeDon || (ViewBag.PersBudget >= item.EntryFeeUser && item.EntryFeeUser != -1) || (ViewBag.PersBudget >= item.EntryFeeMod && item.EntryFeeMod != -1) || (ViewBag.PersBudget >= item.EntryFeeVIP && item.EntryFeeVIP != -1))
-            {
-                @if (item.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name) == null)
-                {
-                     @Html.ActionLink("Открыть группу", "OpenGroup", "Groups", new { name = item.Name }, new { @class = "modal-link" })
-                } else
-                {
-                     @Html.ActionLink("Открыть группу", "OpenGroup", "Groups", new { name = item.Name })
+                    @if (group.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name) == null || group.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name && c.R == "Забанен") != null)
+                    {
+                        <td>
+                            @Html.ActionLink(@group.Name, "OpenGroup", "Groups", new { name = group.Name }, new { @class = "modal-link" })
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.ActionLink(@group.Name, "OpenGroup", "Groups", new { name = group.Name })
+                        </td>
+                    }
+
+                    <td>
+                        <a href="@Url.Action("Details", "Groups", new { name = group.Name })" class="modal-link">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    </td>
+                    <td>
+                    @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                    {
+                            <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                    }
+                    </td>
                 }
-                @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "modal-link" })
-            }
-            @if (item.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
-            {
-                <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить] </a>
-                @Html.ActionLink("Удалить", "Delete", "Groups", new { name = item.Name }, new { @class = "modal-link" })
+            </tr>
+        }
+    </table>
+</div>
+<div class="wrap-login100 tr-80 my-groups bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
+    <h2 class="c-g">
+        <a class="f-s-1rem">Мои группы</a>
+        <a asp-controller="Groups" asp-action="Create">
+            <i class="fas fa-plus-circle"></i>
+        </a>
+    </h2>
+    <table class="default-table">
+        @foreach (var group in (PaginatedList<Group>)ViewBag.Groups)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@group.Name">@group.Name</a>
+                </td>
+                <td>
+                    <a href="@Url.Action("Details", "Groups", new { name = group.Name })" class="modal-link">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                </td>
+                <td>
+                @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                {
+                    <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                }
+                </td>
+            </tr>
+        }
+    </table>
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
 
-            }
-        </td>
-        </tr>
-        }
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled text-light">
+        <<
+    </a>
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled text-light">
+        >>
+    </a>
+</div>
 
-    </tbody>
-</table>
-<h1>Мои группы</h1>
-<p>
-    <a asp-controller="Groups" asp-action="Create">Создать группу</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Название</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["BudgetSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Бюджет</a>
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["ClientAmountSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Кол-во клиентов</a>
-            </th>
-            <th>
-                Тип
-            </th>
-            <th>
-                Спор
-            </th>
-            <th>
-                Вход Дона
-            </th>
-            <th>
-                Вход Юзера
-            </th>
-            <th>
-                Вход VIP
-            </th>
-            <th>
-                Вход Модера
-            </th>
-            <th>
-                Мин Плюс
-            </th>
-            <th>
-                Мин Вычет
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in ViewBag.MyCreatedGroups)
-        {
-        <tr>
-            <td>
-                @item.Name
-            </td>
-            <td>
-                @item.Budget
-            </td>
-            <td>
-                @item.Clients.Count
-            </td>
-            @if (item.Type == 1)
-            {
-                <td>
-                    Донат
-                </td>
-            }
-            else
-            {
-                <td>
-                   Голос
-                </td>
-            }
-            @if (item.CloseCall == true)
-            {
-                <td>
-                    Принять
-                </td>
-            }
-            else
-            {
-                <td>
-                    Удалить
-                </td>
-            }
-            @if (item.EntryFeeDon == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @item.EntryFeeDon
-                </td>
-            }
-            @if (item.EntryFeeUser == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @item.EntryFeeUser
-                </td>
-            }
-            @if (item.EntryFeeVIP == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @item.EntryFeeVIP
-                </td>
-            }
-            @if (item.EntryFeeMod == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @item.EntryFeeMod
-                </td>
-            }
-            <td>
-                @item.MinPlus
-            </td>
-            @if (item.MinMinus == -1)
-            {
-                <td>
-                    Нету @*Иконка отсутствия*@
-                </td>
-            }
-            else
-            {
-                <td>
-                    @item.MinMinus
-                </td>
-            }
-        <td>
-            <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-            <a asp-controller="Groups" asp-action="Edit" asp-route-name="@item.Name">[Изменить]   </a>
-            @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "modal-link" })
-            @Html.ActionLink("Удалить", "Delete", "Groups", new { name = item.Name }, new { @class = "modal-link" })
-        </td>
-        </tr>
-        }
-        @foreach (var item in ViewBag.MyGroups)
-        {
-    <tr>
-        <td>
-            @item.Name
-        </td>
-        <td>
-            @item.Budget
-        </td>
-        <td>
-            @item.Clients.Count
-        </td>
-        @if (item.Type == 1)
-        {
-            <td>
-                Донат
-            </td>
-        }
-        else
-        {
-            <td>
-                 Голос
-            </td>
-        }
-        @if (item.CloseCall == true)
-        {
-            <td>
-                Принять
-            </td>
-        }
-        else
-        {
-            <td>
-                Удалить
-            </td>
-        }
-        @if (item.EntryFeeDon == -1)
-        {
-            <td>
-                Нету @*Иконка отсутствия*@
-            </td>
-        }
-        else
-        {
-            <td>
-                @item.EntryFeeDon
-            </td>
-        }
-        @if (item.EntryFeeUser == -1)
-        {
-            <td>
-                Нету @*Иконка отсутствия*@
-            </td>
-        }
-        else
-        {
-            <td>
-                @item.EntryFeeUser
-            </td>
-        }
-        @if (item.EntryFeeVIP == -1)
-        {
-            <td>
-                Нету @*Иконка отсутствия*@
-            </td>
-        }
-        else
-        {
-            <td>
-                @item.EntryFeeVIP
-            </td>
-        }
-        @if (item.EntryFeeMod == -1)
-        {
-            <td>
-                Нету @*Иконка отсутствия*@
-            </td>
-        }
-        else
-        {
-            <td>
-                @item.EntryFeeMod
-            </td>
-        }
-        <td>
-            @item.MinPlus
-        </td>
-        @if (item.MinMinus == -1)
-        {
-            <td>
-                Нету @*Иконка отсутствия*@
-            </td>
-        }
-        else
-        {
-            <td>
-                @item.MinMinus
-            </td>
-        }
-        <td>
-            <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@item.Name">[Открыть группу]   </a>
-            @Html.ActionLink("Инфо", "Details", "Groups", new { name = item.Name }, new { @class = "details" })
-        </td>
-    </tr>
-        }
-    </tbody>
-</table>
-@{
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-}
-
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @prevDisabled">
-    <<
-</a>
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @nextDisabled">
-    >>
-</a>

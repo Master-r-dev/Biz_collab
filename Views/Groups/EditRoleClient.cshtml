@@ -1,11 +1,9 @@
 ﻿@model Biz_collab.Models.Role_Power
 
-@{ ViewData["Title"] = "EditRoleClient"; }
-
-<div class="modal-content">
+<div class="modal-content mdl">
     <div class="modal-header">
         <h3>Выберите готовые роли или создайте новую</h3>
-        <button class="close" data-dismiss="modal" area-hidden="true">X</button>
+        <button class="close" data-dismiss="modal" area-hidden="true"><i class="fas fa-times-circle"></i></button>
     </div>
     @if (ViewBag.EditorRole == "Mod" || ViewBag.EditorRole == "Создатель") {
     <div class="modal-body">
@@ -96,7 +94,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" asp-route-name="@ViewBag.Name" asp-route-login="@ViewBag.Login" class="btn btn-primary" />
+                <input type="submit" value="Сохранить" asp-route-name="@ViewBag.Name" asp-route-login="@ViewBag.Login" class="btn btn-primary" />
             </div>
         </form>
     </div>

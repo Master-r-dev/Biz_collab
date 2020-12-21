@@ -4,298 +4,221 @@
     ViewData["Title"] = "Группа " + Model.Name;
 }
 
-<h1>Container</h1>
 
-<dl class="row">
-    <dt class="col-sm-2">
-        Бюджет:
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.Budget)
-    </dd>
-    <dt class="col-sm-2">
-        Количество клиентов:
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.Clients.Count)
-    </dd>
-    @if (Model.Clients.FirstOrDefault(rp => rp.GroupId == Model.Id && rp.Client.Login == User.Identity.Name && (rp.R == "Создатель" || rp.R == "Mod")) != null)
-    {
-        @foreach (var c in Model.Clients)
-        {
-            if (c.Client.Login == User.Identity.Name)
-            {
-                <dd class="col-sm-10">
-                    <b style="background-color:rebeccapurple;">   @c.Client.Login | @c.R | @c.P </b> @*Желательно поместить где-то сбоку для пользователя*@
-                </dd>
-            }
-            else
-            {
-                <dd class="col-sm-10">
-                    @c.Client.Login | @c.R | @c.P
-                </dd>
-            }
-            @if (c.R != "Создатель")
-            {
-                @if (c.R != "Забанен")
-                {
-                    <dd class="col-sm-10">
-                        @Html.ActionLink("Изменить роль", "EditRoleClient", "Groups", new { Login = c.Client.Login, name = Model.Name }, new { @class = "modal-link" }) |
-                        <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@c.Client.Login" asp-route-name="@Model.Name">Кнопка забанить</a>
-                        @*имеет смысл где внос за роли(хочешь назад-плати) <a asp-controller="Groups" asp-action="DeleteClient" asp-route-Login="@c.Client.Login" asp-route-name="@Model.Id">Кнопка удалить</a> *@
-                    </dd>
-                }
-                else
-                {
-                    <dd class="col-sm-10">
-                        @Html.ActionLink("Изменить роль", "EditRoleClient", "Groups", new { Login = c.Client.Login, name = Model.Name }, new { @class = "modal-link" })
-                        <a asp-controller="Groups" asp-action="EditRoleClient" asp-route-Login="@c.Client.Login" asp-route-name="@Model.Name">Кнопка изменить роль</a>
-                    </dd>
-                }
-
-            }
-        }
-    }
-    else
-    {
-        @foreach (var c in Model.Clients)
-        {
-            if (c.Client.Login == User.Identity.Name)
-            {
-                <dd class="col-sm-10">
-                    <b style="background-color:tomato;">   @c.Client.Login | @c.R | @c.P </b>
-                </dd>
-            }
-            else
-            {
-                <dd class="col-sm-10">
-                    @c.Client.Login | @c.R | @c.P
-                </dd>
-            }
-        }
-    }
-</dl>
-<form asp-action="OpenGroup" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Найти транзакцию(по логину,роли или описанию): <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
-            <input type="hidden" name="name" value="@Model.Name" />
-            <input type="submit" value="Search" class="btn btn-default" /> |
-            <a asp-action="OpenGroup" asp-route-name="@Model.Name">Вернуться к полному списку</a>
-        </p>
+<div style="display: flex;">
+    <div class="graphics-box">
+        <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center">
+            <h2 class="c-g f-s-1rem my-balance p-t-7">Бюджет</h2>
+            <div id="budget_chart"></div>
+        </div>
+        <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-t-5 p-b-20" align="center">
+            <h2 class="c-g f-s-1rem my-balance p-t-7">Производительность</h2>
+            <div class="gr">
+                <div id="client_chart"></div>
+            </div>
+        </div>
+        <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center">
+            <div class="gr">
+                <div id="res_chart"></div>
+            </div>
+        </div>
     </div>
-</form>
 
-<dl class="row">
-    <dt class="col-sm-2">
-        Транзакции
-    </dt>
-    <dd class="col-sm-10">
-        Количество: @ViewBag.Count
-        @if (Model.Clients.FirstOrDefault(rp => rp.GroupId == Model.Id && rp.Client.Login == User.Identity.Name && (rp.R == "Забанен")) == null)
-        {
-            <a asp-controller="Transactions" asp-action="Create" asp-route-name="@Model.Name">+Новая транзакция</a>
-        }
-    </dd>
-</dl>
-@if (Model.Type == 2)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Описание
-                </th>
-                <th>
-                    <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["AmountSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Сумма</a>
-                </th>
-                <th>
-                    <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["OperationTypeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Тип</a>
-                </th>
-                <th>
-                    <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["ClientNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Клиент</a>
-                </th>
-                <th>
-                    <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["TimeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Статус/Время создания</a>
-                </th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var t in ((PaginatedList<Transaction>)ViewBag.Transactions))
-            {
+    <div class="transactions-box bg-b b-r-10 p-l-20 p-r-20p-b-20">
+        <h2 class="c-g f-s-1rem">
+            Транзакции
+            <a class="add-tranzaction-btn modal-link" href="@Url.Action("Create", "Transactions", new { @Model.Name })" title="Создать новую транзакцию"><i class="fas fa-plus-circle"></i></a>
+        </h2>
+        <table class="default-table">
+            <thead>
                 <tr>
                     <td>
-                        @t.Explanation
+                        Описание
                     </td>
-                    @if (t.OperationType == 3)
+                    <td>
+                        Сумма
+                    </td>
+                    @if (Model.Type == 2)
                     {
                         <td>
-                            <b>+ </b> @t.Amount
+                            Участник
+                        </td>
+                        <td>
+                            Статус
                         </td>
                     }
                     else
                     {
                         <td>
-                            <b>- </b> @t.Amount
+                            Дата создания
                         </td>
                     }
-
-                    @if (t.OperationType == 1)
-                    {
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var transaction in ((PaginatedList<Transaction>)ViewBag.Transactions))
+                {
+                    <tr class="transaction-tr">
                         <td>
-                            <b>трата бюджета  на внешние источники </b>@*Заменить на glyphicon !!!*@
+                            @transaction.Explanation
                         </td>
-                    }
-                    else if (t.OperationType == 2)
-                    {
                         <td>
-                            <b>перевод с счета группы на счет пользователя</b>@*Заменить на glyphicon !!!*@
+                            @if (transaction.OperationType == 3)
+                            {
+                                <i>+@transaction.Amount</i>
+                            }
+                            else
+                            {
+                                <i>-@transaction.Amount</i>
+                            }
                         </td>
-                    }
-                    else if (t.OperationType == 3)
-                    {
-                        <td>
-                            <b>перевод с счета пользователя  на счет группы</b>@*Заменить на glyphicon !!!*@
-                        </td>
-                    }
-                    <td>
-                        @t.Client.Login -- @t.Client.MyGroups.First(rp => rp.GroupId == t.GroupId).R
-                    </td>
-                    @if (t.Status == false)
-                    {
-                        <td>
-                            Ожидание@*Заменить на значок часов или подобное*@
-                        </td>
-                        @if (t.Votes.FirstOrDefault(v => v.Client.Login == User.Identity.Name) == null)
+                        @if (Model.Type == 2)
                         {
-                            @*Заменить на иконки!*@
                             <td>
-                                <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@t.Id">За</a> |
-                                <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@t.Id">Против</a>
+                                @transaction.Client.Login
                             </td>
+                            @if (transaction.Status)
+                            {
+                                <td>
+                                    <i class="fas fa-check-circle"></i>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <i class="fas fa-clock"></i>
+                                </td>
+                                @if (transaction.Votes.FirstOrDefault(v => v.Client.Login == User.Identity.Name) == null)
+                                {
+                                    <td>
+                                        <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@transaction.Id"><i class="fas fa-thumbs-up"></i></a>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@transaction.Id"><i class="fas fa-thumbs-down"></i></a>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <b> @Math.Round((decimal)transaction.YesPercent, 2)</b>
+                                    </td> 
+                                    <td>
+                                        <b> @Math.Round((decimal)transaction.NoPercent, 2)</b>
+                                    </td>
+                                }
+                            }
                         }
                         else
                         {
                             <td>
-                                @*Отражение процента голосов*@
-                                <b style="background-color:limegreen;"> @Math.Round((decimal)t.YesPercent, 2)</b> |
-                                <b style="background-color:tomato;"> @Math.Round((decimal)t.NoPercent, 2)</b>
+                                @transaction.StartTime
                             </td>
                         }
-                        @if (User.Identity.Name == t.Client.Login && t.Status == false)
+                        <td>
+                            <a class="modal-link" href="@Url.Action("Details", "Transactions", new { transaction.Id })">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                        </td>
+                        @if ((User.Identity.Name == transaction.Client.Login || Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R == "Создатель") && transaction.Status == false)
                         {
                             <td>
-                                @Html.ActionLink("Удалить", "Delete", "Transactions", new { id = t.Id }, new { @class = "modal-link" })
-                                @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "modal-link" })
+                                <a class="modal-link" href="@Url.Action("Delete", "Transactions", new { transaction.Id })">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
                             </td>
                         }
-                        else
-                        {
-                            <td>
-                                @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "modal-link" })
-                            </td>
-                        }
-                    }
-                    else
-                    {
-                        <td>
-                            @t.StartTime
-                        </td>
-                        <td>
-                            @*Отражение процента голосов*@
-                            <b style="background-color:limegreen;">@Math.Round((decimal)t.YesPercent, 2)</b> |
-                            <b style="background-color:tomato;"> @Math.Round((decimal)t.NoPercent, 2)</b>
-                        </td>
-                        <td>
-                            @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "modal-link" })
-                        </td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Описание
-                </th>
-                <th>
-                    <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["AmountSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Сумма</a>
-                </th>
-                <th>
-                    <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["OperationTypeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Тип</a>
-                </th>
-                <th>
-                    <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["TimeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Время создания</a>
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var t in ((PaginatedList<Transaction>)ViewBag.Transactions))
-            {
-                <tr>
-                    <td style="word-break:break-all;">
-                        @t.Explanation
-                    </td>
-                    @if (t.OperationType == 3)
-                    {
-                        <td>
-                            <b>+ </b> @t.Amount
-                        </td>
-                    }
-                    else
-                    {
-                        <td>
-                            <b>- </b> @t.Amount
-                        </td>
-                    }
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-                    @if (t.OperationType == 1)
-                    {
-                        <td>
-                            <b>трата бюджета  на внешние источники </b>@*Заменить на glyphicon !!!*@
-                        </td>
-                    }
-                    else if (t.OperationType == 2)
-                    {
-                        <td>
-                            <b>перевод с счета группы на счет пользователя</b>@*Заменить на glyphicon !!!*@
-                        </td>
-                    }
-                    else if (t.OperationType == 3)
-                    {
-                        <td>
-                            <b>перевод с счета пользователя  на счет группы</b>@*Заменить на glyphicon !!!*@
-                        </td>
-                    }
-                    <td>
-                        @t.StartTime
-                    </td>
-                    <td>
-                        @Html.ActionLink("Детали", "Details", "Transactions", new { id = t.Id }, new { @class = "modal-link" })
-                    </td>
-                </tr>
+
+        <div class="m-r-20" align="right">
+            @{
+                var prevDisabled = !ViewBag.Transactions.HasPreviousPage ? "disabled" : "";
+                var nextDisabled = !ViewBag.Transactions.HasNextPage ? "disabled" : "";
             }
-        </tbody>
-    </table>
-}
+
+            <a asp-action="OpenGroup"
+               asp-route-name="@Model.Name"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-pageNumber="@(ViewBag.Transactions.PageIndex - 1)"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-default @prevDisabled"
+               style="color:#adadad">
+                <<
+            </a>
+            <a asp-action="OpenGroup"
+               asp-route-name="@Model.Name"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-pageNumber="@(ViewBag.Transactions.PageIndex + 1)"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-default @nextDisabled"
+               style="color: #adadad">
+                >>
+            </a>
+        </div>
+    </div>
+    <div class="participants-box bg-b b-r-10 p-l-20 p-r-20 p-b-20">
+            <h2 class="c-g f-s-1rem p-t-7">Участники</h2>
+            <table class="default-table scroll">
+                @foreach (var client in Model.Clients)
+                {
+                    var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
+                    var currentuserrole = Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R;
+                    <tr>
+                        <td class="@currentuser">
+                            @client.Client.Login
+                        </td>
+                        <td class="@currentuser">
+                            @client.R | @client.P
+                        </td>
+                        
+                        @if (currentuserrole == "Создатель" && currentuserrole == "Mod")
+                        {
+                            @if (client.R != "Создатель" && client.Client.Login != User.Identity.Name)
+                            {
+                                @if (client.R != "Забанен") 
+                                { 
+                                    <td>
+                                        <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@client.Client.Login" asp-route-name="@Model.Name">
+                                            <i class="fas fa-ban @currentuser"></i>
+                                        </a>
+                                    </td>
+                                }
+                                <td>
+                                    <a class="modal-link" href="@Url.Action("EditRoleClient", "Groups", new { Login = client.Client.Login, name = Model.Name })" title="Изменить роль участника">
+                                        <i class="fas fa-edit @currentuser"></i>
+                                    </a>
+                                </td>
+                            }   
+                        }
+                    </tr>
+                }
+            </table>
+    </div>
+</div>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(drawCharts);
 
+    var base_options = {
+        backgroundColor: '#202020',
+        hAxis: {
+            textStyle: { color: '#adadad' }
+        },
+        vAxis: {
+            textStyle: { color: '#adadad' }
+        },
+        legend: { position: 'none' },
+    };
+
     function get_budget_data() {
 
         var amounts = @ViewBag.trans_amounts;
-        var dates =@Html.Raw(ViewBag.trans_dates);
+        var dates = @ViewBag.trans_dates;
         var curbudget = @Model.Budget;
         var today = (new Date()).toLocaleDateString();
 
@@ -306,6 +229,8 @@ else
         for (let i = 0; i < amounts.length; i++) {
 
             let date = dates[i];
+            date = new Date(date[0], date[1] - 1, date[2]).toLocaleDateString();
+
             if (data[data.length - 1][0] != date) {
                 data.push([date, amounts[i]]);
             } else {
@@ -328,40 +253,43 @@ else
         var clients = @Html.Raw(ViewBag.clients);
         var clients_trans = @ViewBag.clients_trans;
         var data = [
-            ["Пользователь", "Количество транзакций"],
+            ["Пользователь", "Количество транзакций", { role: 'style' }],
         ];
 
         for (let i = 0; i < clients.length; i++) {
-            data.push([clients[i], clients_trans[i]]);
+            if (i % 2) {
+                data.push([clients[i], clients_trans[i], '#ec86ec']);
+            } else {
+                data.push([clients[i], clients_trans[i], '#8937df']);
+            }
         }
-        console.log(data);
-
         return data;
     }
 
     function drawBudgetChart() {
-
-
         data = google.visualization.arrayToDataTable(get_budget_data());
 
-        var options = {
-            title: 'Бюджет',
-            curveType: 'function',
-            legend: { position: 'bottom' }
+        let options = base_options;
+        options['curveType'] = 'function';
+        options['series'] = {
+            0: {
+                color: '#8937df',
+            }
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('budget_chart'));
+        var chart = new google.visualization.AreaChart(document.getElementById('budget_chart'));
 
         chart.draw(data, options);
     }
+
     function drawClientChart() {
         var data = google.visualization.arrayToDataTable(get_client_data());
 
-        var options = {
-            title: "Количество транзакций",
-            bar: { groupWidth: "10%" },
-            legend: { position: "none" },
+        let options = base_options;
+        options['bar'] = {
+            groupWidth: '10%',
         };
+
         var chart = new google.visualization.ColumnChart(document.getElementById("client_chart"));
         chart.draw(data, options);
     }
@@ -369,12 +297,23 @@ else
     function drawResChart() {
         var data = google.visualization.arrayToDataTable([
             ["Описание", "Сумма"],
-            ["ПОТРАЧЕНО", @ViewBag.total_spent],
+            ["Потрачено", @ViewBag.total_spent],
             ["Получено", @ViewBag.total_recieved]
-        ]);
+            ]);
 
-        var options = {
-            title: 'Расходы/Прибыль'
+        let options = base_options;
+        options['slices'] = {
+            0: {
+                color: '#8937df'
+            },
+            1: {
+                color: '#ec86ec'
+            },
+        };
+        options['legend'] = {
+            textStyle: {
+                color: '#969696',
+            },
         };
 
         var chart = new google.visualization.PieChart(document.getElementById("res_chart"));
@@ -386,37 +325,4 @@ else
         drawClientChart();
         drawResChart();
     }
-
 </script>
-
-<div id="budget_chart" style="width: 900px; height: 500px"></div>
-<div id="client_chart" style="width: 900px; height: 500px;"></div>
-<div id="res_chart" style="width: 900px; height: 500px;"></div>
-
-
-
-@{
-    var prevDisabled = !ViewBag.Transactions.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !ViewBag.Transactions.HasNextPage ? "disabled" : "";
-}
-
-<a asp-action="OpenGroup"
-   asp-route-name="@Model.Name"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(ViewBag.Transactions.PageIndex - 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @prevDisabled">
-    <<
-</a>
-<a asp-action="OpenGroup"
-   asp-route-name="@Model.Name"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(ViewBag.Transactions.PageIndex + 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @nextDisabled">
-    >>
-</a>
-
-<div>
-    <a asp-action="Index" asp-controller="Home">Назад на главную</a>
-</div>

@@ -145,12 +145,12 @@ namespace Biz_collab.Controllers
                 "name_desc" => trans.OrderByDescending(s => s.Client.Login),
                 _ => trans.OrderByDescending(s => s.StartTime),
             };
-            int pageSize = 5;
+            int pageSize = 18;
             
             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
 
             var amounts = new int[trans.Where(t=>t.Status==true).Count()];
-            var dates = new string[trans.Where(t => t.Status == true).Count()];
+            var dates = new int[trans.Where(t => t.Status == true).Count()][];
             var total_spent = 0;
             var total_recieved = 0;
             int k = 0;
@@ -164,7 +164,7 @@ namespace Biz_collab.Controllers
                     amounts[k] = -t.Amount;
                     total_spent += t.Amount;
                 }
-                dates[k++] = t.StartTime.ToString();
+                dates[k++] = new int[] { t.StartTime.Year, t.StartTime.Month, t.StartTime.Day };
 
             }
             ViewBag.trans_amounts = JsonSerializer.Serialize(amounts);
@@ -187,8 +187,8 @@ namespace Biz_collab.Controllers
         [Authorize]
         public IActionResult BannedInGroup(string name)
         {
-            ViewBag.groupName = _db.Groups.AsNoTracking().First(g => g.Name == name).Name;
-            return View();
+            ViewBag.Name = _db.Groups.AsNoTracking().First(g => g.Name == name).Name;
+            return PartialView();
         }
         [Authorize]
         [HttpGet]

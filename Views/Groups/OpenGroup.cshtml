@@ -54,7 +54,7 @@
                         <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["ClientNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Участник</a>
                     </td>
                     <td>
-                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["TimeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Статус/Время создания</a>
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["TimeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Статус/Время</a>
                     </td>
                 </tr>
             </thead>
@@ -62,7 +62,7 @@
                 @foreach (var transaction in ((PaginatedList<Transaction>)ViewBag.Transactions))
                 {
                     <tr class="transaction-tr">
-                        <td style="max-width: 300px;word-wrap: break-word;word-break: break-all;white-space: normal;">
+                        <td style="max-width: 300px;overflow-wrap: break-word;word-break: break-all;white-space: normal;">
                             @transaction.Explanation
                         </td>
                         <td>

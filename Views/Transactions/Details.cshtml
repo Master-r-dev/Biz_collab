@@ -22,7 +22,7 @@
             }
 
             <dt>Описание</dt>
-            <dd>@Html.DisplayFor(model => model.Explanation)</dd>
+            <dd style="max-width: 500px;overflow-wrap: break-word;word-break: break-all;white-space: normal;">@Html.DisplayFor(model => model.Explanation)</dd>
 
             @if (Model.Status == false) {
                 <dt>Статус:</dt>

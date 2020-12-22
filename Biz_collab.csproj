@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <Compile Remove="Views\Transaction\**" />
+    <Compile Remove="wwwroot\vendor\**" />
     <Content Remove="Views\Transaction\**" />
+    <Content Remove="wwwroot\vendor\**" />
     <EmbeddedResource Remove="Views\Transaction\**" />
+    <EmbeddedResource Remove="wwwroot\vendor\**" />
     <None Remove="Views\Transaction\**" />
+    <None Remove="wwwroot\vendor\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,27 +53,6 @@
     <None Include="wwwroot\fonts\iconic\fonts\Material-Design-Iconic-Font.woff2" />
     <None Include="wwwroot\images\.DS_Store" />
     <None Include="wwwroot\images\background\.DS_Store" />
-    <None Include="wwwroot\vendor\animsition\js\animsition.js" />
-    <None Include="wwwroot\vendor\animsition\js\animsition.min.js" />
-    <None Include="wwwroot\vendor\bootstrap\css\bootstrap-grid.css.map" />
-    <None Include="wwwroot\vendor\bootstrap\css\bootstrap-grid.min.css.map" />
-    <None Include="wwwroot\vendor\bootstrap\css\bootstrap-reboot.css.map" />
-    <None Include="wwwroot\vendor\bootstrap\css\bootstrap-reboot.min.css.map" />
-    <None Include="wwwroot\vendor\bootstrap\css\bootstrap.css.map" />
-    <None Include="wwwroot\vendor\bootstrap\css\bootstrap.min.css.map" />
-    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.js" />
-    <None Include="wwwroot\vendor\bootstrap\js\bootstrap.min.js" />
-    <None Include="wwwroot\vendor\bootstrap\js\popper.js" />
-    <None Include="wwwroot\vendor\bootstrap\js\popper.min.js" />
-    <None Include="wwwroot\vendor\bootstrap\js\tooltip.js" />
-    <None Include="wwwroot\vendor\countdowntime\countdowntime.js" />
-    <None Include="wwwroot\vendor\daterangepicker\daterangepicker.js" />
-    <None Include="wwwroot\vendor\daterangepicker\moment.js" />
-    <None Include="wwwroot\vendor\daterangepicker\moment.min.js" />
-    <None Include="wwwroot\vendor\jquery\jquery-3.2.1.min.js" />
-    <None Include="wwwroot\vendor\perfect-scrollbar\perfect-scrollbar.min.js" />
-    <None Include="wwwroot\vendor\select2\select2.js" />
-    <None Include="wwwroot\vendor\select2\select2.min.js" />
   </ItemGroup>
 
   <ItemGroup>

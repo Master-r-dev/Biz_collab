@@ -1,4 +1,4 @@
-/*//////////////////////////////////////////////////////////////////
+﻿/*//////////////////////////////////////////////////////////////////
 [ FONT ]*/
 
 
@@ -958,9 +958,9 @@ ol > a > li {
 	width: 98%;
 }
 
-	.default-table td {
-		font-size: 20px;
-	}
+.default-table td {
+	font-size: 20px;
+}
 
 .color {
 	color: #adadad;
@@ -979,7 +979,23 @@ ol > a > li {
 	overflow-y: auto;
 	border-radius: 10px;
 }
+::-webkit-scrollbar {
+	width: 5px;
+}
 
+::-webkit-scrollbar-button {
+	background: #202020;
+}
+
+::-webkit-scrollbar-track-piece {
+	background: #888;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #007bff;
+}
+
+​
 .a-color a {
 	color: #000;
 }

@@ -1,23 +1,22 @@
 ﻿@page
 @model LoginModel
 
-@{
-    ViewData["Title"] = "Вход";
-}
+@{ ViewData["Title"] = "Вход"; }
 
 <div class="wrap-login100 bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50" style="margin: 10% auto; width: 26%">
     <div>
         <section>
-            <form id="account" method="post" class="login100-form">
-                <div class="form-group">
+            <form asp-route-returnUrl="@Model.ReturnUrl" method="post" class="login100-form validate-form">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group wrap-input100 validate-input m-b-20" data-validate="Email is reauired">
                     <label asp-for="Input.Email" class="label-input100"></label>
-                    <input class="form-control input100" asp-for="Input.Email" placeholder="Введите Email" />
-                    <span asp-validation-for="Input.Email" class="text-danger focus-input100"></span>
+                    <input asp-for="Input.Email" class="form-control input100" placeholder="Введите Email" />
+                    <span asp-validation-for="Input.Email" class="text-danger focus-input100" data-symbol="&#xf206;"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group wrap-input100 validate-input" data-validate="Password is required">
                     <label asp-for="Input.Password" class="label-input100"></label>
-                    <input asp-for="Input.Password" class="form-control input100" placeholder="Введите пароль"/>
-                    <span asp-validation-for="Input.Password" class="text-danger focus-input100"></span>
+                    <input asp-for="Input.Password" class="form-control input100" placeholder="Введите пароль" />
+                    <span asp-validation-for="Input.Password" class="text-danger focus-input100" data-symbol="&#xf190;"></span>
                 </div>
                 <div class="form-group">
                     <div class="checkbox">

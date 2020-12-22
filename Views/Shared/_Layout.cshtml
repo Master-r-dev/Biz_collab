@@ -1,6 +1,6 @@
 ﻿@using Biz_collab.Models
 @using Biz_collab.Data
-@{ }  
+@{ }
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,43 +23,50 @@
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-            <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-                <ul class="navbar-nav mr-auto">
-                    <li>
-                        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biz_collab</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link modal-link" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
-                    </li>
-                    @if (User.Identity.Name != null)
-                    {
-                        <li class="nav-item">
-                            @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
+    <div class="@(Context.Request.Path == "/Identity/Account/Login" || Context.Request.Path == "/Identity/Account/Register" ? "": "background-img")">
+        <header>
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                    <ul class="navbar-nav mr-auto">
+                        <li>
+                            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biz_collab</a>
                         </li>
-                    }
-                </ul>
-            </div>
-            <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-                <partial name="_LoginPartial" />
-            </div>
-        </nav>
-    </header>
+                        <li class="nav-item">
+                            <a class="nav-link modal-link" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
+                        </li>
+                        @if (User.Identity.Name != null)
+                        {
+                            <li class="nav-item">
+                                @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                    <partial name="_LoginPartial" />
+                </div>
+            </nav>
+        </header>
 
-    <div class="content">
-        @RenderBody()
-    </div>
-    <div id="modDialog" class="modal fade">
-        <div id="dialogContent" class="modal-dialog"></div>
-    </div>
-
-    <footer class="footer text-muted">
-        <div align="right" style="margin-right: 100px">
-            &copy; 2020 - Biz_collab
+        <div class="content">
+            @RenderBody()
         </div>
-    </footer>
+        <div id="modDialog" class="modal fade">
+            <div id="dialogContent" class="modal-dialog"></div>
+        </div>
 
+        <footer class="footer text-muted">
+            <div align="right" style="margin-right: 100px">
+                &copy; 2020 - Biz_collab
+            </div>
+        </footer>
+    </div>
+    <ul class="body_slides">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

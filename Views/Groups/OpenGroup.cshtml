@@ -3,17 +3,6 @@
 @{
     ViewData["Title"] = "Группа " + Model.Name;
 }
-
-<div class="wrap-login100 search bg-b b-r-10 p-l-50 p-r-50 p-t-10 p-b-10">
-    <form asp-action="OpenGroup" method="get">
-        <div class="form-actions no-color search-box" style="width: auto">
-            <input class="search-text c-g" type="text" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
-            <button class="search-text-btn">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-    </form>
-</div>
 <div style="display: flex;">
     <div class="graphics-box">
         <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center">
@@ -34,10 +23,22 @@
     </div>
 
     <div class="transactions-box bg-b b-r-10 p-l-20 p-r-20p-b-20">
-        <h2 class="c-g f-s-1rem">
-            Транзакции
-            <a class="add-tranzaction-btn modal-link" href="@Url.Action("Create", "Transactions", new { @Model.Name })" title="Создать новую транзакцию"><i class="fas fa-plus-circle"></i></a>
-        </h2>
+        <div style="display: flex;">
+            <h2 class="c-g f-s-1rem">
+                Транзакции
+                <a class="add-tranzaction-btn modal-link" href="@Url.Action("Create", "Transactions", new { @Model.Name })" title="Создать новую транзакцию"><i class="fas fa-plus-circle"></i></a>
+            </h2>
+            <div >
+                <form asp-action="OpenGroup" method="get">
+                    <div class="form-actions no-color search-box" style="width: auto">
+                        <input class="search-text c-g" type="text" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
+                        <button class="search-text-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <table class="default-table">
             <thead>
                 <tr>
@@ -53,80 +54,80 @@
                             Участник
                         </td>
                     }
-                        <td>
-                            Статус/Дата создания
-                        </td>                    
+                    <td>
+                        Статус/Дата создания
+                    </td>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var transaction in ((PaginatedList<Transaction>)ViewBag.Transactions))
                 {
-                <tr class="transaction-tr">
-                    <td>
-                        @transaction.Explanation
-                    </td>
-                    <td>
-                        @if (transaction.OperationType == 3)
-                        {
-                            <i>+@transaction.Amount</i>
-                        }
-                        else
-                        {
-                            <i>-@transaction.Amount</i>
-                        }
-                    </td>
-                    @if (Model.Type == 2)
-                    {
+                    <tr class="transaction-tr">
                         <td>
-                            @transaction.Client.Login
+                            @transaction.Explanation
                         </td>
-                    }
-                    @if (transaction.Status)
-                    {                        
                         <td>
-                            <i class="fas fa-check-circle"></i>
-                            @transaction.StartTime
+                            @if (transaction.OperationType == 3)
+                            {
+                                <i>+@transaction.Amount</i>
+                            }
+                            else
+                            {
+                                <i>-@transaction.Amount</i>
+                            }
                         </td>
-                    }
-                    else
-                    {
-                        <td>
-                            <i class="fas fa-clock"></i>
-                        </td>
-                        @if (transaction.Votes.FirstOrDefault(v => v.Client.Login == User.Identity.Name) == null)
+                        @if (Model.Type == 2)
                         {
                             <td>
-                                <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@transaction.Id"><i class="fas fa-thumbs-up"></i></a>
+                                @transaction.Client.Login
                             </td>
+                        }
+                        @if (transaction.Status)
+                        {
                             <td>
-                                <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@transaction.Id"><i class="fas fa-thumbs-down"></i></a>
+                                <i class="fas fa-check-circle"></i>
+                                @transaction.StartTime
                             </td>
                         }
                         else
                         {
                             <td>
-                                <b> @Math.Round((decimal)transaction.YesPercent, 2)</b>
+                                <i class="fas fa-clock"></i>
                             </td>
+                            @if (transaction.Votes.FirstOrDefault(v => v.Client.Login == User.Identity.Name) == null)
+                            {
+                                <td>
+                                    <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@transaction.Id"><i class="fas fa-thumbs-up"></i></a>
+                                </td>
+                                <td>
+                                    <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@transaction.Id"><i class="fas fa-thumbs-down"></i></a>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <b> @Math.Round((decimal)transaction.YesPercent, 2)</b>
+                                </td>
 
-                            <td>
-                                <b> @Math.Round((decimal)transaction.NoPercent, 2)</b>
-                            </td>
+                                <td>
+                                    <b> @Math.Round((decimal)transaction.NoPercent, 2)</b>
+                                </td>
+                            }
                         }
-                    }
-                    <td>
-                        <a class="modal-link" href="@Url.Action("Details", "Transactions", new { transaction.Id })">
-                            <i class="fas fa-info-circle"></i>
-                        </a>
-                    </td>
-                    @if ((User.Identity.Name == transaction.Client.Login || Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R == "Создатель") && transaction.Status == false)
-                    {
                         <td>
-                            <a class="modal-link" href="@Url.Action("Delete", "Transactions", new { transaction.Id })">
-                                <i class="fas fa-trash-alt"></i>
+                            <a class="modal-link" href="@Url.Action("Details", "Transactions", new { transaction.Id })">
+                                <i class="fas fa-info-circle"></i>
                             </a>
                         </td>
-                    }
-                </tr>
+                        @if ((User.Identity.Name == transaction.Client.Login || Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R == "Создатель") && transaction.Status == false)
+                        {
+                            <td>
+                                <a class="modal-link" href="@Url.Action("Delete", "Transactions", new { transaction.Id })">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        }
+                    </tr>
                 }
             </tbody>
         </table>
@@ -170,7 +171,10 @@
                             @client.Client.Login
                         </td>
                         <td class="@currentuser">
-                            @client.R | @client.P
+                            @client.R
+                        </td>
+                        <td class="@currentuser">
+                            @client.P
                         </td>
                         
                         @if (currentuserrole == "Создатель" || currentuserrole == "Mod")

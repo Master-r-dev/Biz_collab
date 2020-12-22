@@ -3,7 +3,7 @@
 @{ ViewData["Title"] = "Создать транзакцию"; }
 
 <div class="modal-content mdl">
-    <form  asp-action="Create"class="login100-form">
+    <form asp-action="Create" class="login100-form">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         @if (ViewBag.Role != "Донатер")
         {
@@ -14,24 +14,29 @@
                     <span class="glyphicon glyphicon-plus">
                         <input type="radio" asp-for="OperationType" id="1" value="1">
                     </span>
-                    Потратить из группового бюджета
+                    Потратить из группового бюджета <i class="fas fa-share-square"></i>
                 </label>
                 <br />
                 <label for="2">
                     <span class="glyphicon glyphicon-cloud-download">
                         <input type="radio" asp-for="OperationType" id="2" value="2">
                     </span>
-                    Перевести на свой счет
+                    Перевести на свой счет  <i class="fas fa-exchange-alt"></i>
                 </label>
                 <br />
                 <label for="3">
                     <span class="glyphicon glyphicon-cloud-upload">
                         <input type="radio" asp-for="OperationType" id="3" value="3">
                     </span>
-                    Перевести на счет группы
+                    Перевести на счет группы <i class="fa fa-gift"></i>
                 </label>
                 <br />
                 <span asp-validation-for="OperationType" class="text-danger"></span>
+            </div>
+            <div class="form-group wrap-input100 m-b-20">
+                <label asp-for="Amount" class="control-label">Сумма</label>
+                <input oninput="Trans()" id="input" type="number" asp-for="Amount" class="input100" />
+                <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
         }
         else
@@ -40,19 +45,18 @@
                 <label asp-for="OperationType" class="control-label">Вид Транзакции:</label>
                 <br />
                 <label for="3">
-                    <span class="glyphicon glyphicon-cloud-upload">
-                        <input class="input100" type="hidden" asp-for="OperationType" id="3" value="3">
-                    </span>
-                    Перевести на счет группы
+                    <input class="input100" type="hidden" asp-for="OperationType"  value="3">
+                    Перевести на счет группы <i class="fa fa-gift"></i>
                 </label>
                 <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
-        }
-        <div class="form-group wrap-input100 m-b-20">
+            <div class="form-group wrap-input100 m-b-20">
                 <label asp-for="Amount" class="control-label">Сумма</label>
-                <input oninput="Trans()" id="input" type="number" asp-for="Amount" class="input100" />
+                <input oninput="Trans2()" id="input" type="number" asp-for="Amount" class="input100" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
+        }
+
         <div class="form-group wrap-input100 m-b-20">
             <label asp-for="Explanation" class="control-label">Описание</label>
             <input asp-for="Explanation" class="input100" />
@@ -69,19 +73,29 @@
     var x = document.getElementById("input").value;
     var y =@ViewBag.Budget;
     var z =@ViewBag.PersBudget;
-      if (document.getElementById("1").checked && Math.abs(x) <= y) {
-          document.getElementById("input").setAttribute("min", @ViewBag.MinMinus);
-          document.getElementById("input").value = Math.abs(x);
+          if (document.getElementById("1").checked && Math.abs(x) <= y) {
+              document.getElementById("input").setAttribute("min", @ViewBag.MinMinus);
+              document.getElementById("input").value = Math.abs(x);
+         }
+          else if (document.getElementById("2").checked && Math.abs(x) <= y && Math.abs(x) + z < 2000000000) {
+              document.getElementById("input").setAttribute("min", @ViewBag.MinMinus);
+              document.getElementById("input").value = Math.abs(x);
+          }
+          else if (document.getElementById("3").checked && Math.abs(x) <= z && Math.abs(x) + y < 2000000000) {
+              document.getElementById("input").setAttribute("min", @ViewBag.MinPlus);
+              document.getElementById("input").value = Math.abs(x);
+          }       
+        else  document.getElementById("input").value = 0;
     }
-      else if (document.getElementById("2").checked && Math.abs(x) <= y && Math.abs(x) + z < 2000000000) {
-          document.getElementById("input").setAttribute("min", @ViewBag.MinMinus);
+    function Trans2() {
+        var x = document.getElementById("input").value;
+        var y =@ViewBag.Budget;
+        var z =@ViewBag.PersBudget;
+        if (Math.abs(x) <= z && Math.abs(x) + y < 2000000000) {
+           document.getElementById("input").setAttribute("min", @ViewBag.MinPlus);
           document.getElementById("input").value = Math.abs(x);
-      }
-      else if (document.getElementById("3").checked && Math.abs(x) <= z && Math.abs(x) + y < 2000000000) {
-          document.getElementById("input").setAttribute("min", @ViewBag.MinPlus);
-          document.getElementById("input").value = Math.abs(x);
-    }
-    else  document.getElementById("input").value = 0;
+        }
+        else document.getElementById("input").value = 0;
     }
 </script>
 @section Scripts {

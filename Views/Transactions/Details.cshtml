@@ -14,11 +14,11 @@
 			
             <dt>Вид транзакции</dt>
             @if (Model.OperationType == 1) {
-                <dd>Потратить из группового бюджета</dd>
+                <dd>Потратить из группового бюджета  <i class="fas fa-share-square"></i></dd>
             } else if (Model.OperationType == 2) {
-                <dd>Перевести на свой счет</dd>
+                <dd>Перевести на свой счет  <i class="fas fa-exchange-alt"></i> </dd>
             } else if (Model.OperationType == 3) {
-                <dd>Перевести на счет группы</dd>
+                <dd>Перевести на счет группы  <i class="fa fa-gift"></i></dd>
             }
 
             <dt>Описание</dt>

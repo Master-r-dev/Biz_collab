@@ -1076,7 +1076,7 @@ ol > a > li {
 
 .scroll {
 	max-height: 650px;
-	overflow-y: scroll;
+	overflow-y: auto;
 	scrollbar-width: thin;
 	scrollbar-color: #adadad #202020;
 	border-radius: 10px;

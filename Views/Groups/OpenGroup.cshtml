@@ -120,11 +120,8 @@
                             else
                             {
                                 <td>
-                                    <b> @Math.Round((decimal)transaction.YesPercent, 2)</b>
-                                </td>
-
-                                <td>
-                                    <b> @Math.Round((decimal)transaction.NoPercent, 2)</b>
+                                    <b style="color:green"> @Math.Round((decimal)transaction.YesPercent, 2)</b> /
+                                    <b style="color:red"> @Math.Round((decimal)transaction.NoPercent, 2)</b>
                                 </td>
                             }
                         }

@@ -115,6 +115,43 @@ namespace Biz_collab.Controllers
             {
                 return View(@group);
             }
+            var amounts = new int[trans.Where(t => t.Status == true).Count()];
+            var dates = new int[trans.Where(t => t.Status == true).Count()][];
+            var total_spent = 0;
+            var total_recieved = 0;
+            int k = 0;
+            foreach (var t in trans.Where(t => t.Status == true).OrderBy(tr => tr.StartTime))
+            {
+                if (t.OperationType == 3)
+                {
+                    amounts[k] = t.Amount;
+                    total_recieved += t.Amount;
+
+                }
+                else
+                {
+                    amounts[k] = -t.Amount;
+                    total_spent += t.Amount;
+                }
+                dates[k++] = new int[] { t.StartTime.Year, t.StartTime.Month, t.StartTime.Day };
+
+            }
+            ViewBag.trans_amounts = JsonSerializer.Serialize(amounts);
+            ViewBag.trans_dates = JsonSerializer.Serialize(dates);
+            ViewBag.total_spent = total_spent;
+            ViewBag.total_recieved = total_recieved;
+
+            var clients = new string[group.Clients.Count()];
+            var clients_trans = new int[group.Clients.Count()];
+            k = 0;
+            foreach (var c in group.Clients)
+            {
+                clients[k] = c.Client.Login;
+                clients_trans[k++] = trans.Where(t => t.ClientId == c.Client.Id && t.Status == true).Count();
+            }
+            ViewBag.clients = JsonSerializer.Serialize(clients);
+            ViewBag.clients_trans = JsonSerializer.Serialize(clients_trans);
+
             ViewBag.Count = trans.Count();
             ViewData["CurrentSort"] = sortOrder;
             if (searchString != null)
@@ -130,7 +167,7 @@ namespace Biz_collab.Controllers
             {
                 trans = trans.Where(s => s.Client.Login.Contains(searchString) || s.Client.MyGroups.First(rp=>rp.GroupId==s.GroupId && rp.R==searchString)!=null || s.Explanation.Contains(searchString));
             }
-            ViewData["TimeSortParm"] =String.IsNullOrEmpty(sortOrder) ? "" : "Time";
+            ViewData["TimeSortParm"] = sortOrder == "time_desc" ? "Time" : "time_desc";
             ViewData["ClientNameSortParm"] = sortOrder == "Name" ? "name_desc" : "Name";
             ViewData["OperationTypeSortParm"] = sortOrder == "OperationType" ? "optype_desc" : "OperationType";
             ViewData["AmountSortParm"] = sortOrder == "Amount" ? "amount_desc" : "Amount";
@@ -141,47 +178,16 @@ namespace Biz_collab.Controllers
                 "Amount" => trans.OrderBy(s => s.Amount),
                 "amount_desc" => trans.OrderByDescending(s => s.Amount),
                 "Time" => trans.OrderBy(s => s.StartTime),
+                "time_desc" => trans.OrderByDescending(s => s.StartTime),
                 "optype_desc" => trans.OrderByDescending(s => s.OperationType),
                 "name_desc" => trans.OrderByDescending(s => s.Client.Login),
                 _ => trans.OrderByDescending(s => s.StartTime),
             };
-            int pageSize = 18;
+            int pageSize = 8;
             
             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
 
-            var amounts = new int[trans.Where(t=>t.Status==true).Count()];
-            var dates = new int[trans.Where(t => t.Status == true).Count()][];
-            var total_spent = 0;
-            var total_recieved = 0;
-            int k = 0;
-            foreach (var t in trans.Where(t=>t.Status==true).OrderBy(tr => tr.StartTime))
-            {
-                if (t.OperationType == 3) {
-                    amounts[k] = t.Amount;
-                    total_recieved += t.Amount;
-
-                } else {
-                    amounts[k] = -t.Amount;
-                    total_spent += t.Amount;
-                }
-                dates[k++] = new int[] { t.StartTime.Year, t.StartTime.Month, t.StartTime.Day };
-
-            }
-            ViewBag.trans_amounts = JsonSerializer.Serialize(amounts);
-            ViewBag.trans_dates  = JsonSerializer.Serialize(dates);
-            ViewBag.total_spent = total_spent;
-            ViewBag.total_recieved = total_recieved;
-
-            var clients = new string[group.Clients.Count()];
-            var clients_trans = new int[group.Clients.Count()];
-            k = 0;
-            foreach (var c in group.Clients)
-            {
-                clients[k] = c.Client.Login;
-                clients_trans[k++] = trans.Where(t => t.ClientId == c.Client.Id && t.Status == true).Count();
-            }
-            ViewBag.clients = JsonSerializer.Serialize(clients);
-            ViewBag.clients_trans = JsonSerializer.Serialize(clients_trans);
+           
             return View(@group);
         }
         [Authorize]

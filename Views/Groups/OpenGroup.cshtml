@@ -1,8 +1,6 @@
 ﻿@model Biz_collab.Models.Group
+@{ ViewData["Title"] = "Группа " + Model.Name; }
 
-@{
-    ViewData["Title"] = "Группа " + Model.Name;
-}
 <div style="display: flex;">
     <div class="graphics-box">
         <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center">
@@ -23,22 +21,10 @@
     </div>
 
     <div class="transactions-box bg-b b-r-10 p-l-20 p-r-20p-b-20">
-        <div style="display: flex;">
-            <h2 class="c-g f-s-1rem">
-                Транзакции
-                <a class="add-tranzaction-btn modal-link" href="@Url.Action("Create", "Transactions", new { @Model.Name })" title="Создать новую транзакцию"><i class="fas fa-plus-circle"></i></a>
-            </h2>
-            <div >
-                <form asp-action="OpenGroup" method="get">
-                    <div class="form-actions no-color search-box" style="width: auto">
-                        <input class="search-text c-g" type="text" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
-                        <button class="search-text-btn">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <h2 class="c-g f-s-1rem">
+            Транзакции
+            <a class="add-tranzaction-btn modal-link" href="@Url.Action("Create", "Transactions", new { @Model.Name })" title="Создать новую транзакцию"><i class="fas fa-plus-circle"></i></a>
+        </h2>
         <table class="default-table">
             <thead>
                 <tr>
@@ -46,16 +32,16 @@
                         Описание
                     </td>
                     <td>
-                        Сумма
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["AmountSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Сумма</a>
                     </td>
-                    @if (Model.Type == 2)
-                    {
-                        <td>
-                            Участник
-                        </td>
-                    }
                     <td>
-                        Статус/Дата создания
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["OperationTypeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Тип</a>
+                    </td>
+                    <td>
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["ClientNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Участник</a>
+                    </td>
+                    <td>
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["TimeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Статус/Время</a>
                     </td>
                 </tr>
             </thead>
@@ -63,7 +49,7 @@
                 @foreach (var transaction in ((PaginatedList<Transaction>)ViewBag.Transactions))
                 {
                     <tr class="transaction-tr">
-                        <td>
+                        <td style="max-width: 320px;overflow-wrap: break-word;word-break: break-word;white-space: normal;">
                             @transaction.Explanation
                         </td>
                         <td>
@@ -76,12 +62,27 @@
                                 <i>-@transaction.Amount</i>
                             }
                         </td>
-                        @if (Model.Type == 2)
+                        @if (transaction.OperationType == 1)
                         {
                             <td>
-                                @transaction.Client.Login
+                                <i class="fas fa-share-square"></i>
                             </td>
                         }
+                        else if (transaction.OperationType == 2)
+                        {
+                            <td>
+                                <i class="fas fa-exchange-alt"></i>
+                            </td>
+                        }
+                        else if (transaction.OperationType == 3)
+                        {
+                            <td>
+                                <i class="fa fa-gift"></i>
+                            </td>
+                        }
+                        <td>
+                            @transaction.Client.Login -- @transaction.Client.MyGroups.First(rp => rp.GroupId == transaction.GroupId).R
+                        </td>
                         @if (transaction.Status)
                         {
                             <td>
@@ -106,11 +107,8 @@
                             else
                             {
                                 <td>
-                                    <b> @Math.Round((decimal)transaction.YesPercent, 2)</b>
-                                </td>
-
-                                <td>
-                                    <b> @Math.Round((decimal)transaction.NoPercent, 2)</b>
+                                    <b style="color:green"> @Math.Round((decimal)transaction.YesPercent, 2)</b> /
+                                    <b style="color:red"> @Math.Round((decimal)transaction.NoPercent, 2)</b>
                                 </td>
                             }
                         }
@@ -179,26 +177,24 @@
                         
                         @if (currentuserrole == "Создатель" || currentuserrole == "Mod")
                         {
-                            @if (client.R != "Создатель" && client.Client.Login != User.Identity.Name)
+                            @if (client.R != "Забанен")
                             {
-                                @if (client.R != "Забанен") 
-                                { 
-                                    <td>
-                                        <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@client.Client.Login" asp-route-name="@Model.Name">
-                                            <i class="fas fa-ban @currentuser"></i>
-                                        </a>
-                                    </td>
-                                }
                                 <td>
-                                    <a class="modal-link" href="@Url.Action("EditRoleClient", "Groups", new { Login = client.Client.Login, name = Model.Name })" title="Изменить роль участника">
-                                        <i class="fas fa-edit @currentuser"></i>
+                                    <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@client.Client.Login" asp-route-name="@Model.Name">
+                                        <i class="fas fa-ban @currentuser"></i>
                                     </a>
                                 </td>
-                            }   
+                            }
+                            <td>
+                                <a class="modal-link" href="@Url.Action("EditRoleClient", "Groups", new { Login = client.Client.Login, name = Model.Name })" title="Изменить роль участника">
+                                    <i class="fas fa-edit @currentuser"></i>
+                                </a>
+                            </td>
                         }
-                    </tr>
-                }
-            </table>
+                    }
+                </tr>
+            }
+        </table>
     </div>
 </div>
 

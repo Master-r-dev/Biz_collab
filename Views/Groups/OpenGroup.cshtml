@@ -21,10 +21,11 @@
     </div>
 
     <div class="transactions-box bg-b b-r-10 p-l-20 p-r-20p-b-20">
-        <h2 class="c-g f-s-1rem">
+        <h2 class="c-g f-s-1rem m-t-5 m-b-5">Группа: @Model.Name</h2>
+        <h4 class="c-g">
             Транзакции
             <a class="add-tranzaction-btn modal-link" href="@Url.Action("Create", "Transactions", new { @Model.Name })" title="Создать новую транзакцию"><i class="fas fa-plus-circle"></i></a>
-        </h2>
+        </h4>
         <table class="default-table">
             <thead>
                 <tr>
@@ -81,7 +82,7 @@
                             </td>
                         }
                         <td>
-                            @transaction.Client.Login -- @transaction.Client.MyGroups.First(rp => rp.GroupId == transaction.GroupId).R
+                            @transaction.Client.Login
                         </td>
                         @if (transaction.Status)
                         {

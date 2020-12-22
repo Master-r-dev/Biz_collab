@@ -130,7 +130,7 @@ namespace Biz_collab.Controllers
             {
                 trans = trans.Where(s => s.Client.Login.Contains(searchString) || s.Client.MyGroups.First(rp=>rp.GroupId==s.GroupId && rp.R==searchString)!=null || s.Explanation.Contains(searchString));
             }
-            ViewData["TimeSortParm"] =String.IsNullOrEmpty(sortOrder) ? "" : "Time";
+            ViewData["TimeSortParm"] = sortOrder == "time_desc" ? "Time" : "time_desc";
             ViewData["ClientNameSortParm"] = sortOrder == "Name" ? "name_desc" : "Name";
             ViewData["OperationTypeSortParm"] = sortOrder == "OperationType" ? "optype_desc" : "OperationType";
             ViewData["AmountSortParm"] = sortOrder == "Amount" ? "amount_desc" : "Amount";
@@ -141,11 +141,12 @@ namespace Biz_collab.Controllers
                 "Amount" => trans.OrderBy(s => s.Amount),
                 "amount_desc" => trans.OrderByDescending(s => s.Amount),
                 "Time" => trans.OrderBy(s => s.StartTime),
+                "time_desc" => trans.OrderByDescending(s => s.StartTime),
                 "optype_desc" => trans.OrderByDescending(s => s.OperationType),
                 "name_desc" => trans.OrderByDescending(s => s.Client.Login),
                 _ => trans.OrderByDescending(s => s.StartTime),
             };
-            int pageSize = 18;
+            int pageSize = 10;
             
             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
 

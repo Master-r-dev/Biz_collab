@@ -28,8 +28,8 @@
             <input min="1" max="20000000" oninput="this.value = !!this.value && Math.abs(this.value) >= 1  ? Math.abs(this.value) : null " asp-for="EntryFeeDon" class="form-control input100" />
             <span asp-validation-for="EntryFeeDon" class="text-danger"></span>
         </div>
-
-        <div class="" id="Settings">
+        
+        <div  id="Settings">
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input id="InputCloseCall" class="form-check-input" asp-for="CloseCall" /> 
@@ -77,6 +77,15 @@
         </div>
     </form>
 </div>
+<script>
+    document.onload = function () {
+        var x=@Model.Type;
+        if (x == 1) {
+            document.getElementById("Settings").style.display = "none";
+        }
+        else document.getElementById("Settings").style.display = "block";
+    }
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

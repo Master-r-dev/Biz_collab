@@ -11,6 +11,7 @@
                     <dl class="row" style="margin-left: 5px">Мой баланс: @ViewBag.Amount</dl>
                     <div class="form-group" method="post">
                         <input type="number" oninput="this.value = !!this.value && Math.abs(this.value) >= 0 && Math.abs(this.value) <= 1000000 - @ViewBag.Amount ? Math.abs(this.value) : null " name="Add" class="form-control" /> <p>(Максимальный баланс на пользователя=1000000)</p>
+                        <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
                     </div>
                 </div>
                 <div class="form-group">

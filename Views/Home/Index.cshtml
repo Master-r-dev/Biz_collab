@@ -15,7 +15,7 @@
 </div>
 
 <div class="wrap-login100 tr-80 top-groups bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
-    <h2 class="c-g"><a class="f-s-1rem">ТОП групп</a></h2>
+    <h2 class="c-g"><a class="f-s-1rem">Все группы</a></h2>
     <table class="default-table">
         @foreach (var group in Model)
         {
@@ -42,20 +42,39 @@
                         </a>
                     </td>
                     <td>
-                    @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
-                    {
+                        @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                        {
                             <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
                                 <i class="fas fa-trash"></i>
                             </a>
-                    }
+                        }
                     </td>
                 }
             </tr>
         }
     </table>
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled text-light">
+        <<
+    </a>
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled text-light">
+         >>
+    </a>
 </div>
 <div class="wrap-login100 tr-80 my-groups bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
     <h2 class="c-g">
@@ -77,37 +96,22 @@
                     </a>
                 </td>
                 <td>
-                @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
-                {
-                    <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                }
+                    @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                    {
+                        <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    }
                 </td>
             </tr>
         }
     </table>
-    @{
-        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-    }
 
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex - 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @prevDisabled text-light">
-        <<
-    </a>
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex + 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @nextDisabled text-light">
-        >>
-    </a>
 </div>
+
+
+
 

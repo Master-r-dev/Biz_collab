@@ -108,11 +108,12 @@ namespace Biz_collab.Controllers
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             ViewBag.PersBudget = _db.Clients.Find(currentUserID).PersBudget;
+            ViewBag.returnUrl = Request.Headers["Referer"].ToString();
             return PartialView();
         }
      
         [HttpPost]
-        public IActionResult  AddBalance(int Add)
+        public IActionResult  AddBalance(int Add,string returnUrl)
         {
             if (Add <= 0)
             {
@@ -125,7 +126,7 @@ namespace Biz_collab.Controllers
                 client.PersBudget += Add;
                 _db.Entry(client).State = EntityState.Modified;
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+                return Redirect(returnUrl);
             }
         }
 

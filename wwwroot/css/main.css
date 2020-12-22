@@ -30,6 +30,58 @@ body, html {
 	margin: 0;
 	padding: 0;
 	z-index: -2;
+<<<<<<< HEAD
+	background: #202020;
+	filter: blur(3px);
+}
+
+.body_slides, .body_slides:after {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+}
+
+.body_slides li {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-size: cover;
+	background-repeat: none;
+	opacity: 0;
+	-webkit-animation: anim_slides 24s linear infinite 0s;
+	-moz-animation: anim_slides 24s linear infinite 0s;
+	-o-animation: anim_slides 24s linear infinite 0s;
+	-ms-animation: anim_slides 24s linear infinite 0s;
+	animation: anim_slides 24s linear infinite 0s;
+}
+
+.body_slides li:nth-child(1) {
+	background-image: url(../images/background/Background_1.jpg)
+}
+
+.body_slides li:nth-child(2) {
+	-webkit-animation-delay: 6.0s;
+	-moz-animation-delay: 6.0s;
+	background-image: url(../images/background/Background_2.jpg)
+}
+
+.body_slides li:nth-child(3) {
+	-webkit-animation-delay: 12.0s;
+	-moz-animation-delay: 12.0s;
+	background-image: url(../images/background/Background_3.jpg)
+}
+
+.body_slides li:nth-child(4) {
+	-webkit-animation-delay: 18.0s;
+	-moz-animation-delay: 18.0s;
+	background-image: url(../images/background/Background_4.jpg)
+}
+
+=======
 
 	filter: blur(3px);
 }
@@ -79,6 +131,7 @@ body, html {
 	background-image: url(../images/background/Background_4.jpg)
 }
 
+>>>>>>> a9d5fcd3740ea310e12557a1b45544c169d22e30
 @-webkit-keyframes anim_slides {
 	0% {
 		opacity: 0;
@@ -211,6 +264,7 @@ textarea {
 
 input::-webkit-input-placeholder {
 	color: #adadad;
+<<<<<<< HEAD
 }
 
 input:-moz-placeholder {
@@ -233,6 +287,30 @@ textarea:-moz-placeholder {
 	color: #adadad;
 }
 
+=======
+}
+
+input:-moz-placeholder {
+	color: #adadad;
+}
+
+input::-moz-placeholder {
+	color: #adadad;
+}
+
+input:-ms-input-placeholder {
+	color: #adadad;
+}
+
+textarea::-webkit-input-placeholder {
+	color: #adadad;
+}
+
+textarea:-moz-placeholder {
+	color: #adadad;
+}
+
+>>>>>>> a9d5fcd3740ea310e12557a1b45544c169d22e30
 textarea::-moz-placeholder {
 	color: #adadad;
 }
@@ -735,6 +813,27 @@ ol > a > li {
 	pointer-events: none;
 }
 
+<<<<<<< HEAD
+.focus-input100::after {
+	content: attr(data-symbol);
+	font-family: Material-Design-Iconic-Font;
+	color: #adadad;
+	font-size: 22px;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	height: calc(100% - 20px);
+	bottom: 0;
+	left: 0;
+	padding-left: 13px;
+	padding-top: 3px;
+}
+=======
 	.focus-input100::after {
 		content: attr(data-symbol);
 		font-family: Material-Design-Iconic-Font;
@@ -754,6 +853,7 @@ ol > a > li {
 		padding-left: 13px;
 		padding-top: 3px;
 	}
+>>>>>>> a9d5fcd3740ea310e12557a1b45544c169d22e30
 
 	.focus-input100::before {
 		content: "";

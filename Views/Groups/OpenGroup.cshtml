@@ -1,9 +1,5 @@
 ﻿@model Biz_collab.Models.Group
-
-@{
-    ViewData["Title"] = "Группа " + Model.Name;
-}
-
+@{ ViewData["Title"] = "Группа " + Model.Name; }
 
 <div style="display: flex;">
     <div class="graphics-box">
@@ -29,15 +25,6 @@
             Транзакции
             <a class="add-tranzaction-btn modal-link" href="@Url.Action("Create", "Transactions", new { @Model.Name })" title="Создать новую транзакцию"><i class="fas fa-plus-circle"></i></a>
         </h2>
-        <form asp-action="OpenGroup" method="get">
-            <div class="form-actions no-color search-box">
-                <input class="search-text c-g" type="text" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
-                <input type="hidden" name="name" value="@Model.Name" />
-                <button class="search-text-btn">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </form>
         <table class="default-table">
             <thead>
                 <tr>
@@ -171,23 +158,24 @@
         </div>
     </div>
     <div class="participants-box bg-b b-r-10 p-l-20 p-r-20 p-b-20">
-        <h2 class="c-g f-s-1rem p-t-7">Участники</h2>
-        <table class="default-table scroll">
-            @foreach (var client in Model.Clients)
-            {
-                var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
-                var currentuserrole = Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R;
-                <tr>
-                    <td class="@currentuser">
-                        @client.Client.Login
-                    </td>
-                    <td class="@currentuser">
-                        @client.R | @client.P
-                    </td>
-
-                    @if (currentuserrole == "Создатель" || currentuserrole == "Mod")
-                    {
-                        @if (client.R != "Создатель" && client.Client.Login != User.Identity.Name)
+            <h2 class="c-g f-s-1rem p-t-7">Участники</h2>
+            <table class="default-table scroll">
+                @foreach (var client in Model.Clients)
+                {
+                    var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
+                    var currentuserrole = Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R;
+                    <tr>
+                        <td class="@currentuser">
+                            @client.Client.Login
+                        </td>
+                        <td class="@currentuser">
+                            @client.R
+                        </td>
+                        <td class="@currentuser">
+                            @client.P
+                        </td>
+                        
+                        @if (currentuserrole == "Создатель" || currentuserrole == "Mod")
                         {
                             @if (client.R != "Забанен")
                             {

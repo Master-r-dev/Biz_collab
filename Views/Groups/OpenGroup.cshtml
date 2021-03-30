@@ -28,13 +28,13 @@
         </h4>
         <form asp-action="OpenGroup" method="get">
             <div class="form-actions no-color search-box" style="width: auto">
-                <input type="text" class="bg-b" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..."/>
-                    <input type="hidden" name="name" value="@Model.Name" />
-                    <button class="search-text-btn">
-                        <i class="fas fa-search"></i>
-                    </button>
-                    <a asp-action="OpenGroup" asp-route-name="@Model.Name">Вернуться к полному списку</a>
-                </div>
+                <input type="text" class="bg-b" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
+                <input type="hidden" name="name" value="@Model.Name" />
+                <button class="search-text-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <a asp-action="OpenGroup" asp-route-name="@Model.Name">Вернуться к полному списку</a>
+            </div>
         </form>
         <table class="default-table">
             <thead>
@@ -168,13 +168,13 @@
             </a>
         </div>
     </div>
-    <div class="participants-box bg-b b-r-10 p-l-20 p-r-20 p-b-20">
-            <h2 class="c-g f-s-1rem p-t-7">Участники</h2>
-            <table class="default-table scroll">
-                @foreach (var client in Model.Clients)
-                {
-                    var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
-                    var currentuserrole = Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R;
+    <div class="participants-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center" style="height:300px">
+        <h2 class="c-g f-s-1rem p-t-7">Участники</h2>
+        <table class="default-table scroll">
+            @foreach (var client in Model.Clients)
+            {
+                var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
+                var currentuserrole = Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R;
                 <tr>
                     <td class="@currentuser">
                         @client.Client.Login
@@ -203,12 +203,16 @@
                                     <i class="fas fa-edit @currentuser"></i>
                                 </a>
                             </td>
-                             }
+                        }
                     }
                 </tr>
             }
         </table>
+        <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" style="height:450px">
+            <h2 class="c-g f-s-1rem p-t-7">Чат</h2>
+        </div>
     </div>
+    
 </div>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>

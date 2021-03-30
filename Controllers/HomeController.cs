@@ -39,9 +39,9 @@ namespace Biz_collab.Controllers
                 Client client = new Client { Id = currentUserID, Login= currentUserLog, PersBudget=0 };
                 _db.Clients.Add(client);
                 _db.SaveChanges();
-            }
-            var groups= _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).Where(g => g.Clients.First(rp => rp.ClientId == currentUserID && rp.R !="Забанен") != null);            
+            }   
             var AllGroups = _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).AsQueryable();
+            var groups = AllGroups.Where(g => g.Clients.First(rp=>rp.ClientId==currentUserID && rp.R != "Забанен")!=null );  //группы текущего клиента  
             ViewData["CurrentSort"] = sortOrder;
             if (searchString != null)
             {
@@ -98,6 +98,10 @@ namespace Biz_collab.Controllers
             return View(await PaginatedList<Group>.CreateAsync(AllGroups, pageNumber ?? 1, pageSize));
         }
         public IActionResult About()
+        {
+            return PartialView();
+        }
+        public IActionResult Notifications()
         {
             return PartialView();
         }

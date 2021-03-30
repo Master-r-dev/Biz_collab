@@ -1,8 +1,4 @@
-﻿@using Biz_collab.Models
-@using Biz_collab.Data
-@{ }
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -33,12 +29,6 @@
                         <li class="nav-item">
                             <a class="nav-link modal-link" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
                         </li>
-                        @if (User.Identity.Name != null)
-                        {
-                            <li class="nav-item">
-                                @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
-                            </li>
-                        }
                     </ul>
                 </div>
                 <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">

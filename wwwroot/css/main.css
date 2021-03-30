@@ -953,6 +953,11 @@ ol > a > li {
 	margin: 5px;
 }
 
+.chat-box {
+	width: 25%;
+	margin: 5px;
+}
+
 .default-table {
 	color: #adadad;
 	width: 98%;

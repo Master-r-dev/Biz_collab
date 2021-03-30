@@ -962,20 +962,16 @@ ol > a > li {
 	font-size: 20px;
 }
 
-.transaction-tr {
-	border: 1px solid #202020;
-}
-
-.transaction-tr:hover {
-	border-bottom: 1px solid #8937df;
-}
-
 .color {
 	color: #adadad;
 }
 
 .currentuser {
 	color: #8937df;
+}
+
+.transaction-tr:hover {
+	border: 1px solid #8937df;
 }
 
 .scroll {

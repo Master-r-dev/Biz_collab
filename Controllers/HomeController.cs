@@ -93,8 +93,7 @@ namespace Biz_collab.Controllers
             }
             int pageSize = 5;
             ViewBag.Groups = await PaginatedList<Group>.CreateAsync(groups, pageNumber ?? 1, pageSize);
-            ViewBag.PersBudget = _db.Clients.First(c=>c.Id==currentUserID).PersBudget;
-            ViewBag.AddBalanceTitle = "Пополнить баланс: " + Convert.ToString(ViewBag.PersBudget);
+            ViewBag.PersBudget = _db.Clients.First(c=>c.Id==currentUserID).PersBudget;           
             return View(await PaginatedList<Group>.CreateAsync(AllGroups, pageNumber ?? 1, pageSize));
         }
         public IActionResult About()

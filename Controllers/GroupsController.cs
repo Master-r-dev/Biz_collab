@@ -183,7 +183,8 @@ namespace Biz_collab.Controllers
                 "name_desc" => trans.OrderByDescending(s => s.Client.Login),
                 _ => trans.OrderByDescending(s => s.StartTime),
             };
-            int pageSize = 8;            
+            int pageSize = 8;     
+            ViewBag.User=this.User.FindFirst(ClaimTypes.Name).Value.Substring(0, this.User.FindFirst(ClaimTypes.Name).Value.LastIndexOf("@"));
             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);           
             return View(@group);
         }

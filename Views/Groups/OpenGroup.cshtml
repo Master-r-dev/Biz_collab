@@ -210,11 +210,45 @@
         </table>
         <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" style="height:450px">
             <h2 class="c-g f-s-1rem p-t-7">Чат</h2>
+            <div id="inputForm">
+                <input type="text" id="message" />
+                <input type="button" id="sendBtn" value="Отправить" />
+            </div>
+            <div id="chatroom"></div>
         </div>
     </div>
-    
-</div>
 
+</div>
+<script src="../js/signalr/dist/browser/signalr.min.js"></script>
+<script>
+    const hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/chat")
+        .build();
+    // установка имени пользователя
+    let userName = '@ViewBag.User';
+    // получение сообщения от сервера
+    hubConnection.on('Send', function (message, userName) {
+        // создаем элемент <b> для имени пользователя
+        let userNameElem = document.createElement("b");
+        userNameElem.appendChild(document.createTextNode(userName + ': '));
+        // создает элемент <p> для сообщения пользователя
+        let elem = document.createElement("p");
+        elem.appendChild(userNameElem);
+        elem.appendChild(document.createTextNode(message));
+
+        let firstElem = document.getElementById("chatroom").firstChild;
+        document.getElementById("chatroom").insertBefore(elem, firstElem);
+
+    });
+     
+    // отправка сообщения на сервер
+    document.getElementById("sendBtn").addEventListener("click", function (e) {
+        let message = document.getElementById("message").value;
+        hubConnection.invoke("Send", message, userName);
+    });
+
+    hubConnection.start();
+</script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
     google.charts.load('current', { 'packages': ['corechart'] });

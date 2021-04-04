@@ -41,7 +41,7 @@ namespace Biz_collab.Controllers
                 _db.SaveChanges();
             }   
             var AllGroups = _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).AsQueryable();
-            var groups = AllGroups.Where(g => g.Clients.First(rp=>rp.ClientId==currentUserID && rp.R != "Забанен")!=null );  //группы текущего клиента  
+            var groups = AllGroups.Where(g => g.Clients.FirstOrDefault(rp=>rp.ClientId==currentUserID && rp.R != "Забанен")!=null );  //группы текущего клиента  
             ViewData["CurrentSort"] = sortOrder;
             if (searchString != null)
             {

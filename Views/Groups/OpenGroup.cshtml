@@ -208,43 +208,58 @@
                 </tr>
             }
         </table>
-        <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" style="height:450px">
+        <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" style="height:450px; width:auto">
             <h2 class="c-g f-s-1rem p-t-7">Чат</h2>
+            <div id="chatroom" style="height:350px">
+                @foreach (var message in Model.Messages)
+                {
+                    <p>
+                        <b>@message.Name</b>
+                        @message.Text / @message.Time
+                    </p>
+                }
+            </div>
             <div id="inputForm">
                 <input type="text" id="message" />
                 <input type="button" id="sendBtn" value="Отправить" />
             </div>
-            <div id="chatroom"></div>
         </div>
     </div>
-
+    
 </div>
 <script src="../js/signalr/dist/browser/signalr.min.js"></script>
 <script>
     const hubConnection = new signalR.HubConnectionBuilder()
         .withUrl("/chat")
         .build();
-    // установка имени пользователя
-    let userName = '@ViewBag.User';
+   // Прямо через группу чат запускаться не хочет =( Надеюсь и не нужно
+    //.withUrl("https://localhost:44301/Groups/OpenGroup?name=@Model.Name/chat", {
+   //         skipNegotiation: true,
+  //          transport: signalR.HttpTransportType.WebSockets
+   //     })
+    
+
     // получение сообщения от сервера
-    hubConnection.on('Send', function (message, userName) {
+    hubConnection.on('Receive', function (name,text, time) {
         // создаем элемент <b> для имени пользователя
         let userNameElem = document.createElement("b");
-        userNameElem.appendChild(document.createTextNode(userName + ': '));
+        userNameElem.appendChild(document.createTextNode(name + ': '));
         // создает элемент <p> для сообщения пользователя
         let elem = document.createElement("p");
         elem.appendChild(userNameElem);
-        elem.appendChild(document.createTextNode(message));
+        elem.appendChild(document.createTextNode(text + ' ' + time));
 
         let firstElem = document.getElementById("chatroom").firstChild;
         document.getElementById("chatroom").insertBefore(elem, firstElem);
 
     });
-     
+
     // отправка сообщения на сервер
     document.getElementById("sendBtn").addEventListener("click", function (e) {
-        let message = document.getElementById("message").value;
-        hubConnection.invoke("Send", message, userName);
+        var text = document.getElementById("message").value;
+        let groupname = '@Model.Name';
+        hubConnection.invoke("Send",{ "text": text, "groupname": groupname/*, "time": time , "name": name*/ });
+        document.getElementById("message").value = '';
     });
 
     hubConnection.start();

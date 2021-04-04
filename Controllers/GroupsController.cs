@@ -12,14 +12,19 @@ using System.Security.Claims;
 using System.Globalization;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
+using Microsoft.AspNetCore.SignalR;
+using System.Diagnostics.CodeAnalysis;
+
 namespace Biz_collab.Controllers
 {
     public class GroupsController : Controller
     {
         private readonly ApplicationDbContext _db;
+        //protected readonly IHubContext<ChatHub> _chatHub;
 
-        public GroupsController(ApplicationDbContext context)
+        public GroupsController(ApplicationDbContext context/*,[NotNull] IHubContext<ChatHub> chatHub*/)
         {
+           // _chatHub = chatHub;
             _db = context;
         }
         // GET: Groups/Details/5
@@ -60,7 +65,7 @@ namespace Biz_collab.Controllers
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client = await _db.Clients.AsNoTracking().Include(c=>c.MyGroups).FirstAsync(c=>c.Id== currentUserID);            
-            var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).FirstAsync(g => g.Name == name);
+            var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).Include(g=>g.Messages).FirstAsync(g => g.Name == name);
             if (@group.Clients.FirstOrDefault(rp => rp.ClientId == client.Id && rp.R == "Забанен") != null)
             {
                 return RedirectToAction("BannedInGroup", new { name });
@@ -109,7 +114,7 @@ namespace Biz_collab.Controllers
                 @group.Clients.FirstOrDefault(rp => rp.R == "Создатель").P = @group.Clients.Count();
                 _db.Entry(group).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
-            }
+            } //новый пользователь
 
             if (trans == null)
             {
@@ -165,7 +170,7 @@ namespace Biz_collab.Controllers
             ViewData["CurrentFilter"] = searchString;
             if (!String.IsNullOrEmpty(searchString))
             {
-                trans = trans.Where(s => s.Client.Login.Contains(searchString) || s.Client.MyGroups.First(rp=>rp.GroupId==s.GroupId && rp.R==searchString)!=null || s.Explanation.Contains(searchString));
+                trans = trans.Where(s => s.Client.Login.Contains(searchString) || s.Client.MyGroups.FirstOrDefault(rp=>rp.GroupId==s.GroupId && rp.R==searchString)!=null || s.Explanation.Contains(searchString));
             }
             ViewData["TimeSortParm"] = sortOrder == "time_desc" ? "Time" : "time_desc";
             ViewData["ClientNameSortParm"] = sortOrder == "Name" ? "name_desc" : "Name";
@@ -183,9 +188,8 @@ namespace Biz_collab.Controllers
                 "name_desc" => trans.OrderByDescending(s => s.Client.Login),
                 _ => trans.OrderByDescending(s => s.StartTime),
             };
-            int pageSize = 8;     
-            ViewBag.User=this.User.FindFirst(ClaimTypes.Name).Value.Substring(0, this.User.FindFirst(ClaimTypes.Name).Value.LastIndexOf("@"));
-            ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);           
+            int pageSize = 8;            
+            ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);            
             return View(@group);
         }
         [Authorize]
@@ -292,7 +296,7 @@ namespace Biz_collab.Controllers
             ViewBag.Name = rp.Group.Name;
             ViewBag.Login = rp.Client.Login;
             ViewBag.Count = _db.Groups.AsNoTracking().Include(g=>g.Clients).ThenInclude(rp=>rp.Client).First(g=>g.Name==name).Clients.Count();
-            ViewBag.EditorRole= _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            ViewBag.EditorRole= _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
             return PartialView(rp);
         }
 
@@ -300,15 +304,15 @@ namespace Biz_collab.Controllers
         [HttpPost]
         public  IActionResult EditRoleClient(string name,string login,string Percent, [Bind("R,P")] Role_Power rp)
         {   /*код изменение роли клиента*/
-            var c = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.Client.Login == login && rp.Group.Name == name);
+            var c = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.Client.Login == login && rp.Group.Name == name);
             if (rp.R==null )
             {
                 ModelState.AddModelError("Role", "Заполнить!");
                 var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 ViewBag.Name = c.Group.Name;
                 ViewBag.Login = c.Client.Login;
-                ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
-                ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == ID && rp.Group.Name == name).R;
+                ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).FirstOrDefault(g => g.Name == name).Clients.Count();
+                ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
                 return View(c);
             }
             if (Percent == null && rp.P==0)
@@ -319,7 +323,7 @@ namespace Biz_collab.Controllers
                 ViewBag.Name = c.Group.Name;
                 ViewBag.Login = c.Client.Login;
                 ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
-                ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == ID && rp.Group.Name == name).R;
+                ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
                 return View(c);
             }
 
@@ -367,7 +371,7 @@ namespace Biz_collab.Controllers
             ViewBag.Name = c.Group.Name;
             ViewBag.Login = c.Client.Login;
             ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
-            ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).First(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
             return View(c);
         }
         private bool ClientExists(string login,string name)

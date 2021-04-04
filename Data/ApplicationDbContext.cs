@@ -19,6 +19,7 @@ namespace Biz_collab.Data
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Role_Power> Role_Powers { get; set; }
         public DbSet<Vote> Votes { get; set; }
+        public DbSet<Message> Messages { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Client>()
@@ -61,6 +62,18 @@ namespace Biz_collab.Data
                 .WithMany(m => m.Votes)
                 .HasForeignKey(x => x.TransactionId)
                 .OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<Message>()
+                .HasKey(x => x.Id);
+            builder.Entity<Message>()
+                .HasOne(x => x.Client)
+                .WithMany(m => m.MyMessages)
+                .HasForeignKey(x => x.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Message>()
+                .HasOne(x => x.Group)
+                .WithMany(m => m.Messages)
+                .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(builder);
         }

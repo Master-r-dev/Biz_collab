@@ -16,11 +16,17 @@ namespace Biz_collab.Models
         public byte Type { get; set; } //с голосованием или для пожертвований
         public ICollection<Role_Power> Clients { get; set; }
         public ICollection<Transaction> Transactions { get; set; }
+       
         public Group()
         {
             Clients = new List<Role_Power>();
             Transactions = new List<Transaction>();
+            Messages = new HashSet<Message>();
         }
+
+        //чат
+        public virtual ICollection<Message> Messages { get; set; }
+
         /* Settings {*/
         public bool CloseCall { get; set; } //Что делать если голоса за и против равны?(1-принять,0-удалить)
         public int EntryFeeDon { get; set; } // минимальный внос для подключения в группу /Роль="Донатер" сила голоса=1      

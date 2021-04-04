@@ -1,0 +1,42 @@
+﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<table id="tblNotification" class="table table-bordered table-striped">
+    <thread>
+        <tr>
+            <th>From</th>
+            <th>Title</th>
+            <th>Detail</th>
+            <th>isRead</th>
+            <th>Notification DateTime</th>
+        </tr>
+    </thread>
+    <tbody>
+    </tbody>
+</table>
+
+<script type="text/javascript>
+    console.log("su4ka");
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/Notifications/GetNotifications",
+            traditional: true,
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var notifications = data;
+                $.map(notifications, function (notification) {
+                    $("#tblNotification tbody").append("<tr>"
+                        + "<td>" + notification.fromUserName + "<td>"
+                        + "<td>" + notification.notiHeader + "<td>"
+                        + "<td>" + notification.notiBody + "<td>"
+                        + "<td>" + notification.isReadSt + "<td>"
+                        + "<td>" + notification.createdDateSt + "<td>"
+                        + "<tr>");
+                });
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    });
+</script>

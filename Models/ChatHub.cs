@@ -30,7 +30,7 @@ namespace Biz_collab.Models
                 .FirstOrDefault(rp => rp.Group.Name == message.GroupName) != null )
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, message.GroupName);
-                await Clients.Group(message.GroupName).SendAsync("Receive", message.Name,message.Text, message.Time.ToString("HH:mm dd/MM/yy"));
+                await Clients.Group(message.GroupName).SendAsync("Receive", message.Name,message.Text, message.Time.ToString("HH:mm:ss dd/MM/yy"));
                 message.ClientId = _db.Clients.AsNoTracking().FirstOrDefault(c => c.Login == Context.User.Identity.Name).Id;
                 message.GroupId =  _db.Groups.AsNoTracking().FirstOrDefault(g => g.Name == message.GroupName).Id;
                 await _db.Messages.AddAsync(message);

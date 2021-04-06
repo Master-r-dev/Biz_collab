@@ -170,7 +170,7 @@
     </div>
     <div class="participants-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center" style="height:300px">
         <h2 class="c-g f-s-1rem p-t-7">Участники</h2>
-        <table class="default-table scroll">
+        <table class="default-table scroll" style="overflow-x: hidden; overflow-y: auto; text-align: justify;">
             @foreach (var client in Model.Clients)
             {
                 var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
@@ -208,14 +208,14 @@
                 </tr>
             }
         </table>
-        <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" style="height:450px; width:auto">
+        <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" >
             <h2 class="c-g f-s-1rem p-t-7">Чат</h2>
-            <div id="chatroom" style="height:350px">
+            <div class="scroll-box" id="chatroom" style="height:350px">
                 @foreach (var message in Model.Messages)
                 {
                     <p>
                         <b>@message.Name</b>
-                        @message.Text / @message.Time
+                        @message.Text / @message.Time.ToString("HH:mm:ss dd/MM/yy")
                     </p>
                 }
             </div>
@@ -247,10 +247,10 @@
         // создает элемент <p> для сообщения пользователя
         let elem = document.createElement("p");
         elem.appendChild(userNameElem);
-        elem.appendChild(document.createTextNode(text + ' ' + time));
+        elem.appendChild(document.createTextNode(text + ' / ' + time));
 
-        let firstElem = document.getElementById("chatroom").firstChild;
-        document.getElementById("chatroom").insertBefore(elem, firstElem);
+        let firstElem = document.getElementById("chatroom");
+        document.getElementById("chatroom").insertBefore(elem, firstElem.lastElementChild.nextSibling);
 
     });
 

@@ -943,6 +943,12 @@ ol > a > li {
 	margin: 5px;
 }
 
+.scroll-box {
+	overflow-x: hidden;
+	overflow-y: auto;
+	text-align: justify;
+}
+
 .transactions-box {
 	width: 50%;
 	margin: 5px;
@@ -951,11 +957,19 @@ ol > a > li {
 .participants-box {
 	width: 25%;
 	margin: 5px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	text-align: justify;
 }
 
 .chat-box {
 	width: 25%;
 	margin: 5px;
+	height: 445px;
+	position:absolute;
+	right:-4px;
+	top: 370px;
+	text-align: justify;
 }
 
 .default-table {

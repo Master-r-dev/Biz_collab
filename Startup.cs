@@ -59,6 +59,14 @@ namespace Biz_collab
 
             app.UseRouting();
 
+            /*app.UseCors(builder =>
+{
+                    builder.WithOrigins("https://localhost:44365")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });*/
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

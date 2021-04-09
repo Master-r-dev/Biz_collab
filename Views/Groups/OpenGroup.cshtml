@@ -214,8 +214,17 @@
                 @foreach (var message in Model.Messages)
                 {
                     <p>
-                        <b>@message.Name</b>
-                        @message.Text / @message.Time.ToString("HH:mm:ss dd/MM/yy")
+                        <div class="chat-container">
+                            <div class="style-name">
+                                @message.Name
+                            </div>
+                            <div class="style-massage-text">
+                                @message.Text
+                            </div>
+                            <div class="style-time">
+                                @message.Time.ToString("HH:mm:ss")
+                            </div>
+                        </div>
                     </p>
                 }
             </div>
@@ -237,7 +246,7 @@
    //         skipNegotiation: true,
   //          transport: signalR.HttpTransportType.WebSockets
    //     })
-    
+
 
     // получение сообщения от сервера
     hubConnection.on('Receive', function (name,text, time) {
@@ -255,11 +264,19 @@
     });
 
     // отправка сообщения на сервер
+    document.addEventListener("keypress", function (e) {
+        if (e.keyCode == 13) {
+        document.getElementById("sendBtn").click();
+        }
+    });
+
     document.getElementById("sendBtn").addEventListener("click", function (e) {
         var text = document.getElementById("message").value;
+        if (text != "") {
         let groupname = '@Model.Name';
         hubConnection.invoke("Send",{ "text": text, "groupname": groupname/*, "time": time , "name": name*/ });
         document.getElementById("message").value = '';
+        }
     });
 
     hubConnection.start();

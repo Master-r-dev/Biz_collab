@@ -972,6 +972,27 @@ ol > a > li {
 	text-align: justify;
 }
 
+.chat-container {
+	border: 2px solid #dedede;
+	background-color: #f1f1f1;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 10px 0;
+}
+
+.style-name {
+	color: #4e4d4d;
+}
+
+.style-massage-text {
+	color: #4e4d4d;
+}
+
+.style-time {
+	color: #9c9c9c;
+	text-align: right;
+}
+
 .default-table {
 	color: #adadad;
 	width: 98%;

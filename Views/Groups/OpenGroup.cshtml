@@ -1,0 +1,410 @@
+﻿@model Biz_collab.Models.Group
+@{ ViewData["Title"] = "Группа " + Model.Name; }
+
+<div style="display: flex;">
+    <div class="graphics-box">
+        <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center">
+            <h2 class="c-g f-s-1rem my-balance p-t-7">Бюджет</h2>
+            <div id="budget_chart"></div>
+        </div>
+        <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-t-5 p-b-20" align="center">
+            <h2 class="c-g f-s-1rem my-balance p-t-7">Производительность</h2>
+            <div class="gr">
+                <div id="client_chart"></div>
+            </div>
+        </div>
+        <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center">
+            <div class="gr">
+                <div id="res_chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="transactions-box bg-b b-r-10 p-l-20 p-r-20p-b-20">
+        <h2 class="c-g f-s-1rem m-t-5 m-b-5">Группа: @Model.Name</h2>
+        <h4 class="c-g">
+            Транзакции
+            <a class="add-tranzaction-btn modal-link" href="@Url.Action("Create", "Transactions", new { @Model.Name })" title="Создать новую транзакцию"><i class="fas fa-plus-circle"></i></a>
+        </h4>
+        <form asp-action="OpenGroup" method="get">
+            <div class="form-actions no-color search-box" style="width: auto">
+                <input type="text" class="bg-b" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
+                <input type="hidden" name="name" value="@Model.Name" />
+                <button class="search-text-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <a asp-action="OpenGroup" asp-route-name="@Model.Name">Вернуться к полному списку</a>
+            </div>
+        </form>
+        <table class="default-table">
+            <thead>
+                <tr>
+                    <td>
+                        Описание
+                    </td>
+                    <td>
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["AmountSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Сумма</a>
+                    </td>
+                    <td>
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["OperationTypeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Тип</a>
+                    </td>
+                    <td>
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["ClientNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Участник</a>
+                    </td>
+                    <td>
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["TimeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Статус/Время</a>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var transaction in ((PaginatedList<Transaction>)ViewBag.Transactions))
+                {
+                    <tr class="transaction-tr">
+                        <td style="max-width: 320px;overflow-wrap: break-word;word-break: break-word;white-space: normal;">
+                            @transaction.Explanation
+                        </td>
+                        <td>
+                            @if (transaction.OperationType == 3)
+                            {
+                                <i>+@transaction.Amount</i>
+                            }
+                            else
+                            {
+                                <i>-@transaction.Amount</i>
+                            }
+                        </td>
+                        @if (transaction.OperationType == 1)
+                        {
+                            <td>
+                                <i class="fas fa-share-square"></i>
+                            </td>
+                        }
+                        else if (transaction.OperationType == 2)
+                        {
+                            <td>
+                                <i class="fas fa-exchange-alt"></i>
+                            </td>
+                        }
+                        else if (transaction.OperationType == 3)
+                        {
+                            <td>
+                                <i class="fa fa-gift"></i>
+                            </td>
+                        }
+                        <td>
+                            @transaction.Client.Login
+                        </td>
+                        @if (transaction.Status)
+                        {
+                            <td>
+                                <i class="fas fa-check-circle"></i>
+                                @transaction.StartTime
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <i class="fas fa-clock"></i>
+                            </td>
+                            @if (transaction.Votes.FirstOrDefault(v => v.Client.Login == User.Identity.Name) == null)
+                            {
+                                <td>
+                                    <a asp-controller="Transactions" asp-action="VoteYes" asp-route-id="@transaction.Id"><i class="fas fa-thumbs-up"></i></a>
+                                </td>
+                                <td>
+                                    <a asp-controller="Transactions" asp-action="VoteNo" asp-route-id="@transaction.Id"><i class="fas fa-thumbs-down"></i></a>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <b style="color:green"> @Math.Round((decimal)transaction.YesPercent, 2)</b> /
+                                    <b style="color:red"> @Math.Round((decimal)transaction.NoPercent, 2)</b>
+                                </td>
+                            }
+                        }
+                        <td>
+                            <a class="modal-link" href="@Url.Action("Details", "Transactions", new { transaction.Id })">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                        </td>
+                        @if (User.Identity.Name == transaction.Client.Login && transaction.Status == false)
+                        {
+                            <td>
+                                <a class="modal-link" href="@Url.Action("Delete", "Transactions", new { transaction.Id })">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+        <div class="m-r-20" align="right">
+            @{
+                var prevDisabled = !ViewBag.Transactions.HasPreviousPage ? "disabled" : "";
+                var nextDisabled = !ViewBag.Transactions.HasNextPage ? "disabled" : "";
+            }
+
+            <a asp-action="OpenGroup"
+               asp-route-name="@Model.Name"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-pageNumber="@(ViewBag.Transactions.PageIndex - 1)"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-default @prevDisabled"
+               style="color:#adadad">
+                <<
+            </a>
+            <a asp-action="OpenGroup"
+               asp-route-name="@Model.Name"
+               asp-route-sortOrder="@ViewData["CurrentSort"]"
+               asp-route-pageNumber="@(ViewBag.Transactions.PageIndex + 1)"
+               asp-route-currentFilter="@ViewData["CurrentFilter"]"
+               class="btn btn-default @nextDisabled"
+               style="color: #adadad">
+                >>
+            </a>
+        </div>
+    </div>
+    <div class="participants-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center" style="height:300px">
+        <h2 class="c-g f-s-1rem p-t-7">Участники</h2>
+        <table class="default-table scroll" style="overflow-x: hidden; overflow-y: auto; text-align: justify;">
+            @foreach (var client in Model.Clients)
+            {
+                var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
+                var currentuserrole = Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R;
+                <tr>
+                    <td class="@currentuser">
+                        @client.Client.Login
+                    </td>
+                    <td class="@currentuser">
+                        @client.R
+                    </td>
+                    <td class="@currentuser">
+                        @client.P
+                    </td>
+
+                    @if (currentuserrole == "Создатель" || currentuserrole == "Mod")
+                    {
+                        @if (client.R != "Создатель" && client.Client.Login != User.Identity.Name)
+                        {
+                            @if (client.R != "Забанен")
+                            {
+                                <td>
+                                    <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@client.Client.Login" asp-route-name="@Model.Name">
+                                        <i class="fas fa-ban @currentuser"></i>
+                                    </a>
+                                </td>
+                            }
+                            <td>
+                                <a class="modal-link" href="@Url.Action("EditRoleClient", "Groups", new { Login = client.Client.Login, name = Model.Name })" title="Изменить роль участника">
+                                    <i class="fas fa-edit @currentuser"></i>
+                                </a>
+                            </td>
+                        }
+                    }
+                </tr>
+            }
+        </table>
+        <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" >
+            <h2 class="c-g f-s-1rem p-t-7">Чат</h2>
+            <div class="scroll-box" id="chatroom" style="height:350px">
+                @foreach (var message in Model.Messages)
+                {
+                    <p>
+                        <div class="chat-container">
+                            <div class="style-name">
+                                @message.Name
+                            </div>
+                            <div class="style-massage-text">
+                                @message.Text
+                            </div>
+                            <div class="style-time">
+                                @message.Time.ToString("HH:mm:ss")
+                            </div>
+                        </div>
+                    </p>
+                }
+            </div>
+            <div id="inputForm">
+                <input type="text" id="message" />
+                <input type="button" id="sendBtn" value="Отправить" />
+            </div>
+        </div>
+    </div>
+    
+</div>
+<script src="../js/signalr/dist/browser/signalr.min.js"></script>
+<script>
+    const hubConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/chat")
+        .build();
+   // Прямо через группу чат запускаться не хочет =( Надеюсь и не нужно
+    //.withUrl("https://localhost:44301/Groups/OpenGroup?name=@Model.Name/chat", {
+   //         skipNegotiation: true,
+  //          transport: signalR.HttpTransportType.WebSockets
+   //     })
+
+
+    // получение сообщения от сервера
+    hubConnection.on('Receive', function (name,text, time) {
+        // создаем элемент <b> для имени пользователя
+        let userNameElem = document.createElement("b");
+        userNameElem.appendChild(document.createTextNode(name + ': '));
+        // создает элемент <p> для сообщения пользователя
+        let elem = document.createElement("p");
+        elem.appendChild(userNameElem);
+        elem.appendChild(document.createTextNode(text + ' / ' + time));
+
+        let firstElem = document.getElementById("chatroom");
+        document.getElementById("chatroom").insertBefore(elem, firstElem.lastElementChild.nextSibling);
+
+    });
+
+    // отправка сообщения на сервер
+    document.addEventListener("keypress", function (e) {
+        if (e.keyCode == 13) {
+        document.getElementById("sendBtn").click();
+        }
+    });
+
+    document.getElementById("sendBtn").addEventListener("click", function (e) {
+        var text = document.getElementById("message").value;
+        if (text != "") {
+        let groupname = '@Model.Name';
+        hubConnection.invoke("Send",{ "text": text, "groupname": groupname/*, "time": time , "name": name*/ });
+        document.getElementById("message").value = '';
+        }
+    });
+
+    hubConnection.start();
+</script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawCharts);
+
+    var base_options = {
+        backgroundColor: '#202020',
+        hAxis: {
+            textStyle: { color: '#adadad' }
+        },
+        vAxis: {
+            textStyle: { color: '#adadad' }
+        },
+        legend: { position: 'none' },
+    };
+
+    function get_budget_data() {
+
+        var amounts = @ViewBag.trans_amounts;
+        var dates = @ViewBag.trans_dates;
+        var curbudget = @Model.Budget;
+        var today = (new Date()).toLocaleDateString();
+
+        var data = [
+            ["Дата", "Бюджет"],
+        ];
+
+        for (let i = 0; i < amounts.length; i++) {
+
+            let date = dates[i];
+            date = new Date(date[0], date[1] - 1, date[2]).toLocaleDateString();
+
+            if (data[data.length - 1][0] != date) {
+                data.push([date, amounts[i]]);
+            } else {
+                data[data.length - 1][1] += amounts[i];
+            }
+        }
+        for (let i = data.length - 1; i > 0; i--) {
+            curbudget -= data[i][1];
+            data[i][1] = curbudget;
+        }
+        if (data[data.length - 1][0] != today)
+            data.push([(new Date()).toLocaleDateString(), @Model.Budget]);
+        else
+            data[data.length - 1][1] = @Model.Budget;
+
+        return data;
+    }
+
+    function get_client_data() {
+        var clients = @Html.Raw(ViewBag.clients);
+        var clients_trans = @ViewBag.clients_trans;
+        var data = [
+            ["Пользователь", "Количество транзакций", { role: 'style' }],
+        ];
+
+        for (let i = 0; i < clients.length; i++) {
+            if (i % 2) {
+                data.push([clients[i], clients_trans[i], '#ec86ec']);
+            } else {
+                data.push([clients[i], clients_trans[i], '#8937df']);
+            }
+        }
+        return data;
+    }
+
+    function drawBudgetChart() {
+        data = google.visualization.arrayToDataTable(get_budget_data());
+
+        let options = base_options;
+        options['curveType'] = 'function';
+        options['series'] = {
+            0: {
+                color: '#8937df',
+            }
+        };
+
+        var chart = new google.visualization.AreaChart(document.getElementById('budget_chart'));
+
+        chart.draw(data, options);
+    }
+
+    function drawClientChart() {
+        var data = google.visualization.arrayToDataTable(get_client_data());
+
+        let options = base_options;
+        options['bar'] = {
+            groupWidth: '10%',
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById("client_chart"));
+        chart.draw(data, options);
+    }
+
+    function drawResChart() {
+        var data = google.visualization.arrayToDataTable([
+            ["Описание", "Сумма"],
+            ["Потрачено", @ViewBag.total_spent],
+            ["Получено", @ViewBag.total_recieved]
+            ]);
+
+        let options = base_options;
+        options['slices'] = {
+            0: {
+                color: '#8937df'
+            },
+            1: {
+                color: '#ec86ec'
+            },
+        };
+        options['legend'] = {
+            textStyle: {
+                color: '#969696',
+            },
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById("res_chart"));
+        chart.draw(data, options);
+    }
+
+    function drawCharts() {
+        drawBudgetChart();
+        drawClientChart();
+        drawResChart();
+    }
+</script>

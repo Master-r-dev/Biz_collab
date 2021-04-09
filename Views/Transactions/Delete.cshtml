@@ -1,0 +1,57 @@
+﻿@model Biz_collab.Models.Transaction
+
+@{ ViewData["Title"] = "Удалить транзакцию"; }
+
+<div class="modal-content mdl">
+    <div class="modal-header">
+        <h4>Вы уверены что хотите удалить транзакцию?</h4>
+        <button class="close" data-dismiss="modal" area-hidden="true"><i class="fas fa-times-circle"></i></button>
+    </div>
+    <div class="modal-body">
+        <dl class="dl-horizontal">
+            <dt>Cумма</dt>
+            <dd>@Html.DisplayFor(model => model.Amount)</dd>
+
+            <dt>Вид транзакции</dt>
+            @if (Model.OperationType == 1) {
+                <dd>Потратить из группового бюджета <i class="fas fa-share-square"></i> </dd>
+            }
+            else if (Model.OperationType == 2) {
+                <dd>Перевести на свой счет <i class="fas fa-exchange-alt"></i></dd>
+            }
+
+            <dt>Описание</dt>
+            <dd style="max-width: 320px;overflow-wrap: break-word;word-break: break-word;white-space: normal;" >@Html.DisplayFor(model => model.Explanation)</dd>
+
+            <dt>Статус:</dt>
+            <dd>Ожидание</dd>
+
+            <dt>Процент За</dt>
+            <dd>@Html.DisplayFor(model => model.YesPercent)</dd>
+            
+            <dt>Процент Против</dt>
+            <dd>@Html.DisplayFor(model => model.NoPercent)</dd>
+
+            @if (ViewBag.Role == "Mod" || ViewBag.Role == "Создатель" || ViewBag.Role == "VIP"){
+                <dt class="col-sm-10">Голоса</dt>
+                foreach (var v in Model.Votes) {
+                    
+                    <dd> @v.Client.Login | 
+                        @if (v.V == true) {
+                            <b>За</b> 
+                        }
+                        else {
+                            <b>Против</b>
+                        }
+                        | Сила= @v.P
+                    </dd>
+                }
+            }
+        </dl>
+    
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Удалить" class="btn btn-danger" /> 
+        </form>
+    </div>
+</div>

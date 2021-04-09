@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Biz_collab</title>
+    <link rel="shortcut icon" type="image/x-icon" href="" />
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="~/fonts/iconic/css/material-design-iconic-font.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/site.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/util.css">
+    <link rel="stylesheet" type="text/css" href="~/css/main.css">
+    <link href="~/notification/ikr.notification.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/main.js"></script>
+    <script src="~/notification/ikr.notificationPlugin.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+</head>
+<body>
+    <div class="@(Context.Request.Path == "/Identity/Account/Login" || Context.Request.Path == "/Identity/Account/Register" ? "": "background-img")">
+        <header>
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+                    <ul class="navbar-nav mr-auto">
+                        <li>
+                            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biz_collab</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link modal-link" asp-area="" asp-controller="Home" asp-action="About">Про суть проекта</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                    <div id="noti_Container"></div>
+                    <partial name="_LoginPartial" />
+                </div>
+            </nav>
+        </header>
+
+        <div class="content">
+            @RenderBody()
+        </div>
+        <div id="modDialog" class="modal fade">
+            <div id="dialogContent" class="modal-dialog"></div>
+        </div>
+
+        <footer class="footer text-muted">
+            <div align="right" style="margin-right: 100px">
+                &copy; 2020 - Biz_collab
+            </div>
+        </footer>
+    </div>
+    <ul class="body_slides">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#noti_Container").ikrNotificationSetup();
+        $ajax({
+            type: "GET",
+            dataType: "json",
+            url: "/Notifications/GetNotifications",
+            traditional: true,
+            contentType: "application/json;charset=utf-8",
+            succes: function (data) {
+                var notifications = data;
+                $("#noti_Container").ikrNotificationCount({
+                    NotificationList: notifications,
+                    NotiFromPropName: "FromUserName",
+                    ListTitlePropName: "NotiHeader",
+                    ListBodyPropName: "NotiBody",
+                    ControllerName: "Notifications",
+                    ActionName: "AllNotifications"
+                });
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+    });
+</script>

@@ -1,0 +1,68 @@
+﻿@model Biz_collab.Models.Group
+
+<div class="modal-content mdl">
+    <div class="modal-header">
+        <h4>Инфо</h4>
+        <button class="close" data-dismiss="modal" area-hidden="true"><i class="fas fa-times-circle"></i></button>
+    </div>
+    <div class="modal-body">
+        <dl class="dl-horizontal">
+            <dt>Название</dt>
+            <dd>@Html.DisplayFor(model => model.Name)</dd>
+
+            <dt>Бюджет</dt>
+            <dd>@Html.DisplayFor(model => model.Budget)</dd>
+
+            <dt>Тип</dt>
+            @if (Model.Type == 1)
+            {
+                <dd>Для пожертвований</dd>
+            }
+            else
+            {
+                <dd>С голосованием</dd>
+            }
+
+            <dt>Вход Дона</dt>
+            <dd>@Html.DisplayFor(model => model.EntryFeeDon)</dd>
+
+            @if (Model.Type != 1)
+            {
+                <dt>Мин Плюс</dt>
+                <dd>@Html.DisplayFor(model => model.MinPlus)</dd>
+
+                <dt>Спор</dt>
+                @if (Model.CloseCall == true)
+                {
+                    <dd>Принять</dd>
+                }
+                else
+                {
+                    <dd>Удалить</dd>
+                }
+                @if (Model.MinMinus != -1)
+                {
+                    <dt>Мин Вычет</dt>
+                    <dd>@Html.DisplayFor(model => model.MinMinus)</dd>
+                }
+
+                @if (Model.EntryFeeUser != -1)
+                {
+                    <dt>Вход Юзера</dt>
+                    <dd>@Html.DisplayFor(model => model.EntryFeeUser)</dd>
+                }
+
+                @if (Model.EntryFeeVIP != -1)
+                {
+                    <dt>Вход VIP</dt>
+                    <dd>@Html.DisplayFor(model => model.EntryFeeVIP)</dd>
+                }
+                @if (Model.EntryFeeMod != -1)
+                {
+                    <dt>Вход Модера</dt>
+                    <dd>@Html.DisplayFor(model => model.EntryFeeMod)</dd>
+                }
+            }
+        </dl>
+    </div>
+</div>

@@ -1,0 +1,117 @@
+﻿@model PaginatedList<Biz_collab.Models.Group>
+
+@{
+    ViewData["Title"] = "Главная";
+}
+<div class="wrap-login100 search bg-b b-r-10 p-l-50 p-r-50 p-t-10 p-b-10">
+    <form asp-action="Index" method="get">
+        <div class="form-actions no-color search-box" style="width: auto">
+            <input class="search-text c-g" type="text" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
+            <button class="search-text-btn">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="wrap-login100 tr-80 top-groups bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
+    <h2 class="c-g"><a class="f-s-1rem">Все группы</a></h2>
+    <table class="default-table">
+        @foreach (var group in Model)
+        {
+            <tr>
+                @if (ViewBag.PersBudget >= group.EntryFeeDon || (ViewBag.PersBudget >= group.EntryFeeUser && group.EntryFeeUser != -1) || (ViewBag.PersBudget >= group.EntryFeeMod && group.EntryFeeMod != -1) || (ViewBag.PersBudget >= group.EntryFeeVIP && group.EntryFeeVIP != -1))
+                {
+
+                    @if (group.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name) == null || group.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name && c.R == "Забанен") != null)
+                    {
+                        <td>
+                            @Html.ActionLink(@group.Name, "OpenGroup", "Groups", new { name = group.Name }, new { @class = "modal-link" })
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.ActionLink(@group.Name, "OpenGroup", "Groups", new { name = group.Name })
+                        </td>
+                    }
+
+                    <td>
+                        <a href="@Url.Action("Details", "Groups", new { name = group.Name })" class="modal-link">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    </td>
+                    <td>
+                        @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                        {
+                            <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled text-light">
+        <<
+    </a>
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled text-light">
+         >>
+    </a>
+</div>
+<div class="wrap-login100 tr-80 my-groups bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
+    <h2 class="c-g">
+        <a class="f-s-1rem">Мои группы</a>
+        <a asp-controller="Groups" asp-action="Create" title="Создать группу">
+            <i class="fas fa-plus-circle"></i>
+        </a>
+    </h2>
+    <table class="default-table">
+        @foreach (var group in (PaginatedList<Group>)ViewBag.Groups)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@group.Name">@group.Name</a>
+                </td>
+                <td>
+                    <a href="@Url.Action("Details", "Groups", new { name = group.Name })" class="modal-link">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                </td>
+                <td>
+                    @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                    {
+                        <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+
+</div>
+
+
+
+

@@ -1,0 +1,52 @@
+﻿@model Biz_collab.Models.Group
+
+<div class="modal-content mdl">
+    <div class="modal-header">
+        <h3>Вступление в группу</h3>
+        <button class="close" data-dismiss="modal" area-hidden="true"><i class="fas fa-times-circle"></i></button>
+    </div>
+    <div class="modal-body">
+        <label>Выберите роль</label>
+        <div class="form-group">
+            <form asp-action="JoinGroup">
+                <div class="form-group" method="post">
+                    <label for="1" class="control-label">
+                        <input type="radio" id="1" value="1" name="sum" />
+                            Донатером(Не можете ставить на голосование ,но можете голосовать и пополнять счет группы)
+                            Требуется @Model.EntryFeeDon у.е
+                    </label>
+
+                    @if (Model.Type == 2) {
+                        @if (ViewBag.PersBudget >= Model.EntryFeeUser) {
+                            <label for="2" class="control-label">
+                                <input type="radio" id="2" onclick="JoinGroup()" value="2" name="sum" />
+                                Участник(можете ставить на голосование и пополнять счет)
+                                Требуется @Model.EntryFeeUser у.е
+                            </label> 
+                        }
+
+                        @if (ViewBag.PersBudget >= Model.EntryFeeVIP) {
+                            <label for="3" class="control-label">
+                                <input type="radio" id="3" onclick="JoinGroup()" value="3" name="sum" />
+                                VIP(можете ставить на голосование и пополнять счет).Голос равен 1/4 сумме участников
+                                Требуется @Model.EntryFeeVIP у.е
+                            </label> 
+                        }
+ 
+                        @if (ViewBag.PersBudget >= Model.EntryFeeMod) {
+                            <label for="4" class="control-label">
+                                <input type="radio" id="4" onclick="JoinGroup()" value="4" name="sum" />
+                                Модератор(можете ставить на голосование и пополнять счет).Голос равен 1/2 сумме участников
+                                Требуется @Model.EntryFeeMod у.е
+                            </label>    
+                        }
+                     }
+                    <input type="hidden" value="@Model.Name" name="name">
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Вступить" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

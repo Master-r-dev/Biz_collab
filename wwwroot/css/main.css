@@ -946,6 +946,8 @@ ol > a > li {
 .scroll-box {
 	overflow-x: hidden;
 	overflow-y: auto;
+	display: flex;
+	flex-direction: column-reverse;
 	text-align: justify;
 }
 

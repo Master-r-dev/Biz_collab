@@ -30,7 +30,10 @@ namespace Biz_collab.Models
                 .FirstOrDefault(rp => rp.Group.Name == message.GroupName) != null )
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, message.GroupName);
-                await Clients.Group(message.GroupName).SendAsync("Receive", message.Name,message.Text, message.Time.ToString("HH:mm:ss dd/MM/yy"));
+                //объявляем сообщение нового дня              
+                if (message.Time.Day - _db.Groups.Include(g => g.Messages).FirstOrDefault(g => g.Name == message.GroupName).Messages.Last().Time.Day >= 1)
+                { await Clients.Group(message.GroupName).SendAsync("Receive", message.Name, message.Text, message.Time.ToString("HH:mm:ss"), message.Time.ToString("ddd , dd/MM/yy")); }
+                else { await Clients.Group(message.GroupName).SendAsync("Receive", message.Name, message.Text, message.Time.ToString("HH:mm:ss")); }
                 message.ClientId = _db.Clients.AsNoTracking().FirstOrDefault(c => c.Login == Context.User.Identity.Name).Id;
                 message.GroupId =  _db.Groups.AsNoTracking().FirstOrDefault(g => g.Name == message.GroupName).Id;
                 await _db.Messages.AddAsync(message);

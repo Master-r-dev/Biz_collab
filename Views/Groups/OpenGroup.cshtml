@@ -209,25 +209,25 @@
             }
         </table>
         <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" >
-            <h2 class="c-g f-s-1rem p-t-7">Чат</h2>
-            <div class="scroll-box" id="chatroom" style="height:350px">
-                @foreach (var message in Model.Messages)
-                {
-                    <p>
-                        <div class="chat-container">
-                            <div class="style-name">
-                                @message.Name
+            <h2 class="c-g f-s-1rem p-t-7">Чат</h2>            
+                <div class="scroll-box" id="chatroom" style="height:350px">
+                    @foreach (var message in Model.Messages.Reverse())
+                    {
+                        <p>
+                            <div class="chat-container">
+                                <div class="style-name">
+                                    @message.Name
+                                </div>
+                                <div class="style-massage-text">
+                                    @message.Text
+                                </div>
+                                <div class="style-time">
+                                    @message.Time.ToString("HH:mm:ss")
+                                </div>
                             </div>
-                            <div class="style-massage-text">
-                                @message.Text
-                            </div>
-                            <div class="style-time">
-                                @message.Time.ToString("HH:mm:ss")
-                            </div>
-                        </div>
-                    </p>
-                }
-            </div>
+                        </p>
+                    }
+                </div>            
             <div id="inputForm">
                 <input type="text" id="message" />
                 <input type="button" id="sendBtn" value="Отправить" />
@@ -249,7 +249,8 @@
 
 
     // получение сообщения от сервера
-    hubConnection.on('Receive', function (name,text, time) {
+    hubConnection.on('Receive', function (name, text, time, nday) {
+        var firstElem = document.getElementById("chatroom").firstChild;
         // создаем элемент <b> для имени пользователя
         let userNameElem = document.createElement("b");
         userNameElem.appendChild(document.createTextNode(name + ': '));
@@ -258,9 +259,15 @@
         elem.appendChild(userNameElem);
         elem.appendChild(document.createTextNode(text + ' / ' + time));
 
-        let firstElem = document.getElementById("chatroom");
-        document.getElementById("chatroom").insertBefore(elem, firstElem.lastElementChild.nextSibling);
-
+        document.getElementById("chatroom").insertBefore(elem, firstElem);
+        if (nday != null) {
+            // добавляет элемент для диагностического сообщения
+            let notifyElem = document.createElement("b");
+            notifyElem.appendChild(document.createTextNode(nday));
+            let elem = document.createElement("p");
+            elem.appendChild(notifyElem);            
+            document.getElementById("chatroom").insertBefore(elem, firstElem);
+        }
     });
 
     // отправка сообщения на сервер

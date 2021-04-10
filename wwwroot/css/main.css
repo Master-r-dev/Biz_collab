@@ -946,9 +946,10 @@ ol > a > li {
 .scroll-box {
 	overflow-x: hidden;
 	overflow-y: auto;
+	text-align: justify;
+	overflow: auto;
 	display: flex;
 	flex-direction: column-reverse;
-	text-align: justify;
 }
 
 .transactions-box {

@@ -208,13 +208,30 @@
                 </tr>
             }
         </table>
+        
+
         <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" >
             <h2 class="c-g f-s-1rem p-t-7">Чат</h2>            
                 <div class="scroll-box" id="chatroom" style="height:350px">
                     @foreach (var message in Model.Messages.Reverse())
-                    {
-                        <p>
-                            <div class="chat-container">
+                    {                    
+                        @if (message.Name == Context.User.Identity.Name.Substring(0, Context.User.Identity.Name.LastIndexOf("@")))
+                        {
+                            <div class="chat-usercontainer">
+
+                                <div class="style-username">
+                                    @message.Name
+                                </div>
+                                <div class="style-usermassage-text">
+                                    @message.Text
+                                </div>
+                                <div class="style-time">
+                                    @message.Time.ToString("HH:mm:ss")
+                                </div>
+                            </div>
+                        }
+                        else
+                        { <div class="chat-container">
                                 <div class="style-name">
                                     @message.Name
                                 </div>
@@ -225,7 +242,7 @@
                                     @message.Time.ToString("HH:mm:ss")
                                 </div>
                             </div>
-                        </p>
+                        }                        
                     }
                 </div>            
             <div id="inputForm">
@@ -251,21 +268,34 @@
     // получение сообщения от сервера
     hubConnection.on('Receive', function (name, text, time, nday) {
         var firstElem = document.getElementById("chatroom").firstChild;
-        // создаем элемент <b> для имени пользователя
-        let userNameElem = document.createElement("b");
+        let isCurrentUserMessage = name =='@Context.User.Identity.Name.Substring(0, Context.User.Identity.Name.LastIndexOf("@"))';
+        // создаем элемент <div> для имени пользователя
+        let userNameElem = document.createElement("div");
+        userNameElem.classList.add( isCurrentUserMessage ? "style-username" : "style-name");
         userNameElem.appendChild(document.createTextNode(name + ': '));
-        // создает элемент <p> для сообщения пользователя
-        let elem = document.createElement("p");
-        elem.appendChild(userNameElem);
-        elem.appendChild(document.createTextNode(text + ' / ' + time));
-
-        document.getElementById("chatroom").insertBefore(elem, firstElem);
+        // создает элемент <div> для сообщения пользователя
+        let textElem = document.createElement("div");
+        textElem.classList.add(isCurrentUserMessage ? "style-usermassage-text" : "style-massage-text");
+        textElem.appendChild(document.createTextNode(text));
+        // создаем элемент <div> для времени отправки пользователя
+        let timeElem = document.createElement("div");
+        timeElem.classList.add("style-time");
+        timeElem.appendChild(document.createTextNode(time));
+        // создает элемент <div> для сообщения пользователя
+        let container = document.createElement('div');
+        container.classList.add(isCurrentUserMessage ? "chat-usercontainer" : "chat-container");
+        container.appendChild(userNameElem);
+        container.appendChild(textElem);
+        container.appendChild(timeElem);
+        document.getElementById("chatroom").insertBefore(container, firstElem);
         if (nday != null) {
             // добавляет элемент для диагностического сообщения
-            let notifyElem = document.createElement("b");
+            let notifyElem = document.createElement("b");            
             notifyElem.appendChild(document.createTextNode(nday));
             let elem = document.createElement("p");
-            elem.appendChild(notifyElem);            
+            //let elem = document.createElement("div");
+            //elem.classList.add("nday");
+            elem.appendChild(notifyElem);
             document.getElementById("chatroom").insertBefore(elem, firstElem);
         }
     });
@@ -273,10 +303,9 @@
     // отправка сообщения на сервер
     document.addEventListener("keypress", function (e) {
         if (e.keyCode == 13) {
-        document.getElementById("sendBtn").click();
+            document.getElementById("sendBtn").click();
         }
     });
-
     document.getElementById("sendBtn").addEventListener("click", function (e) {
         var text = document.getElementById("message").value;
         if (text != "") {

@@ -991,10 +991,35 @@ ol > a > li {
 	color: #4e4d4d;
 }
 
+.chat-usercontainer {
+	border: 2px solid #dedede;
+	background-color: #7A36B2;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 10px 0;
+}
+
+.style-username {
+	color: #8D0726;
+}
+
+.style-usermassage-text {
+	color: #000000;
+}
+
 .style-time {
 	color: #9c9c9c;
 	text-align: right;
 }
+
+.nday {
+	border: 2px solid #dedede;
+	background-color: #f1f1f1;
+	border-radius: 5px;
+	padding: 1px;
+	margin: 1px 0;
+}
+
 
 .default-table {
 	color: #adadad;

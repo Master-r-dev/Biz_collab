@@ -1012,6 +1012,17 @@ ol > a > li {
 	text-align: right;
 }
 
+.style-button {
+	background-color: #7A36B2;
+	padding: 1px 15px;
+	border-radius: 8px;
+}
+
+.style-field {
+	padding: 1px 16px;
+	border-radius: 8px;
+}
+
 .nday {
 	border: 2px solid #dedede;
 	background-color: #f1f1f1;

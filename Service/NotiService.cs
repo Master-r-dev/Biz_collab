@@ -13,14 +13,14 @@ namespace Biz_collab.Service
     public class NotiService : INotiService
     {
         List<Noti> _oNotifications = new List<Noti>();
-        public List<Noti> GetNotifications(int nToUserId, bool bIsGetOnlyUnread)
+        public List<Noti> GetNotifications(string nToUserId, bool bIsGetOnlyUnread)
         {
             _oNotifications = new List<Noti>();
             using (IDbConnection con = new SqlConnection(Global.ConnectionString))
             {
                 if (con.State == ConnectionState.Closed) con.Open();
-
-                var oNotis = con.Query<Noti>("SELECT * FROM View_Notification WHERE ToUserId"+ nToUserId).ToList();
+                string conString = "SELECT * FROM Notification WHERE ToUserId=" + nToUserId;
+                var oNotis = con.Query<Noti>(conString).ToList();
 
                 if (oNotis != null && oNotis.Count() > 0)
                 {

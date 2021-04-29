@@ -8,8 +8,8 @@ namespace Biz_collab.Models
     public class Noti
     {
         public int NotiId { get; set; } = 0;
-        public int FromUserId { get; set; } = 0;
-        public int ToUserId { get; set; } = 0;
+        public string FromUserId { get; set; } = "";
+        public string ToUserId { get; set; } = "";
         public string NotiHeader { get; set; } = "";
         public string NotiBody { get; set; } = "";
         public bool IsRead { get; set; } = false;

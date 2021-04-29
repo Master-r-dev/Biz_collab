@@ -30,6 +30,7 @@ namespace Biz_collab
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews();
             Global.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddScoped<INotiService, NotiService>();
             services.AddSignalR();
@@ -38,7 +39,6 @@ namespace Biz_collab
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
             services.AddRazorPages();            
         }
 

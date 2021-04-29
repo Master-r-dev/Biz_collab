@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Biz_collab.Controllers
@@ -23,7 +24,7 @@ namespace Biz_collab.Controllers
 
         public JsonResult GetNotifications(bool bIsGetOnlyUnread=false)
         {
-            int nToUserId = 3;
+            string nToUserId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             _oNotifications = new List<Noti>();
             _oNotifications = _notiService.GetNotifications(nToUserId, bIsGetOnlyUnread);
             return Json(_oNotifications);

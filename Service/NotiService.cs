@@ -19,8 +19,8 @@ namespace Biz_collab.Service
             using (IDbConnection con = new SqlConnection(Global.ConnectionString))
             {
                 if (con.State == ConnectionState.Closed) con.Open();
-                string conString = "SELECT * FROM Notification WHERE ToUserId=" + nToUserId;
-                var oNotis = con.Query<Notification>(conString).ToList();
+                string conString = "SELECT * FROM View_Notification WHERE ToUserId='" + nToUserId + "'";
+                var oNotis = con.Query<Noti>(conString).ToList();
 
                 if (oNotis != null && oNotis.Count() > 0)
                 {

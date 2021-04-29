@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 
 namespace Biz_collab.Models
 {
-    public class Noti
+    public class Notification
     {
         public int NotiId { get; set; } = 0;
         public string FromUserId { get; set; } = "";
         public string ToUserId { get; set; } = "";
+        public string FromUserName { get; set; } = "";
+        public string ToUserName { get; set; } = "";
         public string NotiHeader { get; set; } = "";
         public string NotiBody { get; set; } = "";
         public bool IsRead { get; set; } = false;
@@ -20,7 +22,6 @@ namespace Biz_collab.Models
         public string CreatedDateSt => this.CreatedDate.ToString("dd-MMM-yyyy HH:mm:ss");
         public string IsReadSt => this.IsRead ? "YES" : "NO";
 
-        public string FromUserName { get; set; } = "";
-        public string ToUserName { get; set; } = "";
+        
     }
 }

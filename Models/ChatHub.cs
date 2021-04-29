@@ -38,6 +38,7 @@ namespace Biz_collab.Models
                 message.GroupId =  _db.Groups.AsNoTracking().FirstOrDefault(g => g.Name == message.GroupName).Id;
                 await _db.Messages.AddAsync(message);
                 await _db.SaveChangesAsync();
+
                 /*
                  
                  */

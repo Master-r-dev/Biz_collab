@@ -12,7 +12,7 @@ namespace Biz_collab.Controllers
     public class NotificationsController : Controller
     {
         INotiService _notiService = null;
-        List<Noti> _oNotifications = new List<Noti>();
+        List<Notification> _oNotifications = new List<Notification>();
         public NotificationsController(INotiService notiService)
         {
             _notiService = notiService;
@@ -25,7 +25,7 @@ namespace Biz_collab.Controllers
         public JsonResult GetNotifications(bool bIsGetOnlyUnread=false)
         {
             string nToUserId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            _oNotifications = new List<Noti>();
+            _oNotifications = new List<Notification>();
             _oNotifications = _notiService.GetNotifications(nToUserId, bIsGetOnlyUnread);
             return Json(_oNotifications);
         }

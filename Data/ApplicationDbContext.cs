@@ -20,6 +20,7 @@ namespace Biz_collab.Data
         public DbSet<Role_Power> Role_Powers { get; set; }
         public DbSet<Vote> Votes { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Message> Notifications { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Client>()

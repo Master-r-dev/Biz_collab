@@ -1,4 +1,5 @@
 ﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/notification/ikr.notificationPlugin.js"></script>
 <table id="tblNotification" class="table table-bordered table-striped">
     <thread>
         <tr>
@@ -12,31 +13,24 @@
     <tbody>
     </tbody>
 </table>
+<script type="text/javascript">
+    $.get(
+        "/Notifications/GetNotifications",
+        onAjaxSuccess
+    );
 
-<script type="text/javascript>
-    console.log("su4ka");
-    $(document).ready(function () {
-        $.ajax({
-            type: "GET",
-            dataType: "json",
-            url: "/Notifications/GetNotifications",
-            traditional: true,
-            contentType: "application/json;charset=utf-8",
-            success: function (data) {
-                var notifications = data;
-                $.map(notifications, function (notification) {
-                    $("#tblNotification tbody").append("<tr>"
-                        + "<td>" + notification.fromUserName + "<td>"
-                        + "<td>" + notification.notiHeader + "<td>"
-                        + "<td>" + notification.notiBody + "<td>"
-                        + "<td>" + notification.isReadSt + "<td>"
-                        + "<td>" + notification.createdDateSt + "<td>"
-                        + "<tr>");
-                });
-            },
-            error: function (xhr, status, error) {
-
-            }
+    function onAjaxSuccess(data) {
+        console.log(data);
+        var notifications = data;
+        $.map(notifications, function (notification) {
+            $("#tblNotification tbody").append("<tr>"
+                + "<td>" + notification.fromUserId + "</td>"
+                + "<td>" + notification.notiHeader + "</td>"
+                + "<td>" + notification.notiBody + "</td>"
+                + "<td>" + notification.isReadSt + "</td>"
+                + "<td>" + notification.createdDateSt + "</td>"
+                + "</tr>");
         });
-    });
+    }
 </script>
+

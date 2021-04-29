@@ -1,6 +1,6 @@
 ﻿@model Biz_collab.Models.Group
 @{ ViewData["Title"] = "Группа " + Model.Name; }
-
+<script src="~/notification/ikr.notificationPlugin.js"></script>
 <div style="display: flex;">
     <div class="graphics-box">
         <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center">
@@ -208,50 +208,50 @@
                 </tr>
             }
         </table>
-        
 
-        <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" >
-            <h2 class="c-g f-s-1rem p-t-7">Чат</h2>            
-                <div class="scroll-box" id="chatroom" style="height:350px">
-                    @foreach (var message in Model.Messages.Reverse())
-                    {                    
-                        @if (message.Name == Context.User.Identity.Name.Substring(0, Context.User.Identity.Name.LastIndexOf("@")))
-                        {
-                            <div class="chat-usercontainer">
 
-                                <div class="style-username">
-                                    @message.Name
-                                </div>
-                                <div class="style-usermassage-text">
-                                    @message.Text
-                                </div>
-                                <div class="style-time">
-                                    @message.Time.ToString("HH:mm:ss")
-                                </div>
+        <div class="chat-box bg-b b-r-10 p-l-20 p-r-20 p-b-20">
+            <h2 class="c-g f-s-1rem p-t-7">Чат</h2>
+            <div class="scroll-box" id="chatroom" style="height:350px">
+                @foreach (var message in Model.Messages.Reverse())
+                {
+                    @if (message.Name == Context.User.Identity.Name.Substring(0, Context.User.Identity.Name.LastIndexOf("@")))
+                    {
+                        <div class="chat-usercontainer">
+
+                            <div class="style-username">
+                                @message.Name
                             </div>
-                        }
-                        else
-                        { <div class="chat-container">
-                                <div class="style-name">
-                                    @message.Name
-                                </div>
-                                <div class="style-massage-text">
-                                    @message.Text
-                                </div>
-                                <div class="style-time">
-                                    @message.Time.ToString("HH:mm:ss")
-                                </div>
+                            <div class="style-usermassage-text">
+                                @message.Text
                             </div>
-                        }                        
+                            <div class="style-time">
+                                @message.Time.ToString("HH:mm:ss")
+                            </div>
+                        </div>
                     }
-                </div>            
+                    else
+                    { <div class="chat-container">
+                            <div class="style-name">
+                                @message.Name
+                            </div>
+                            <div class="style-massage-text">
+                                @message.Text
+                            </div>
+                            <div class="style-time">
+                                @message.Time.ToString("HH:mm:ss")
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
             <div id="inputForm">
-                <input type="text" id="message" class="style-field"/>
+                <input type="text" id="message" class="style-field" />
                 <input class="style-button" type="button" id="sendBtn" value="Отправить" />
             </div>
         </div>
     </div>
-    
+
 </div>
 <script src="../js/signalr/dist/browser/signalr.min.js"></script>
 <script>
@@ -290,7 +290,7 @@
         document.getElementById("chatroom").insertBefore(container, firstElem);
         if (nday != null) {
             // добавляет элемент для диагностического сообщения
-            let notifyElem = document.createElement("b");            
+            let notifyElem = document.createElement("b");
             notifyElem.appendChild(document.createTextNode(nday));
             let elem = document.createElement("p");
             //let elem = document.createElement("div");

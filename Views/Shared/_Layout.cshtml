@@ -36,7 +36,6 @@
                 <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                     <partial name="_LoginPartial" />
                 </div>
-                <div id="noti_Container"></div>
             </nav>
         </header>
 
@@ -64,6 +63,7 @@
 </html>
 
 <script type="text/javascript">
+    console.log("AOSPIHDIOPASGDASIOD");
     $(document).ready(function () {
         $("#noti_Container").ikrNotificationSetup();
         $.get(
@@ -72,11 +72,10 @@
         );
 
         function onAjaxSuccess(data) {
-            console.log(data);
             var notifications = data;
             $("#noti_Container").ikrNotificationCount({
                 NotificationList: notifications,
-                NotiFromPropName: "FromUserName",
+                NotiFromPropName: "FromUserId",
                 ListTitlePropName: "NotiHeader",
                 ListBodyPropName: "NotiBody",
                 ControllerName: "Notifications",

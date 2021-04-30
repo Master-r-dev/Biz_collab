@@ -13,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Biz_collab.Models;
-using Biz_collab.Common;
 using Biz_collab.IService;
 using Biz_collab.Service;
 
@@ -31,7 +30,6 @@ namespace Biz_collab
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            Global.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddScoped<INotiService, NotiService>();
             services.AddSignalR();
             services.AddDbContext<ApplicationDbContext>(options =>

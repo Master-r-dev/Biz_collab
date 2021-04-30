@@ -78,7 +78,7 @@ namespace Biz_collab.Data
             builder.Entity<Notification>()
                 .HasKey(x => x.Id);
             builder.Entity<Notification>()
-            .HasOne(x => x.Client)
+                .HasOne(x => x.Client)
                 .WithMany(m => m.MyNotifications)
                 .HasForeignKey(x => x.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);

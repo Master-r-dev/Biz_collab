@@ -8,6 +8,6 @@ namespace Biz_collab.IService
 {
     public interface INotiService
     {
-        List<Notification> GetNotifications(string nToUserId, bool bIsGetOnlyUnread);
+        List<Notification> GetNotifications(string ClientId, bool bIsGetOnlyUnread);
     }
 }

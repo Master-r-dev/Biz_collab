@@ -31,9 +31,9 @@ namespace Biz_collab.Controllers
 
         public JsonResult GetNotifications(bool bIsGetOnlyUnread=false)
         {
-            string nToUserId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             _oNotifications = new List<Notification>();
-            _oNotifications = _notiService.GetNotifications(nToUserId, bIsGetOnlyUnread);
+            _oNotifications = _notiService.GetNotifications(ClientId, bIsGetOnlyUnread);
             return Json(_oNotifications);
         }
         [Route("/notificationSeen")]

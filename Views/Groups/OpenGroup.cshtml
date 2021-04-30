@@ -309,7 +309,8 @@
     document.getElementById("sendBtn").addEventListener("click", function (e) {
         var text = document.getElementById("message").value;
         if (text != "") {
-        let groupname = '@Model.Name';
+            let groupname = decodeURI('@Model.Name');
+           
         hubConnection.invoke("Send",{ "text": text, "groupname": groupname/*, "time": time , "name": name*/ });
         document.getElementById("message").value = '';
         }

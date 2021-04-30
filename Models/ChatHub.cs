@@ -22,26 +22,21 @@ namespace Biz_collab.Models
             message.Name = Context.User.Identity.Name.Substring(0, Context.User.Identity.Name.LastIndexOf("@"));
             /*Message message = new Message { Text = text};*/
             //если клиент состоит в группе и его роль не забанен
-            if (_db.Clients.AsNoTracking().Include(c => c.MyGroups).ThenInclude(rp => rp.Group)
+            var client = _db.Clients.AsNoTracking().Include(c => c.MyGroups).ThenInclude(rp => rp.Group)
                 .FirstOrDefault(c => c.Login == Context.User.Identity.Name).MyGroups
-                .FirstOrDefault(rp => rp.Group.Name == message.GroupName).R != "Забанен" || 
-                _db.Clients.AsNoTracking().Include(c => c.MyGroups).ThenInclude(rp => rp.Group)
-                .FirstOrDefault(c => c.Login == Context.User.Identity.Name).MyGroups
-                .FirstOrDefault(rp => rp.Group.Name == message.GroupName) != null )
+                .FirstOrDefault(rp => rp.Group.Name == System.Web.HttpUtility.HtmlDecode( message.GroupName));
+            if (client.R != "Забанен" || client != null )
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, message.GroupName);
                 //объявляем сообщение нового дня              
-                if (message.Time.Day - _db.Groups.Include(g => g.Messages).FirstOrDefault(g => g.Name == message.GroupName).Messages.Last().Time.Day >= 1)
+                if ( !_db.Groups.AsNoTracking().Include(g => g.Messages).FirstOrDefault(g => g.Name == message.GroupName).Messages.Any() || message.Time.Day - _db.Groups.AsNoTracking().Include(g => g.Messages).FirstOrDefault(g => g.Name == message.GroupName).Messages.Last().Time.Day >= 1)
                 { await Clients.Group(message.GroupName).SendAsync("Receive", message.Name, message.Text, message.Time.ToString("HH:mm:ss"), message.Time.ToString("ddd , dd/MM/yy")); }
-                else { await Clients.Group(message.GroupName).SendAsync("Receive", message.Name, message.Text, message.Time.ToString("HH:mm:ss")); }
+                else
+                { await Clients.Group(message.GroupName).SendAsync("Receive", message.Name, message.Text, message.Time.ToString("HH:mm:ss")); }
                 message.ClientId = _db.Clients.AsNoTracking().FirstOrDefault(c => c.Login == Context.User.Identity.Name).Id;
                 message.GroupId =  _db.Groups.AsNoTracking().FirstOrDefault(g => g.Name == message.GroupName).Id;
                 await _db.Messages.AddAsync(message);
                 await _db.SaveChangesAsync();
-
-                /*
-                 
-                 */
             }
         }
         /*

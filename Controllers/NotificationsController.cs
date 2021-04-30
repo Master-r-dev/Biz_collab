@@ -1,6 +1,8 @@
-﻿using Biz_collab.IService;
+﻿using Biz_collab.Data;
+using Biz_collab.IService;
 using Biz_collab.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,11 +16,13 @@ namespace Biz_collab.Controllers
 {
     public class NotificationsController : Controller
     {
+        private readonly ApplicationDbContext _db;
         INotiService _notiService = null;
         List<Notification> _oNotifications = new List<Notification>();
-        public NotificationsController(INotiService notiService)
+        public NotificationsController(INotiService notiService, ApplicationDbContext context)
         {
             _notiService = notiService;
+            _db = context;
         }
         public IActionResult AllNotifications()
         {
@@ -44,6 +48,8 @@ namespace Biz_collab.Controllers
                 bodyStr = reader.ReadToEndAsync().Result;
             }
             var json = JsonConvert.DeserializeObject<Notification>(bodyStr);
+            _db.Entry(json).State = EntityState.Modified;
+            _db.SaveChanges();
             //СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА
             //ниже как было реализовано в старом проекте(работало)
             /*Thread.Sleep(500);

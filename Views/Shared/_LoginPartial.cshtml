@@ -1,33 +1,57 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
-    <ul class="navbar-nav ml-auto">
-        @if (SignInManager.IsSignedIn(User))
-        {
-            <li class="nav-item">
-                @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
-            </li>
-            //уведомления
-            <li class="nav-item">
-                <div id="noti_Container"></div>
-                @Html.ActionLink("Уведомления", "Notifications", "Home", new { }, new { @class = "modal-link nav-link" })
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Профиль">@User.Identity.Name</a>
-            </li>
-            <li class="nav-item">
-                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                    <button type="submit" class="nav-link btn btn-link">Выйти</button>
-                </form>
-            </li>
-        }
-        else
-        {
-            <li class="nav-item">
-                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Зарегистрироваться</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Войти</a>
-            </li>
-        }
-    </ul>
+<script src="~/notification/ikr.notificationPlugin.js?v=1.0"></script>
+<ul class="navbar-nav ml-auto">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <script type="text/javascript">
+            console.log("AOSPIHDIOPASGDASIOD");
+            $(document).ready(function () {
+                $("#noti_Container").ikrNotificationSetup();
+                $.get(
+                    "/Notifications/GetNotifications",
+                    onAjaxSuccess
+                );
+
+                function onAjaxSuccess(data) {
+                    var notifications = data;
+                    $("#noti_Container").ikrNotificationCount({
+                        NotificationList: notifications,
+                        NotiFromPropName: "FromUserId",
+                        ListTitlePropName: "NotiHeader",
+                        ListBodyPropName: "NotiBody",
+                        ControllerName: "Notifications",
+                        ActionName: "AllNotifications"
+                    });
+                }
+            });
+        </script>
+
+        <li class="nav-item">
+            @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
+        </li>
+        //уведомления
+        <li class="nav-item">
+            <div id="noti_Container"></div>
+            @Html.ActionLink("Уведомления", "Notifications", "Home", new { }, new { @class = "modal-link nav-link" })
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Профиль">@User.Identity.Name</a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link">Выйти</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Зарегистрироваться</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Войти</a>
+        </li>
+    }
+</ul>

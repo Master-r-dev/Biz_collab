@@ -7,11 +7,12 @@ namespace Biz_collab.Models
 {
     public class Notification
     {
-        public int NotiId { get; set; } = 0;
-        public string FromUserId { get; set; } = "";
+        public int Id { get; set; }
+        /*public string FromUserId { get; set; } = "";
         public string ToUserId { get; set; } = "";
-        public string FromUserName { get; set; } = "";
-        public string ToUserName { get; set; } = "";
+        public string FromUserName { get; set; } = "";*/
+        public Client Client { get; set; }
+        public string ClientId { get; set; }
         public string NotiHeader { get; set; } = "";
         public string NotiBody { get; set; } = "";
         public bool IsRead { get; set; } = false;

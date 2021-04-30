@@ -20,7 +20,7 @@ namespace Biz_collab.Service
             {
                 if (con.State == ConnectionState.Closed) con.Open();
                 string conString = "SELECT * FROM View_Notification WHERE ToUserId='" + nToUserId + "'";
-                var oNotis = con.Query<Noti>(conString).ToList();
+                var oNotis = con.Query<Notification>(conString).ToList();
 
                 if (oNotis != null && oNotis.Count() > 0)
                 {

@@ -20,7 +20,7 @@ namespace Biz_collab.Data
         public DbSet<Role_Power> Role_Powers { get; set; }
         public DbSet<Vote> Votes { get; set; }
         public DbSet<Message> Messages { get; set; }
-        public DbSet<Message> Notifications { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Client>()
@@ -74,6 +74,13 @@ namespace Biz_collab.Data
                 .HasOne(x => x.Group)
                 .WithMany(m => m.Messages)
                 .HasForeignKey(x => x.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Notification>()
+                .HasKey(x => x.Id);
+            builder.Entity<Notification>()
+            .HasOne(x => x.Client)
+                .WithMany(m => m.MyNotifications)
+                .HasForeignKey(x => x.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(builder);

@@ -13,7 +13,8 @@ namespace Biz_collab.Models
         public int PersBudget { get; set; } 
         public ICollection<Role_Power> MyGroups { get; set; }
         public ICollection<Transaction> MyTransactions { get; set; }
-        public ICollection<Vote> MyVotes { get; set; }
+        public ICollection<Notification>  MyNotifications { get; set; }
+    public ICollection<Vote> MyVotes { get; set; }
         //для изменения и удаления
         public virtual ICollection<Message> MyMessages { get; set; }
         public Client()

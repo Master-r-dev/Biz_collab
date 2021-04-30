@@ -38,7 +38,7 @@ namespace Biz_collab.Controllers
         }
         [Route("/notificationSeen")]
         [HttpPut]
-        public ActionResult Cart()
+        public ActionResult NotificationSeen()
         {
             var bodyStr = "";
             var req = Request;
@@ -49,24 +49,8 @@ namespace Biz_collab.Controllers
             }
             var json = JsonConvert.DeserializeObject<Notification>(bodyStr);
             _db.Entry(json).State = EntityState.Modified;
+            Console.WriteLine(json.IsRead);
             _db.SaveChanges();
-            //СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА ЛЕХА СЮДА
-            //ниже как было реализовано в старом проекте(работало)
-            /*Thread.Sleep(500);
-            var totalPrice = 0;
-            int lastCustomerId = db.Customers.Max(item => item.customerId);
-            foreach (var value in json.Dat)
-            {
-                totalPrice += value.Price * value.Quantity;
-            }
-            db.Orders.Add(new order { order_time = DateTime.Now, price = totalPrice, customerId = lastCustomerId });
-            db.SaveChanges();
-            int lastOrderId = db.Orders.Max(item => item.orderId);
-            foreach (var value in json.Dat)
-            {
-                db.Mos.Add(new mo { orderId = lastOrderId, menu_itemId = value.Id, order_items_quantity = value.Quantity });
-            }
-            db.SaveChanges();*/
             return RedirectToAction("/");
         }
     }

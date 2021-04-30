@@ -28,13 +28,13 @@
             $('#' + parentId + ' .ikrNoti_Button').click(function () {
                 opt.NotificationList.forEach(function (item) {
                     item.isRead = true
-                });
-                let json = JSON.stringify(opt);
-                console.log(json)
-                let request = new XMLHttpRequest();
-                request.open("PUT", "/notificationSeen", true);
-                request.setRequestHeader("Content-Type", "application/json");
-                request.send(json);
+                    let json = JSON.stringify(item);
+                    console.log(json)
+                    let request = new XMLHttpRequest();
+                    request.open("PUT", "/notificationSeen", true);
+                    request.setRequestHeader("Content-Type", "application/json");
+                    request.send(json);
+                });   
 
                 $('#' + parentId + ' .ikrNotifications').fadeToggle('fast', 'linear', function () {
                     if ($('#' + parentId + ' .ikrNotifications').is(':hidden')) {

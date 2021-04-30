@@ -18,7 +18,7 @@
                 var notifications = data;
                 $("#noti_Container").ikrNotificationCount({
                     NotificationList: notifications,
-                    NotiFromPropName: "FromUserId",
+                    NotiFromPropName: "ClientId",
                     ListTitlePropName: "NotiHeader",
                     ListBodyPropName: "NotiBody",
                     ControllerName: "Notifications",
@@ -31,7 +31,6 @@
         <li class="nav-item">
             @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
         </li>
-        //уведомления
         <li class="nav-item">
             <div id="noti_Container"></div>
             @Html.ActionLink("Уведомления", "Notifications", "Home", new { }, new { @class = "modal-link nav-link" })

@@ -229,11 +229,15 @@ namespace Biz_collab.Controllers
                 group.Budget += group.EntryFeeDon;
                 _db.Entry(client).State = EntityState.Modified;
                 _db.Entry(group).State = EntityState.Modified;
+                Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Создатель").ClientId, NotiHeader = "Новый пользователь", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "../Groups/OpenGroup?name=" + @group.Name };
+                _db.Notifications.Add(newUser);
                 await _db.SaveChangesAsync();
                 return RedirectToAction("OpenGroup", new { name, x=true });
             }
             else if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 2)
             {
+                Notification newUser = new Notification { ClientId= @group.Clients.FirstOrDefault(rp => rp.R == "Создатель").ClientId, NotiHeader="Новый пользователь", NotiBody="В вашей группе: "+ @group.Name+"   добавился пользователь   "+ client.Login, IsRead=false, Url="" };
+                _db.Notifications.Add(newUser);
                 if (sum == 1 && client.PersBudget>=group.EntryFeeDon) {
                     Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Донатер", P = 1 };
                     @group.Clients.Add(cl);

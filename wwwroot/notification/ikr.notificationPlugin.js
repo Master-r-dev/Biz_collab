@@ -13,10 +13,10 @@
             $("#" + parentId).append("<div class='ikrNoti_Counter'></div>" +
                 "<div class='ikrNoti_Button'></div>" +
                 "<div class='ikrNotifications'>" +
-                "<h3>Notifications (<span class='notiCounterOnHead'>0</span>)</h3>" +
+                "<h3>Уведомления (<span class='notiCounterOnHead'>0</span>)</h3>" +
                 "<div class='ikrNotificationItems'>" +
                 "</div>" +
-                "<div class='ikrSeeAll'><a href='#'>See All</a></div>" +
+                "<div class='ikrSeeAll'><a href='#'>Посмотреть все</a></div>" +
                 "</div>");
 
             $('#' + parentId + ' .ikrNoti_Counter')
@@ -64,7 +64,6 @@
         /*
           Declaration : $("#myComboId").ikrNotificationCount({
                     NotificationList: [],
-                    NotiFromPropName: "",
                     ListTitlePropName: "",
                     ListBodyPropName: "",
                     ControllerName: "Notifications",
@@ -74,7 +73,6 @@
         opt = options
         var defaultSettings = $.extend({
             NotificationList: [],
-            NotiFromPropName: "",
             ListTitlePropName: "",
             ListBodyPropName: "",
             ControllerName: "Notifications",
@@ -91,15 +89,13 @@
             $('#' + parentId + ' .notiCounterOnHead').text(totalUnReadNoti);
             if (defaultSettings.NotificationList.length > 0) {
                 $.map(defaultSettings.NotificationList, function (item) {
-                    var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";
-                    var sNotiFromPropName = $.trim(defaultSettings.NotiFromPropName) == "" ? "" : item[ikrLowerFirstLetter(defaultSettings.NotiFromPropName)];
-                    $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' notiId=" + item.notiId + ">" +
-                        "<h4 class='ikrNotiFromPropName'>" + sNotiFromPropName + "</h4>" +
+                    var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";                   
+                    $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "'" + item.Id + ">" +
                         "<h5 class='ikrNotificationTitle'>" + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
-                        "<div class='ikrNofiCreatedDate'>" + item.createdDateSt + "</div>" +
+                        "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
                         "</div>");
-                    $("#" + parentId + " .ikrNotificationItems .ikrSingleNotiDiv[notiId=" + item.notiId + "]").click(function () {
+                    $("#" + parentId + " .ikrNotificationItems .ikrSingleNotiDiv[Id=" + item.Id + "]").click(function () {
                         if ($.trim(item.url) != "") {
                             window.location.href = item.url;
                         }

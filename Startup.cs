@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Biz_collab.Models;
 using Biz_collab.IService;
 using Biz_collab.Service;
+using System.Text.Unicode;
 
 namespace Biz_collab
 {
@@ -32,6 +33,9 @@ namespace Biz_collab
             services.AddControllersWithViews();
             services.AddScoped<INotiService, NotiService>();
             services.AddSignalR();
+            services.AddWebEncoders(o => {
+                o.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(UnicodeRanges.All);
+            });
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));

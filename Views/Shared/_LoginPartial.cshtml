@@ -1,12 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
-<script src="~/notification/ikr.notificationPlugin.js?v=1.0"></script>
+<script src="~/notification/ikr.notificationPlugin.js"  charset="windows-1251"></script>
 
 @if (SignInManager.IsSignedIn(User))
 {
     <script type="text/javascript">
-        console.log("AOSPIHDIOPASGDASIOD");
         $(document).ready(function () {
             $("#noti_Container").ikrNotificationSetup();
             $.get(
@@ -29,11 +28,10 @@
     </script>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
+            <div id="noti_Container"></div>
         </li>
         <li class="nav-item">
-            <div id="noti_Container"></div>
-            @Html.ActionLink("Уведомления", "Notifications", "Home", new { }, new { @class = "modal-link nav-link" })
+            @Html.ActionLink("Пополнить баланс", "AddBalance", "Home", new { }, new { @class = "modal-link nav-link" })
         </li>
         <li class="nav-item">
             <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Профиль">@User.Identity.Name</a>

@@ -17,7 +17,7 @@ namespace Biz_collab.Controllers
     public class NotificationsController : Controller
     {
         private readonly ApplicationDbContext _db;
-        INotiService _notiService = null;
+        readonly INotiService _notiService = null;
         List<Notification> _oNotifications = new List<Notification>();
         public NotificationsController(INotiService notiService, ApplicationDbContext context)
         {
@@ -49,7 +49,6 @@ namespace Biz_collab.Controllers
             }
             var json = JsonConvert.DeserializeObject<Notification>(bodyStr);
             _db.Entry(json).State = EntityState.Modified;
-            Console.WriteLine(json.IsRead);
             _db.SaveChanges();
             return RedirectToAction("/");
         }

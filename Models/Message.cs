@@ -14,8 +14,6 @@ namespace Biz_collab.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public string GroupName { get; set; }
-        [Required]
         public string Text { get; set; }
         public DateTime Time { get; set; }
         public string ClientId { get; set; }

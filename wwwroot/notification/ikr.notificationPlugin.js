@@ -90,12 +90,12 @@
             if (defaultSettings.NotificationList.length > 0) {
                 $.map(defaultSettings.NotificationList, function (item) {
                     var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";                   
-                    $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "'" + item.Id + ">" +
+                    $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
                         "<h5 class='ikrNotificationTitle'>" + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
                         "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
                         "</div>");
-                    $("#" + parentId + " .ikrNotificationItems .ikrSingleNotiDiv[Id=" + item.Id + "]").click(function () {
+                    $("#" + parentId + " .ikrNotificationItems .ikrSingleNotiDiv[Id=" + item.id + "]").click(function () {
                         if ($.trim(item.url) != "") {
                             window.location.href = item.url;
                         }

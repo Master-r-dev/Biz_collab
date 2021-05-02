@@ -263,7 +263,7 @@
    //         skipNegotiation: true,
   //          transport: signalR.HttpTransportType.WebSockets
    //     })
-
+    hubConnection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
 
     // получение сообщения от сервера
     hubConnection.on('Receive', function (name, text, time, nday) {
@@ -309,11 +309,26 @@
     document.getElementById("sendBtn").addEventListener("click", function (e) {
         var text = document.getElementById("message").value;
         if (text != "") {
-            let groupname = decodeURI('@Model.Name');
-           
-        hubConnection.invoke("Send",{ "text": text, "groupname": groupname/*, "time": time , "name": name*/ });
-        document.getElementById("message").value = '';
-        }
+            var groupname = "@Model.Name";
+            var notify = "";
+            var cRole="@Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R";
+            if (cRole == "Создатель" || cRole == "Mod" || cRole == "VIP") {
+                var regex = new RegExp(/(?<=[\s])@("@")all$|^@("@")all(?=[\s])|(?<=[\s])@("@")all(?=[\s])/);
+                var regexUser = new RegExp(/(?<=[\s])@("@")w*@("@")\w*\.\w*(?![\s])$|^@("@")w*@("@")\w*\.\w*(?=[\s])|(?<=[\s])@("@")w*@("@")\w*\.\w*(?=[\s])/)
+                if (regex.exec(text) != null && regex.exec(text).length > 0) {
+                    console.log(regex.exec(text)[0])
+                    if (regex.exec(text)[0] == "@("@")all") {
+                        var notify = "all";
+                    }
+                }
+                else if (regexUser.exec(text) != null && regexUser.exec(text).length > 0 && regexUser.exec(text)[0] != "") {
+                    console.log(regexUser.exec(text)[0])
+                    notify = regexUser.exec(text)[0];
+                }
+            }
+            hubConnection.invoke("Send", text, groupname, notify /*, "name": name*/ );
+            document.getElementById("message").value = '';
+            }
     });
 
     hubConnection.start();

@@ -32,7 +32,11 @@ namespace Biz_collab
         {
             services.AddControllersWithViews();
             services.AddScoped<INotiService, NotiService>();
-            services.AddSignalR();
+            services.AddSignalR(hubOptions =>
+            {
+                hubOptions.EnableDetailedErrors = true;
+                hubOptions.KeepAliveInterval = System.TimeSpan.FromMinutes(1);
+            });
             services.AddWebEncoders(o => {
                 o.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(UnicodeRanges.All);
             });

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,6 +11,7 @@ namespace Biz_collab.Models
         public string Login { get; set; }
         public int PersBudget { get; set; } 
         public ICollection<Role_Power> MyGroups { get; set; }
+        public ICollection<MutedList> MutedList { get; set; }
         public ICollection<Transaction> MyTransactions { get; set; }
         public ICollection<Notification>  MyNotifications { get; set; }
         public ICollection<Vote> MyVotes { get; set; }

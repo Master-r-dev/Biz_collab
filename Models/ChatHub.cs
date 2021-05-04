@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Biz_collab.Data;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,10 +17,6 @@ namespace Biz_collab.Models
         public async Task Send(string Text,string Groupname ,string[] notify)
         {
             //если клиент состоит в группе и его роль не забанен
-            /* var client = _db.Clients.Include(c => c.MyGroups).ThenInclude(rp => rp.Group).ThenInclude(c=>c.Clients)
-                 .FirstOrDefault(c => c.Login == Context.User.Identity.Name).MyGroups
-                 .FirstOrDefault(rp => rp.Group.Name == Groupname);
-            */
             var client = _db.Groups.AsNoTracking().Include(g => g.Clients).FirstOrDefault(g => g.Name == Groupname).Clients
                 .FirstOrDefault(rp=>rp.ClientId == Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             Message message = new Message { Text = Text};
@@ -46,15 +39,18 @@ namespace Biz_collab.Models
                         {
                             foreach (var c in client.Group.Clients)
                             {
-                                Notification callUser = new Notification
-                                {
-                                    ClientId = c.ClientId,
-                                    NotiHeader = "Вас упомянули в чате",
-                                    NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
-                                    IsRead = false,
-                                    Url = "../Groups/OpenGroup?name=" + Groupname
-                                };
-                                await _db.Notifications.AddAsync(callUser);
+                                if (c.ClientId==client.ClientId) { continue; }
+                                if (!c.Client.MutedList.Any(m=>m.MutedId == message.GroupId || m.MutedId == message.ClientId)) {
+                                    Notification callUser = new Notification
+                                    {
+                                        ClientId = c.ClientId,
+                                        NotiHeader = "Вас упомянули в чате",
+                                        NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                        IsRead = false,
+                                        Url = "../Groups/OpenGroup?name=" + Groupname
+                                    };
+                                    await _db.Notifications.AddAsync(callUser);
+                                }
                             }
 
                         }
@@ -67,67 +63,8 @@ namespace Biz_collab.Models
                                 {
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "Mod"))
                                     {
-                                        Notification callUser = new Notification
-                                        {
-                                            ClientId = c.ClientId,
-                                            NotiHeader = "Вас упомянули в чате",
-                                            NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
-                                            IsRead = false,
-                                            Url = "../Groups/OpenGroup?name=" + Groupname
-                                        };
-                                        await _db.Notifications.AddAsync(callUser);
-                                    }
-                                }
-                                else if (notify[i] == "VIP")
-                                {
-                                    foreach (var c in client.Group.Clients.Where(c => c.R == "VIP"))
-                                    {
-                                        Notification callUser = new Notification
-                                        {
-                                            ClientId = c.ClientId,
-                                            NotiHeader = "Вас упомянули в чате",
-                                            NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
-                                            IsRead = false,
-                                            Url = "../Groups/OpenGroup?name=" + Groupname
-                                        };
-                                        await _db.Notifications.AddAsync(callUser);
-                                    }
-                                }
-                                else if (notify[i] == "User")
-                                {
-                                    foreach (var c in client.Group.Clients.Where(c => c.R == "User"))
-                                    {
-                                        Notification callUser = new Notification
-                                        {
-                                            ClientId = c.ClientId,
-                                            NotiHeader = "Вас упомянули в чате",
-                                            NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
-                                            IsRead = false,
-                                            Url = "../Groups/OpenGroup?name=" + Groupname
-                                        };
-                                        await _db.Notifications.AddAsync(callUser);
-                                    }
-                                }
-                                else if (notify[i] == "Don")
-                                {
-                                    foreach (var c in client.Group.Clients.Where(c => c.R == "Don"))
-                                    {
-                                        Notification callUser = new Notification
-                                        {
-                                            ClientId = c.ClientId,
-                                            NotiHeader = "Вас упомянули в чате",
-                                            NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
-                                            IsRead = false,
-                                            Url = "../Groups/OpenGroup?name=" + Groupname
-                                        };
-                                        await _db.Notifications.AddAsync(callUser);
-                                    }
-                                }
-                                else
-                                {
-                                    foreach (var c in client.Group.Clients)
-                                    {
-                                        if (c.Client.Login == notify[i])
+                                        if (c.ClientId == client.ClientId) { continue; }
+                                        if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
                                         {
                                             Notification callUser = new Notification
                                             {
@@ -138,7 +75,86 @@ namespace Biz_collab.Models
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
                                             await _db.Notifications.AddAsync(callUser);
-                                            break;
+                                        }
+                                    }
+                                }
+                                else if (notify[i] == "VIP")
+                                {
+                                    foreach (var c in client.Group.Clients.Where(c => c.R == "VIP"))
+                                    {
+                                        if (c.ClientId == client.ClientId) { continue; }
+                                        if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                        {
+                                            Notification callUser = new Notification
+                                            {
+                                                ClientId = c.ClientId,
+                                                NotiHeader = "Вас упомянули в чате",
+                                                NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                IsRead = false,
+                                                Url = "../Groups/OpenGroup?name=" + Groupname
+                                            };
+                                            await _db.Notifications.AddAsync(callUser);
+                                        }
+                                    }
+                                }
+                                else if (notify[i] == "User")
+                                {
+                                    foreach (var c in client.Group.Clients.Where(c => c.R == "User"))
+                                    {
+                                        if (c.ClientId == client.ClientId) { continue; }
+                                        if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                        {
+                                            Notification callUser = new Notification
+                                            {
+                                                ClientId = c.ClientId,
+                                                NotiHeader = "Вас упомянули в чате",
+                                                NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                IsRead = false,
+                                                Url = "../Groups/OpenGroup?name=" + Groupname
+                                            };
+                                            await _db.Notifications.AddAsync(callUser);
+                                        }
+                                    }
+                                }
+                                else if (notify[i] == "Don")
+                                {
+                                    foreach (var c in client.Group.Clients.Where(c => c.R == "Don"))
+                                    {
+                                        if (c.ClientId == client.ClientId) { continue; }
+                                        if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                        {
+                                            Notification callUser = new Notification
+                                            {
+                                                ClientId = c.ClientId,
+                                                NotiHeader = "Вас упомянули в чате",
+                                                NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                IsRead = false,
+                                                Url = "../Groups/OpenGroup?name=" + Groupname
+                                            };
+                                            await _db.Notifications.AddAsync(callUser);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var c in client.Group.Clients)
+                                    {
+                                        if (c.Client.Login == notify[i])
+                                        {
+                                            if (c.ClientId == client.ClientId) { continue; }
+                                            if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                            {
+                                                Notification callUser = new Notification
+                                                {
+                                                    ClientId = c.ClientId,
+                                                    NotiHeader = "Вас упомянули в чате",
+                                                    NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                    IsRead = false,
+                                                    Url = "../Groups/OpenGroup?name=" + Groupname
+                                                };
+                                                await _db.Notifications.AddAsync(callUser);
+                                                break;
+                                            }
                                         }
                                     }
                                 }

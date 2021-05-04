@@ -169,12 +169,21 @@
         </div>
     </div>
     <div class="participants-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center" style="height:300px">
-        <h2 class="c-g f-s-1rem p-t-7">Клиенты</h2>
+        @{var currentuserrole = Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R; }
+
+        @if (currentuserrole == "Creator" || currentuserrole == "Mod")
+        {
+        <h2 class="c-g f-s-1rem p-t-7">Клиенты  <a class="modal-link" href="@Url.Action("InviteClient", "Groups", new { name = Model.Name })" title="Добавить участника"><i class="fas fa-user-plus"></i></a> </h2>
+        }
+        else
+        {
+            <h2 class="c-g f-s-1rem p-t-7">Клиенты</h2>
+        }
         <table class="default-table scroll" style="overflow-x: hidden; overflow-y: auto; text-align: justify;">
+
             @foreach (var client in Model.Clients)
             {
                 var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
-                var currentuserrole = Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R;
                 <tr>
                     <td class="@currentuser">
                         @client.Client.Login
@@ -207,6 +216,8 @@
                     }
                 </tr>
             }
+
+
         </table>
 
 

@@ -26,7 +26,6 @@ namespace Biz_collab.Controllers
         
         [Authorize]
         public async Task<IActionResult> Index(
-            string sortOrder,
             string currentFilter,
             string searchString,
             int? pageNumber)
@@ -42,7 +41,6 @@ namespace Biz_collab.Controllers
             }   
             var AllGroups = _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).AsQueryable();
             var groups = AllGroups.Where(g => g.Clients.FirstOrDefault(rp=>rp.ClientId==currentUserID && rp.R != "Забанен")!=null );  //группы текущего клиента  
-            ViewData["CurrentSort"] = sortOrder;
             if (searchString != null)
             {
                 pageNumber = 1;
@@ -56,41 +54,9 @@ namespace Biz_collab.Controllers
             {
                 AllGroups = AllGroups.Where(s => s.Name.Contains(searchString));
                 groups = groups.Where(s => s.Name.Contains(searchString));
-            }
-            ViewData["ClientAmountSortParm"] = sortOrder == "ClientAmount" ? "clientamount_desc" : "ClientAmount";
-            ViewData["NameSortParm"] = sortOrder == "Name" ? "name_desc" : "Name";
-            ViewData["BudgetSortParm"] = sortOrder == "Budget" ? "budget_desc" : "Budget";            
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    AllGroups = AllGroups.OrderByDescending(s => s.Name);
-                    groups = groups.OrderByDescending(s => s.Name);
-                    break;
-                case "Budget":
-                    AllGroups = AllGroups.OrderBy(s => s.Budget);
-                    groups = groups.OrderBy(s => s.Budget);
-                    break;
-                case "budget_desc":
-                    AllGroups = AllGroups.OrderByDescending(s => s.Budget);
-                    groups = groups.OrderByDescending(s => s.Budget);
-                    break;
-                case "ClientAmount":
-                    AllGroups = AllGroups.OrderBy(s => s.Clients.Count);
-                    groups = groups.OrderBy(s => s.Clients.Count);
-                    break;
-                case "Name":
-                    AllGroups = AllGroups.OrderBy(s => s.Name);
-                    groups = groups.OrderBy(s => s.Name);
-                    break;
-                case "clientamount_desc":                    
-                    AllGroups = AllGroups.OrderByDescending(s => s.Clients.Count);
-                    groups = groups.OrderByDescending(s => s.Clients.Count);
-                    break;
-                default:
-                    AllGroups = AllGroups.OrderByDescending(s => s.Clients.Count);
-                    groups = groups.OrderByDescending(s => s.Clients.Count);
-                    break;
-            }
+            }           
+            AllGroups = AllGroups.OrderByDescending(s => s.Clients.Count);
+            groups = groups.OrderByDescending(s => s.Clients.Count);                
             int pageSize = 5;
             ViewBag.Groups = await PaginatedList<Group>.CreateAsync(groups, pageNumber ?? 1, pageSize);
             ViewBag.PersBudget = _db.Clients.First(c=>c.Id==currentUserID).PersBudget;           

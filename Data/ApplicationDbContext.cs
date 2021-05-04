@@ -21,6 +21,7 @@ namespace Biz_collab.Data
         public DbSet<Vote> Votes { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<MutedList> MutedLists { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Client>()
@@ -80,6 +81,13 @@ namespace Biz_collab.Data
             builder.Entity<Notification>()
                 .HasOne(x => x.Client)
                 .WithMany(m => m.MyNotifications)
+                .HasForeignKey(x => x.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity < MutedList > ()
+                .HasKey(x => x.ClientId);
+            builder.Entity<MutedList>()
+                .HasOne(x => x.Client)
+                .WithMany(m => m.MutedList)
                 .HasForeignKey(x => x.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
 

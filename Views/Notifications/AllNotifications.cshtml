@@ -1,34 +1,114 @@
 ﻿<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/notification/ikr.notificationPlugin.js" charset="windows-1251"></script>
-<table id="tblNotification" class="table table-bordered table-striped" charset="windows-1251">
-    <thread>
-        <tr>
-            <th>Заголовок</th>
-            <th>Содержание</th>
-            <th>Прочитано?</th>
-            <th>Дата создания</th>
-        </tr>
-    </thread>
-    <tbody>
-    </tbody>
-</table>
-<script type="text/javascript" charset="windows-1251">    
-        $.get(
-            "/Notifications/GetNotifications",
-            onAjaxSuccess
-        );    
-    
-        function onAjaxSuccess(data) {
-            
-            var notifications = data;
-            $.map(notifications, function (notification) {
-                $("#tblNotification ").append("<tr>"
-                    + "<td>" + notification.notiHeader + "</td>"
-                    + "<td>" + notification.notiBody + "</td>"
-                    + "<td>" + notification.isRead + "</td>"
-                    + "<td>" + new Date(notification.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</td>"
-                    + "</tr>");
-            });
+@model PaginatedList<Biz_collab.Models.Notification>
+
+<div class="transactions-box bg-b b-r-10 p-l-20 p-r-20p-b-20" style="width: auto">
+    <h4 class="c-g">
+        Мои уведомления
+    </h4>
+    <form asp-action="AllNotifications" method="get">
+        <div class="form-actions no-color search-box" style="width: auto">
+            <input type="text" class="bg-b" name="searchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
+            <button class="search-text-btn">
+                <i class="fas fa-search"></i>
+            </button>
+            <a asp-action="AllNotifications">Вернуться к полному списку</a>
+        </div>
+    </form>
+    <table class="default-table">
+        <thead>
+            <tr>                
+                <td>
+                    <a asp-action="AllNotifications"  asp-route-sortOrder="@ViewData["NotiHeaderSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Заголовок</a>
+                </td>
+                <td>
+                    <a asp-action="AllNotifications"  asp-route-sortOrder="@ViewData["NotiBodySortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Содержание</a>
+                </td>
+                <td>
+                    <a asp-action="AllNotifications"  asp-route-sortOrder="@ViewData["IsReadSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Прочитано?</a>
+                </td>
+                <td>
+                    <a asp-action="AllNotifications"  asp-route-sortOrder="@ViewData["CreatedDateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Дата создания</a>
+                </td>
+                <td>
+                    Действия
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var n in Model)
+            {
+            <tr class="transaction-tr">
+                <td style="max-width: 320px;overflow-wrap: break-word;word-break: break-word;white-space: normal;">
+                    @n.NotiHeader
+                </td>
+                <td>
+                    @n.NotiBody
+                </td>
+                @if (n.IsRead)
+                {
+                    <td>
+                        <i class="fas fa-check-circle"></i>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <i class="fas fa-clock"></i>
+                    </td>
+
+                }
+                <td>
+                    @n.CreatedDate.ToString("dd/MM HH:mm:ss")
+                </td>
+                <td>
+                    <a class="modal-link" href="@Url.Action("Accept", "Notifications", new { n.Id })">
+                        <i class="fas fa-thumbs-up"></i>
+                    </a>
+                </td>
+                <td>
+                    <a class="modal-link" href="@Url.Action("Deny", "Notifications", new { n.Id })">
+                        <i class="fas fa-thumbs-down"></i>
+                    </a>
+                </td>
+                <td>
+                    <a class="modal-link" href="@Url.Action("Mute", "Notifications", new { n.Id })">
+                        <i class="fas fa-volume-mute"></i>
+                    </a>
+                </td>
+                <td>
+                    <a class="modal-link" href="@Url.Action("Delete", "Notifications", new { n.Id })">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <div class="m-r-20" align="right">
+        @{
+            var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+            var nextDisabled = !Model.HasNextPage ? "disabled" : "";
         }
-</script>
+
+        <a asp-action="AllNotifications"
+           asp-route-sortOrder="@ViewData["CurrentSort"]"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           class="btn btn-default @prevDisabled"
+           style="color:#adadad">
+            <<
+        </a>
+        <a asp-action="AllNotifications"
+           asp-route-sortOrder="@ViewData["CurrentSort"]"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           class="btn btn-default @nextDisabled"
+           style="color: #adadad">
+            >>
+        </a>
+    </div>
+</div>
 

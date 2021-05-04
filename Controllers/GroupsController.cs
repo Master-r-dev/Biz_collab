@@ -217,9 +217,9 @@ namespace Biz_collab.Controllers
         [HttpPost]
         public async Task<IActionResult> JoinGroup(string name,int sum)
         {
-            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;            
+            var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c=>c.MutedList).FirstAsync(g => g.Name == name);
             var client = await _db.Clients.Include(c => c.MyGroups).FirstAsync(c => c.Id == currentUserID);
-            var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).FirstAsync(g => g.Name == name);            
             if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 1 && sum == 1)
             {
                 Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Don", P = 1 };
@@ -229,15 +229,16 @@ namespace Biz_collab.Controllers
                 group.Budget += group.EntryFeeDon;
                 _db.Entry(client).State = EntityState.Modified;
                 _db.Entry(group).State = EntityState.Modified;
-                Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый пользователь", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "../Groups/OpenGroup?name=" + @group.Name };
-                _db.Notifications.Add(newUser);
+                if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                {
+                    Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый донатер", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "../Groups/OpenGroup?name=" + @group.Name };
+                    _db.Notifications.Add(newUser);
+                }
                 await _db.SaveChangesAsync();
                 return RedirectToAction("OpenGroup", new { name, x=true });
             }
             else if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 2)
-            {
-                Notification newUser = new Notification { ClientId= @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader="Новый пользователь", NotiBody="В вашей группе: "+ @group.Name+"   добавился пользователь   "+ client.Login, IsRead=false, Url="" };
-                _db.Notifications.Add(newUser);
+            {               
                 if (sum == 1 && client.PersBudget>=group.EntryFeeDon) {
                     Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Don", P = 1 };
                     @group.Clients.Add(cl);
@@ -246,6 +247,11 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeDon;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                    {
+                        Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый донатер", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "" };
+                        _db.Notifications.Add(newUser);
+                    }
                     await _db.SaveChangesAsync();
                     return RedirectToAction("OpenGroup", new { name, x=true });
                 }
@@ -257,6 +263,11 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeUser;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                    {
+                        Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый участник", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "" };
+                        _db.Notifications.Add(newUser);
+                    }
                     await _db.SaveChangesAsync();
                     return RedirectToAction("OpenGroup", new { name,x=true });
                 }
@@ -268,6 +279,11 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeVIP;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                    {
+                        Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый VIP", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "" };
+                        _db.Notifications.Add(newUser);
+                    }
                     await _db.SaveChangesAsync();
                     return RedirectToAction("OpenGroup", new { name, x = true });
                 }
@@ -279,6 +295,11 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeMod;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                    {
+                        Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый модератор", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "" };
+                        _db.Notifications.Add(newUser);
+                    }
                     await _db.SaveChangesAsync();
                     return RedirectToAction("OpenGroup", new { name, x = true });
                 }
@@ -297,7 +318,7 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Name = rp.Group.Name;
+            ViewBag.Name = name;
             ViewBag.Login = rp.Client.Login;
             ViewBag.Count = _db.Groups.AsNoTracking().Include(g=>g.Clients).ThenInclude(rp=>rp.Client).First(g=>g.Name==name).Clients.Count();
             ViewBag.EditorRole= _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
@@ -313,22 +334,22 @@ namespace Biz_collab.Controllers
             {
                 ModelState.AddModelError("Role", "Заполнить!");
                 var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                ViewBag.Name = c.Group.Name;
+                ViewBag.Name = name;
                 ViewBag.Login = c.Client.Login;
                 ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).FirstOrDefault(g => g.Name == name).Clients.Count();
                 ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
-                return View(c);
+                return PartialView(c);
             }
             if (Percent == null && rp.P==0)
             {
                 ModelState.AddModelError("P", "Заполнить!");
                 ModelState.AddModelError("Percent", "Заполнить!");
                 var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                ViewBag.Name = c.Group.Name;
+                ViewBag.Name = name;
                 ViewBag.Login = c.Client.Login;
                 ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
                 ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
-                return View(c);
+                return PartialView(c);
             }
 
             if (name == null || login==null )
@@ -341,8 +362,6 @@ namespace Biz_collab.Controllers
             }
             rp.ClientId = c.ClientId;
             rp.GroupId = c.GroupId;
-            rp.Client = c.Client;
-            rp.Group = c.Group;
             if (Percent != null)
             {
                 rp.Percent = Math.Round(Convert.ToDouble(Percent, CultureInfo.InvariantCulture) *0.01,4);
@@ -354,6 +373,33 @@ namespace Biz_collab.Controllers
             {
                 try
                 {
+                    if (!rp.Client.MutedList.Any(m => m.MutedId == rp.GroupId || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                    {
+                        if (rp.Percent == null)
+                        {
+                            Notification changedUser = new Notification
+                            {
+                                ClientId = rp.ClientId,
+                                NotiHeader = " У Вас " + login + " изменили роль в группе: " + name,
+                                NotiBody = "На роль " + rp.R + " с силой " + rp.P,
+                                IsRead = false,
+                                Url = "../Groups/OpenGroup?name=" + name
+                            };
+                            _db.Notifications.Add(changedUser);
+                        }
+                        else
+                        {
+                            Notification changedUser = new Notification
+                            {
+                                ClientId = rp.ClientId,
+                                NotiHeader = " У Вас " + login + " изменили роль в группе: " + name,
+                                NotiBody = "На роль " + rp.R + " с силой " + rp.P + " и процентом " + rp.Percent,
+                                IsRead = false,
+                                Url = "../Groups/OpenGroup?name=" + name
+                            };
+                            _db.Notifications.Add(changedUser);
+                        }
+                    }
                     _db.Entry(rp).State = EntityState.Modified;
                     _db.SaveChanges();
                 }
@@ -372,12 +418,115 @@ namespace Biz_collab.Controllers
                 return RedirectToAction("OpenGroup", new { name });
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            ViewBag.Name = c.Group.Name;
+            ViewBag.Name = name;
             ViewBag.Login = c.Client.Login;
             ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
             ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
-            return View(c);
+            return PartialView(c);
         }
+        [Authorize]
+        [HttpGet]
+        public IActionResult InviteClient(string name)
+        {   
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ViewBag.Name = name;
+            ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
+            ViewBag.InviterRole = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            return PartialView();
+        }
+        [Authorize]
+        [HttpPost]
+        public IActionResult InviteClient(string name, string login, string Percent, [Bind("R,P")] Role_Power rp)
+        {   /*код приглашения клиента*/
+            if (!ClientExists(login, name) && _db.Clients.AsNoTracking().Any(c => c.Login == login))
+            {
+                if (rp.R == null)
+                {
+                    ModelState.AddModelError("Role", "Заполнить!");
+                    var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                    ViewBag.Name = name;
+                    ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
+                    ViewBag.InviterRole = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
+                    return PartialView();
+                }
+                if (Percent == null && rp.P == 0)
+                {
+                    ModelState.AddModelError("P", "Заполнить!");
+                    ModelState.AddModelError("Percent", "Заполнить!");
+                    var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                    ViewBag.Name = name;
+                    ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
+                    ViewBag.InviterRole = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
+                    return PartialView();
+                }
+
+                if (name == null || login == null)
+                {
+                    return NotFound();
+                }
+                rp.ClientId = _db.Clients.AsNoTracking().First(c=>c.Login==login).Id;
+                rp.GroupId = _db.Groups.AsNoTracking().First(g => g.Name == name).Id;
+                if (Percent != null)
+                {
+                    rp.Percent = Math.Round(Convert.ToDouble(Percent, CultureInfo.InvariantCulture) * 0.01, 4);
+                    rp.P = Convert.ToInt32(Math.Round(Convert.ToDouble(_db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Id == rp.GroupId).Clients.Count() * rp.Percent)));
+                }
+                if (rp.R != null || rp.P >= 0)
+                {
+                    try
+                    {
+                        if (!rp.Client.MutedList.Any(m => m.MutedId == rp.GroupId || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                        {
+                            if (rp.Percent == null)
+                            {
+                            
+                                Notification inviteUser = new Notification
+                                {
+                                    ClientId = rp.ClientId,
+                                    NotiHeader = " Вас " + login + " пригласили в группу: " + name,
+                                    NotiBody = "На роль " + rp.R + " с силой " + rp.P,
+                                    IsRead = false,
+                                    Url = ""
+                                };
+                                _db.Notifications.Add(inviteUser);
+                            }
+                            else
+                            {
+                                Notification inviteUser = new Notification
+                                {
+                                    ClientId = rp.ClientId,
+                                    NotiHeader = " Вас " + login + " пригласили в группу: " + name,
+                                    NotiBody = "На роль " + rp.R + " с силой " + rp.P + " и процентом " + rp.Percent,
+                                    IsRead = false,
+                                    Url = ""
+                                };
+                                _db.Notifications.Add(inviteUser);
+                            }
+                        }
+                        _db.SaveChanges();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (ClientExists(login, name))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    _db.Entry<Role_Power>(rp).State = EntityState.Detached;
+                    return RedirectToAction("OpenGroup", new { name });
+                }
+            }
+            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ViewBag.Name = name;
+            ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
+            ViewBag.InviterRole = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
+            return PartialView();
+        }
+        
         private bool ClientExists(string login,string name)
         {
             return _db.Groups.First(g => g.Name == name).Clients.Any(e => e.Client.Login == login);
@@ -390,6 +539,18 @@ namespace Biz_collab.Controllers
             client.P = 0;
             client.Percent = 0;
             _db.Entry(client).State = EntityState.Modified;
+            if (!client.Client.MutedList.Any(m => m.MutedId == client.GroupId || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                Notification BanClient = new Notification
+                {
+                    ClientId = client.ClientId,
+                    NotiHeader = "Вы были заблокированы в: " + name,
+                    NotiBody = "Осмыслите свое поведение.",
+                    IsRead = false,
+                    Url = ""
+                };
+                _db.Notifications.Add(BanClient);
+            }
             await _db.SaveChangesAsync();
             return RedirectToAction("OpenGroup", new { name });
         }
@@ -476,6 +637,22 @@ namespace Biz_collab.Controllers
             {
                 try
                 {
+                    foreach (var rp in @gg.Clients)
+                    {
+                        if (rp.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value) { continue; }
+                        if (!rp.Client.MutedList.Any(m => m.MutedId == @group.Id || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                        {
+                            Notification editGroup = new Notification
+                            {
+                                ClientId = rp.ClientId,
+                                NotiHeader = "Группа: " + name + " была изменена ",
+                                NotiBody = "Изменения находятся в деталях группы ",
+                                IsRead = false,
+                                Url = "../Groups/OpenGroup?name=" + group.Name
+                            };
+                            _db.Notifications.Add(editGroup);
+                        }
+                    }
                     _db.Entry(@group).State = EntityState.Modified;
                     await _db.SaveChangesAsync();
                 }
@@ -521,15 +698,31 @@ namespace Biz_collab.Controllers
         public async Task<IActionResult> DeleteConfirmed(string name)
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var @group = await _db.Groups.FirstAsync(g=>g.Name==name);
-            var client = _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).First(g => g.Name == name)
-                .Clients.FirstOrDefault(rp=>rp.ClientId== currentUserID && rp.R=="Creator").Client;
+            var @group = await _db.Groups.Include(g=>g.Clients).ThenInclude(rp => rp.Client).FirstAsync(g=>g.Name==name);
+            var client = @group.Clients.FirstOrDefault(rp=>rp.ClientId== currentUserID && rp.R=="Creator").Client;
 
             if (client != null)
             {
                 client.PersBudget += group.Budget;
                 _db.Entry(client).State = EntityState.Modified;
-                _db.Groups.Remove(@group);
+                foreach (var rp in @group.Clients)
+                {
+                    if (rp.ClientId == client.Id) { continue; }
+                    if (!rp.Client.MutedList.Any(m => m.MutedId == @group.Id || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                    {
+                        Notification deleteGroup = new Notification
+                        {
+                            ClientId = rp.ClientId,
+                            NotiHeader = "Группа: " + name + " была удалена ",
+                            NotiBody = "Все средства у ее создателя: " + client.Login,
+                            IsRead = false,
+                            Url = ""
+                        };
+                        _db.Notifications.Add(deleteGroup);
+                    }
+                }
+
+                _db.Groups.Remove(@group);                
                 await _db.SaveChangesAsync();
             }
             return Redirect("~/Home/Index");

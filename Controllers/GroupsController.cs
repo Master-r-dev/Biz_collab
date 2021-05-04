@@ -111,7 +111,7 @@ namespace Biz_collab.Controllers
                     i.P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() * i.Percent)));
                     _db.Entry(i).State = EntityState.Modified;
                 }
-                @group.Clients.FirstOrDefault(rp => rp.R == "Создатель").P = @group.Clients.Count();
+                @group.Clients.FirstOrDefault(rp => rp.R == "Creator").P = @group.Clients.Count();
                 _db.Entry(group).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
             } //новый пользователь
@@ -222,24 +222,24 @@ namespace Biz_collab.Controllers
             var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).FirstAsync(g => g.Name == name);            
             if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 1 && sum == 1)
             {
-                Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Донатер", P = 1 };
+                Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Don", P = 1 };
                 @group.Clients.Add(cl);
                 _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                 client.PersBudget -= group.EntryFeeDon;
                 group.Budget += group.EntryFeeDon;
                 _db.Entry(client).State = EntityState.Modified;
                 _db.Entry(group).State = EntityState.Modified;
-                Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Создатель").ClientId, NotiHeader = "Новый пользователь", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "../Groups/OpenGroup?name=" + @group.Name };
+                Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый пользователь", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "../Groups/OpenGroup?name=" + @group.Name };
                 _db.Notifications.Add(newUser);
                 await _db.SaveChangesAsync();
                 return RedirectToAction("OpenGroup", new { name, x=true });
             }
             else if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 2)
             {
-                Notification newUser = new Notification { ClientId= @group.Clients.FirstOrDefault(rp => rp.R == "Создатель").ClientId, NotiHeader="Новый пользователь", NotiBody="В вашей группе: "+ @group.Name+"   добавился пользователь   "+ client.Login, IsRead=false, Url="" };
+                Notification newUser = new Notification { ClientId= @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader="Новый пользователь", NotiBody="В вашей группе: "+ @group.Name+"   добавился пользователь   "+ client.Login, IsRead=false, Url="" };
                 _db.Notifications.Add(newUser);
                 if (sum == 1 && client.PersBudget>=group.EntryFeeDon) {
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Донатер", P = 1 };
+                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Don", P = 1 };
                     @group.Clients.Add(cl);
                     _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                     client.PersBudget -= group.EntryFeeDon;
@@ -250,7 +250,7 @@ namespace Biz_collab.Controllers
                     return RedirectToAction("OpenGroup", new { name, x=true });
                 }
                 if (sum == 2 && client.PersBudget >= group.EntryFeeUser) {
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Участник", P = 1 }; 
+                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "User", P = 1 }; 
                     @group.Clients.Add(cl);
                     _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                     client.PersBudget -= group.EntryFeeUser;
@@ -419,7 +419,7 @@ namespace Biz_collab.Controllers
                     var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                     //находим клиента который создает и добовляем его в группу ,даем роль создателя 
                     var client = _db.Clients.Include(c => c.MyGroups).FirstOrDefault(cr => cr.Id == currentUserID);
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Создатель", P = 2 };
+                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Creator", P = 2 };
                     @group.Clients.Add(cl);
                     //у этого клиента вычитаем сумму которая выдалась на группу 
                     if (client.PersBudget >= @group.Budget) _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).PersBudget -= @group.Budget;
@@ -523,7 +523,7 @@ namespace Biz_collab.Controllers
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var @group = await _db.Groups.FirstAsync(g=>g.Name==name);
             var client = _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).First(g => g.Name == name)
-                .Clients.FirstOrDefault(rp=>rp.ClientId== currentUserID && rp.R=="Создатель").Client;
+                .Clients.FirstOrDefault(rp=>rp.ClientId== currentUserID && rp.R=="Creator").Client;
 
             if (client != null)
             {

@@ -100,10 +100,6 @@ namespace Biz_collab.Controllers
         {
             return PartialView();
         }
-        public IActionResult Notifications()
-        {
-            return PartialView();
-        }
 
         [Authorize]
         [HttpGet]

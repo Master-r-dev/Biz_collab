@@ -87,7 +87,7 @@ namespace Biz_collab.Controllers
                 // ниже происходит автоматически если владелец.Иначе транзакция ждет подтверждения
                 // по данному id группы в которой происходит транзакция нужно в бд найти эту группу и изменить в ней поле budget
                
-                if (gc.R == "Создатель")
+                if (gc.R == "Creator")
                 {
                     transaction.StartTime = DateTime.Now;
                     transaction.Status = true;

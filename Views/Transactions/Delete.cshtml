@@ -32,7 +32,7 @@
             <dt>Процент Против</dt>
             <dd>@Html.DisplayFor(model => model.NoPercent)</dd>
 
-            @if (ViewBag.Role == "Mod" || ViewBag.Role == "Создатель" || ViewBag.Role == "VIP"){
+            @if (ViewBag.Role == "Mod" || ViewBag.Role == "Creator" || ViewBag.Role == "VIP"){
                 <dt class="col-sm-10">Голоса</dt>
                 foreach (var v in Model.Votes) {
                     

@@ -5,7 +5,7 @@
         <h3>Выберите готовые роли или создайте новую</h3>
         <button class="close" data-dismiss="modal" area-hidden="true"><i class="fas fa-times-circle"></i></button>
     </div>
-    @if (ViewBag.EditorRole == "Mod" || ViewBag.EditorRole == "Создатель") {
+    @if (ViewBag.EditorRole == "Mod" || ViewBag.EditorRole == "Creator") {
     <div class="modal-body">
         <form name="EditRoleClient" asp-action="EditRoleClient">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -34,7 +34,7 @@
                     <div>
                         <label for="1">
                             <span class="glyphicon glyphicon-plus">
-                                <input type="radio" onclick="SetP()" asp-for="R" id="1" value="Донатер">
+                                <input type="radio" onclick="SetP()" asp-for="R" id="1" value="Don">
                             </span>
                             Донатер
                         </label>
@@ -42,7 +42,7 @@
                     <div>
                         <label for="2">
                             <span class="glyphicon glyphicon-cloud-download">
-                                <input type="radio" onclick="SetP()" asp-for="R" id="2" value="Участник">
+                                <input type="radio" onclick="SetP()" asp-for="R" id="2" value="User">
                             </span>
                             Участник
                         </label>

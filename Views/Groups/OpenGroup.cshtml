@@ -49,7 +49,7 @@
                         <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["OperationTypeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]"> Тип</a>
                     </td>
                     <td>
-                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["ClientNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Участник</a>
+                        <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["ClientNameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Клиент</a>
                     </td>
                     <td>
                         <a asp-action="OpenGroup" asp-route-name="@Model.Name" asp-route-sortOrder="@ViewData["TimeSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Статус/Время</a>
@@ -169,7 +169,7 @@
         </div>
     </div>
     <div class="participants-box bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center" style="height:300px">
-        <h2 class="c-g f-s-1rem p-t-7">Участники</h2>
+        <h2 class="c-g f-s-1rem p-t-7">Клиенты</h2>
         <table class="default-table scroll" style="overflow-x: hidden; overflow-y: auto; text-align: justify;">
             @foreach (var client in Model.Clients)
             {
@@ -186,9 +186,9 @@
                         @client.P
                     </td>
 
-                    @if (currentuserrole == "Создатель" || currentuserrole == "Mod")
+                    @if (currentuserrole == "Creator" || currentuserrole == "Mod")
                     {
-                        @if (client.R != "Создатель" && client.Client.Login != User.Identity.Name)
+                        @if (client.R != "Creator" && client.Client.Login != User.Identity.Name)
                         {
                             @if (client.R != "Забанен")
                             {
@@ -226,7 +226,7 @@
                                 @message.Text
                             </div>
                             <div class="style-time">
-                                @message.Time.ToString("HH:mm:ss")
+                                @message.Time.ToString("dd/MM HH:mm:ss")
                             </div>
                         </div>
                     }
@@ -239,7 +239,7 @@
                                 @message.Text
                             </div>
                             <div class="style-time">
-                                @message.Time.ToString("HH:mm:ss")
+                                @message.Time.ToString("dd/MM HH:mm:ss")
                             </div>
                         </div>
                     }
@@ -298,6 +298,24 @@
             elem.appendChild(notifyElem);
             document.getElementById("chatroom").insertBefore(elem, firstElem);
         }
+        $(document).ready(function () {
+            $("#noti_Container").ikrNotificationSetup();
+            $.get(
+                "/Notifications/GetNotifications",
+                onAjaxSuccess
+            );
+
+            function onAjaxSuccess(data) {
+                var notifications = data;
+                $("#noti_Container").ikrNotificationCount({
+                    NotificationList: notifications,
+                    ListTitlePropName: "NotiHeader",
+                    ListBodyPropName: "NotiBody",
+                    ControllerName: "Notifications",
+                    ActionName: "AllNotifications"
+                });
+            }
+        });
     });
 
     // отправка сообщения на сервер
@@ -310,20 +328,24 @@
         var text = document.getElementById("message").value;
         if (text != "") {
             var groupname = "@Model.Name";
-            var notify = "";
+            var notify = [];
             var cRole="@Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R";
-            if (cRole == "Создатель" || cRole == "Mod" || cRole == "VIP") {
-                var regex = new RegExp(/(?<=[\s])@("@")all$|^@("@")all(?=[\s])|(?<=[\s])@("@")all(?=[\s])/);
-                var regexUser = new RegExp(/(?<=[\s])@("@")w*@("@")\w*\.\w*(?![\s])$|^@("@")w*@("@")\w*\.\w*(?=[\s])|(?<=[\s])@("@")w*@("@")\w*\.\w*(?=[\s])/)
-                if (regex.exec(text) != null && regex.exec(text).length > 0) {
-                    console.log(regex.exec(text)[0])
-                    if (regex.exec(text)[0] == "@("@")all") {
-                        var notify = "all";
+            if (cRole == "Creator" || cRole == "Mod" || cRole == "VIP") {
+                //var regex = new RegExp(/(?<=[\s])@("@")all$|^@("@")all(?=[\s])|(?<=[\s])@("@")all(?=[\s])|^@("@")all$/);
+                //var regexOneUser = new RegExp(/(?<=[\s])@("@")[^\s]+@("@")[^\s]+\.[^\s]+$|^@("@")[^\s]+@("@")[^\s]+\.[^\s]+|(?<=[\s])@("@")[^\s]+@("@")[^\s]+\.[^\s]+|^@("@")[^\s]+@("@")[^\s]+\.[^\s]+$/)
+                // all, Mod, VIP, User, Don, Oneuser
+                var regex = new RegExp(/(?<=[\s])@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)$|^@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)(?=[\s])|(?<=[\s])@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)(?=[\s])|^@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)$/g);
+                if (text.match(regex) != null && text.match(regex).length > 0) {
+                    if (text.match(regex).includes("@("@")all")) { notify[0] = "all"; }
+                    else {
+                        for (let i = 0; i < text.match(regex).length; i++) {
+                            if (text.match(regex)[i] == "@("@")Mod") { notify[i] = "Mod"; }
+                            else if (text.match(regex)[i] == "@("@")VIP") { notify[i] = "VIP"; }
+                            else if (text.match(regex)[i] == "@("@")User") { notify[i] = "User"; }
+                            else if (text.match(regex)[i] == "@("@")Don") { notify[i] = "Don"; }
+                            else { notify[i] = text.match(regex)[i]; }
+                        }
                     }
-                }
-                else if (regexUser.exec(text) != null && regexUser.exec(text).length > 0 && regexUser.exec(text)[0] != "") {
-                    console.log(regexUser.exec(text)[0])
-                    notify = regexUser.exec(text)[0];
                 }
             }
             hubConnection.invoke("Send", text, groupname, notify /*, "name": name*/ );

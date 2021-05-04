@@ -42,7 +42,7 @@
                         </a>
                     </td>
                     <td>
-                        @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                        @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Creator") != null)
                         {
                             <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
                                 <i class="fas fa-edit"></i>
@@ -96,7 +96,7 @@
                     </a>
                 </td>
                 <td>
-                    @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Создатель") != null)
+                    @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Creator") != null)
                     {
                         <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
                             <i class="fas fa-edit"></i>

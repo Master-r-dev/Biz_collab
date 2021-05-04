@@ -61,26 +61,3 @@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
-
-@*<script type="text/javascript">
-    console.log("AOSPIHDIOPASGDASIOD");
-    $(document).ready(function () {
-        $("#noti_Container").ikrNotificationSetup();
-        $.get(
-            "/Notifications/GetNotifications",
-            onAjaxSuccess
-        );
-
-        function onAjaxSuccess(data) {
-            var notifications = data;
-            $("#noti_Container").ikrNotificationCount({
-                NotificationList: notifications,
-                NotiFromPropName: "FromUserId",
-                ListTitlePropName: "NotiHeader",
-                ListBodyPropName: "NotiBody",
-                ControllerName: "Notifications",
-                ActionName: "AllNotifications"
-            });
-        }
-    });
-</script>*@

@@ -222,16 +222,29 @@ namespace Biz_collab.Controllers
             var client = await _db.Clients.Include(c => c.MyGroups).FirstAsync(c => c.Id == currentUserID);
             if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 1 && sum == 1)
             {
-                Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Don", P = 1 };
+                Role_Power cl = new Role_Power {
+                    Group = @group,
+                    Client = client,
+                    ClientId = client.Id,
+                    GroupId = @group.Id,
+                    R = "Don",
+                    P = 1
+                };
                 @group.Clients.Add(cl);
                 _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                 client.PersBudget -= group.EntryFeeDon;
                 group.Budget += group.EntryFeeDon;
                 _db.Entry(client).State = EntityState.Modified;
                 _db.Entry(group).State = EntityState.Modified;
-                if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
                 {
-                    Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый донатер", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "../Groups/OpenGroup?name=" + @group.Name };
+                    Notification newUser = new Notification {
+                        ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
+                        NotiHeader = "Новый донатер",
+                        NotiBody = " Добавился пользователь-" + client.Login +" в вашей группе:" + @group.Name ,
+                        IsRead = false,
+                        Url = "../Groups/OpenGroup?name=" + @group.Name
+                    };
                     _db.Notifications.Add(newUser);
                 }
                 await _db.SaveChangesAsync();
@@ -240,48 +253,87 @@ namespace Biz_collab.Controllers
             else if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 2)
             {               
                 if (sum == 1 && client.PersBudget>=group.EntryFeeDon) {
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "Don", P = 1 };
+                    Role_Power cl = new Role_Power {
+                        Group = @group,
+                        Client = client,
+                        ClientId = client.Id,
+                        GroupId = @group.Id,
+                        R = "Don",
+                        P = 1
+                    };
                     @group.Clients.Add(cl);
                     _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                     client.PersBudget -= group.EntryFeeDon;
                     group.Budget += group.EntryFeeDon;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
-                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
                     {
-                        Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый донатер", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "" };
+                        Notification newUser = new Notification {
+                            ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
+                            NotiHeader = "Новый донатер",
+                            NotiBody = " Добавился пользователь-" + client.Login + " в вашей группе:" + @group.Name,
+                            IsRead = false,
+                            Url = ""
+                        };
                         _db.Notifications.Add(newUser);
                     }
                     await _db.SaveChangesAsync();
                     return RedirectToAction("OpenGroup", new { name, x=true });
                 }
                 if (sum == 2 && client.PersBudget >= group.EntryFeeUser) {
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "User", P = 1 }; 
+                    Role_Power cl = new Role_Power {
+                        Group = @group,
+                        Client = client,
+                        ClientId = client.Id,
+                        GroupId = @group.Id,
+                        R = "User",
+                        P = 1
+                    };
                     @group.Clients.Add(cl);
                     _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                     client.PersBudget -= group.EntryFeeUser;
                     group.Budget += group.EntryFeeUser;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
-                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
                     {
-                        Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый участник", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "" };
+                        Notification newUser = new Notification {
+                            ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
+                            NotiHeader = "Новый участник",
+                            NotiBody = " Добавился пользователь-" + client.Login + " в вашей группе:" + @group.Name,
+                            IsRead = false,
+                            Url = ""
+                        };
                         _db.Notifications.Add(newUser);
                     }
                     await _db.SaveChangesAsync();
                     return RedirectToAction("OpenGroup", new { name,x=true });
                 }
                 if (sum == 3 && client.PersBudget >= group.EntryFeeVIP) {
-                    Role_Power cl = new Role_Power { Group = @group, Client = client, ClientId = client.Id, GroupId = @group.Id, R = "VIP", P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() *0.25))) };
+                    Role_Power cl = new Role_Power {
+                        Group = @group,
+                        Client = client,
+                        ClientId = client.Id,
+                        GroupId = @group.Id,
+                        R = "VIP",
+                        P = Convert.ToInt32(Math.Round(Convert.ToDouble(@group.Clients.Count() * 0.25)))
+                    };
                     @group.Clients.Add(cl);
                     _db.Clients.FirstOrDefault(cr => cr.Id == currentUserID).MyGroups.Add(cl);
                     client.PersBudget -= group.EntryFeeVIP;
                     group.Budget += group.EntryFeeVIP;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
-                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
                     {
-                        Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый VIP", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "" };
+                        Notification newUser = new Notification {
+                            ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
+                            NotiHeader = "Новый VIP",
+                            NotiBody = " Добавился пользователь-" + client.Login + " в вашей группе:" + @group.Name,
+                            IsRead = false,
+                            Url = ""
+                        };
                         _db.Notifications.Add(newUser);
                     }
                     await _db.SaveChangesAsync();
@@ -295,9 +347,15 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeMod;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
-                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedId == @group.Id))
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
                     {
-                        Notification newUser = new Notification { ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId, NotiHeader = "Новый модератор", NotiBody = "В вашей группе: " + @group.Name + "   добавился пользователь   " + client.Login, IsRead = false, Url = "" };
+                        Notification newUser = new Notification {
+                            ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
+                            NotiHeader = "Новый модератор",
+                            NotiBody = " Добавился пользователь-" + client.Login + " в вашей группе:" + @group.Name,
+                            IsRead = false,
+                            Url = ""
+                        };
                         _db.Notifications.Add(newUser);
                     }
                     await _db.SaveChangesAsync();
@@ -360,6 +418,7 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
+            rp.Client = c.Client;
             rp.ClientId = c.ClientId;
             rp.GroupId = c.GroupId;
             if (Percent != null)
@@ -373,15 +432,15 @@ namespace Biz_collab.Controllers
             {
                 try
                 {
-                    if (!rp.Client.MutedList.Any(m => m.MutedId == rp.GroupId || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                    if (!rp.Client.MutedList.Any(m => m.MutedName == name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
                     {
                         if (rp.Percent == null)
                         {
                             Notification changedUser = new Notification
                             {
                                 ClientId = rp.ClientId,
-                                NotiHeader = " У Вас " + login + " изменили роль в группе: " + name,
-                                NotiBody = "На роль " + rp.R + " с силой " + rp.P,
+                                NotiHeader = "У Вас изменил роль на:" + rp.R + " с силой:" + rp.P,
+                                NotiBody = "Пользователь-"+ this.User.FindFirst(ClaimTypes.Name).Value + " в группе:" + name,
                                 IsRead = false,
                                 Url = "../Groups/OpenGroup?name=" + name
                             };
@@ -392,8 +451,8 @@ namespace Biz_collab.Controllers
                             Notification changedUser = new Notification
                             {
                                 ClientId = rp.ClientId,
-                                NotiHeader = " У Вас " + login + " изменили роль в группе: " + name,
-                                NotiBody = "На роль " + rp.R + " с силой " + rp.P + " и процентом " + rp.Percent,
+                                NotiHeader = "У Вас изменил роль на:" + rp.R + " с силой:" + rp.P + " и процентом:" + rp.Percent,
+                                NotiBody = "Пользователь-" + this.User.FindFirst(ClaimTypes.Name).Value + " в группе:" + name,                                
                                 IsRead = false,
                                 Url = "../Groups/OpenGroup?name=" + name
                             };
@@ -464,18 +523,19 @@ namespace Biz_collab.Controllers
                 {
                     return NotFound();
                 }
+                rp.Client = _db.Clients.AsNoTracking().Include(c=>c.MutedList).First(c => c.Login == login);
                 rp.ClientId = _db.Clients.AsNoTracking().First(c=>c.Login==login).Id;
                 rp.GroupId = _db.Groups.AsNoTracking().First(g => g.Name == name).Id;
                 if (Percent != null)
                 {
                     rp.Percent = Math.Round(Convert.ToDouble(Percent, CultureInfo.InvariantCulture) * 0.01, 4);
-                    rp.P = Convert.ToInt32(Math.Round(Convert.ToDouble(_db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Id == rp.GroupId).Clients.Count() * rp.Percent)));
+                    rp.P = Convert.ToInt32(Math.Round(Convert.ToDouble((_db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Id == rp.GroupId).Clients.Count()+1) * rp.Percent)));
                 }
                 if (rp.R != null || rp.P >= 0)
                 {
                     try
                     {
-                        if (!rp.Client.MutedList.Any(m => m.MutedId == rp.GroupId || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                        if (!rp.Client.MutedList.Any(m => m.MutedName == name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
                         {
                             if (rp.Percent == null)
                             {
@@ -483,8 +543,8 @@ namespace Biz_collab.Controllers
                                 Notification inviteUser = new Notification
                                 {
                                     ClientId = rp.ClientId,
-                                    NotiHeader = " Вас " + login + " пригласили в группу: " + name,
-                                    NotiBody = "На роль " + rp.R + " с силой " + rp.P,
+                                    NotiHeader = "Вас пригласил на роль:" + rp.R + " с силой:" + rp.P,
+                                    NotiBody = "Пользователь-" + this.User.FindFirst(ClaimTypes.Name).Value + " в группе:" + name,
                                     IsRead = false,
                                     Url = ""
                                 };
@@ -495,8 +555,8 @@ namespace Biz_collab.Controllers
                                 Notification inviteUser = new Notification
                                 {
                                     ClientId = rp.ClientId,
-                                    NotiHeader = " Вас " + login + " пригласили в группу: " + name,
-                                    NotiBody = "На роль " + rp.R + " с силой " + rp.P + " и процентом " + rp.Percent,
+                                    NotiHeader = "Вас пригласил на роль:" + rp.R + " с силой:" + rp.P + " и процентом:" + rp.Percent,
+                                    NotiBody = "Пользователь-" + this.User.FindFirst(ClaimTypes.Name).Value + " в группе:" + name,                                    
                                     IsRead = false,
                                     Url = ""
                                 };
@@ -539,13 +599,13 @@ namespace Biz_collab.Controllers
             client.P = 0;
             client.Percent = 0;
             _db.Entry(client).State = EntityState.Modified;
-            if (!client.Client.MutedList.Any(m => m.MutedId == client.GroupId || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            if (!client.Client.MutedList.Any(m => m.MutedName == name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
             {
                 Notification BanClient = new Notification
                 {
                     ClientId = client.ClientId,
-                    NotiHeader = "Вы были заблокированы в: " + name,
-                    NotiBody = "Осмыслите свое поведение.",
+                    NotiHeader = "Вы были заблокированы.Осмыслите свое поведение.",
+                    NotiBody = "Пользователем-" + this.User.FindFirst(ClaimTypes.Name).Value + " в группе:" + name,
                     IsRead = false,
                     Url = ""
                 };
@@ -640,13 +700,13 @@ namespace Biz_collab.Controllers
                     foreach (var rp in @gg.Clients)
                     {
                         if (rp.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value) { continue; }
-                        if (!rp.Client.MutedList.Any(m => m.MutedId == @group.Id || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                        if (!rp.Client.MutedList.Any(m => m.MutedName == @group.Name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
                         {
                             Notification editGroup = new Notification
                             {
                                 ClientId = rp.ClientId,
-                                NotiHeader = "Группа: " + name + " была изменена ",
-                                NotiBody = "Изменения находятся в деталях группы ",
+                                NotiHeader = "Изменена группа",
+                                NotiBody = "Пользователем-"+ this.User.FindFirst(ClaimTypes.Name) + " .Изменения находятся в деталях группы:"+ name,
                                 IsRead = false,
                                 Url = "../Groups/OpenGroup?name=" + group.Name
                             };
@@ -708,13 +768,13 @@ namespace Biz_collab.Controllers
                 foreach (var rp in @group.Clients)
                 {
                     if (rp.ClientId == client.Id) { continue; }
-                    if (!rp.Client.MutedList.Any(m => m.MutedId == @group.Id || m.MutedId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                    if (!rp.Client.MutedList.Any(m => m.MutedName == name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
                     {
                         Notification deleteGroup = new Notification
                         {
                             ClientId = rp.ClientId,
-                            NotiHeader = "Группа: " + name + " была удалена ",
-                            NotiBody = "Все средства у ее создателя: " + client.Login,
+                            NotiHeader = "Удалена группа " + name,
+                            NotiBody = "Все средства у ее создателя-" + client.Login,
                             IsRead = false,
                             Url = ""
                         };

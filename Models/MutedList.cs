@@ -9,6 +9,6 @@ namespace Biz_collab.Models
     {
         public string ClientId { get; set; }
         public virtual Client Client { get; set; }
-        public string MutedId { get; set; }
+        public string MutedName { get; set; }
     }
 }

@@ -387,7 +387,6 @@ namespace Biz_collab.Controllers
             {
                 return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
             }
-            var name = transaction.Group.Name;
             _db.Votes.RemoveRange(transaction.Votes);
             _db.Transactions.Remove(transaction);
             await _db.SaveChangesAsync();

@@ -6,10 +6,12 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Biz_collab.Controllers
@@ -47,38 +49,21 @@ namespace Biz_collab.Controllers
             ViewData["NotiHeaderSortParm"] = sortOrder == "NotiHeader" ? "notiheader_desc" : "NotiHeader";
             ViewData["NotiBodySortParm"] = sortOrder == "NotiBody" ? "notibody_desc" : "NotiBody";
             ViewData["IsReadSortParm"] = sortOrder == "IsRead" ? "isread_desc" : "IsRead";
-             ViewData["CreatedDateSortParm"] = sortOrder == "CreatedDate" ? "createddate_desc" : "CreatedDate";
-            switch (sortOrder)
+            ViewData["CreatedDateSortParm"] = sortOrder == "CreatedDate" ? "createddate_desc" : "CreatedDate";
+            notifications = sortOrder switch
             {
-                case "notiheader_desc":
-                    notifications = notifications.OrderByDescending(s => s.NotiHeader);                    
-                    break;
-                case "NotiHeader":
-                    notifications = notifications.OrderBy(s => s.NotiHeader);                    
-                    break;
-                case "notibody_desc":
-                    notifications = notifications.OrderByDescending(s => s.NotiBody);                   
-                    break;
-                case "NotiBody":
-                    notifications = notifications.OrderBy(s => s.NotiBody);                   
-                    break;
-                case "IsRead":
-                    notifications = notifications.OrderBy(s => s.IsRead);                    
-                    break;
-                case "isread_desc":
-                    notifications = notifications.OrderByDescending(s => s.IsRead);                    
-                    break;
-                case "CreatedDate":
-                    notifications = notifications.OrderBy(s => s.CreatedDate);
-                    break;
-                case "createddate_desc":
-                    notifications = notifications.OrderByDescending(s => s.CreatedDate);
-                    break;
-                default:
-                    notifications = notifications.OrderByDescending(s => s.CreatedDate);
-                    break;
-            }
+                "notiheader_desc" => notifications.OrderByDescending(s => s.NotiHeader),
+                "NotiHeader" => notifications.OrderBy(s => s.NotiHeader),
+                "notibody_desc" => notifications.OrderByDescending(s => s.NotiBody),
+                "NotiBody" => notifications.OrderBy(s => s.NotiBody),
+                "IsRead" => notifications.OrderBy(s => s.IsRead),
+                "isread_desc" => notifications.OrderByDescending(s => s.IsRead),
+                "CreatedDate" => notifications.OrderBy(s => s.CreatedDate),
+                "createddate_desc" => notifications.OrderByDescending(s => s.CreatedDate),
+                _ => notifications.OrderByDescending(s => s.CreatedDate),
+            };
             int pageSize = 5;
+            ViewBag.MutedList = _db.MutedLists.Where(n => n.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return View(await PaginatedList<Notification>.CreateAsync(notifications, pageNumber ?? 1, pageSize));
         }
 
@@ -104,68 +89,96 @@ namespace Biz_collab.Controllers
             _db.SaveChanges();
             return RedirectToAction("/");
         }
-        // GET: Transactions/Delete/5
-        public IActionResult Delete(string id)
+        public IActionResult Accept(int? id,string name)
         {
+            if (id == null)
+            {
+                return NotFound();
+            } 
+            var n =_db.Notifications.FirstOrDefault(m => m.Id == id);
+            Regex regex = new Regex(@"(?<=[:])[^\s]+");
+            var matches = regex.Matches(n.NotiHeader);
+            if (n.NotiHeader.IndexOf("про") == -1) //пользователь без процента
+            {
+                Role_Power cl = new Role_Power
+                {
+                    ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                    GroupId = _db.Groups.First(g=>g.Name==name).Id,
+                    R = matches[0].Value,
+                    P = int.Parse(matches[1].Value, NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite) 
+                };
+                _db.Role_Powers.Add(cl);                
+            }
+            else //с процентом
+            {
+                Role_Power cl = new Role_Power
+                {
+                    ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                    GroupId = _db.Groups.First(g => g.Name == name).Id,
+                    R = matches[0].Value,
+                    P = int.Parse(matches[1].Value, NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite),
+                    Percent = Math.Round(Convert.ToDouble(matches[2].Value, CultureInfo.InvariantCulture) * .0001, 4)
+            };
+                _db.Role_Powers.Add(cl);
+            }
+            n.NotiHeader= "ПРИНЯТО " + n.NotiHeader;
+            n.Url = "../Groups/OpenGroup?name=" + name;
+            _db.Entry(n).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("/");
+        }
+        public IActionResult Mute( bool action , string name)
+        {
+            if (action) {//заглушить
+                MutedList n = new MutedList 
+                {
+                    ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                    MutedName = name
+                };
+                _db.MutedLists.Add(n);
+            }
+            else { //включить
+                MutedList n = new MutedList
+                {
+                    ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                    MutedName = name
+                };
+                _db.MutedLists.Remove(n);
+            }
+            if (name == null)
+            {
+                return NotFound();
+            }
+            _db.SaveChanges();
+            return RedirectToAction("/");
+        }
 
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int? id, bool action , string login, string name)
+        {
             if (id == null)
             {
                 return NotFound();
             }
-
-            var transaction = _db.Transactions
-                 .Include(t => t.Client)
-                 .Include(t => t.Votes)
-                 .Include(t => t.Group)
-                 .ThenInclude(g => g.Clients)
-                 .ThenInclude(rp => rp.Client)
-                 .FirstOrDefault(m => m.Id == id);
-            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            ViewBag.Name = transaction.Group.Name;
-            if (transaction == null)
-            {
-                return NotFound();
+            if (action) {// удалить и отказаться от приглашения(отослать уведомление об отказе тому кто отправил приглашение)
+                Notification declineOffer = new Notification
+                {
+                    ClientId =  _db.Clients.Find(login).Id,
+                    NotiHeader = "Отказ вашему приглашению",
+                    NotiBody = " Пользователем-" + this.User.FindFirst(ClaimTypes.Name).Value + " в группу:" + name,
+                    IsRead = false,
+                    Url = "../Groups/OpenGroup?name=" + name
+                };
+                await _db.Notifications.AddAsync(declineOffer);
+                var n = _db.Notifications.Find(id);
+                _db.Notifications.Remove(n);
             }
-            ViewBag.Role = transaction.Group.Clients.First(rp => rp.ClientId == currentUserID).R;
-            if (ViewBag.Role == "Забанен")
-            {
-                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
-            }
-            if (transaction.Status == true)
-            {
-                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
-            }
-
-            return PartialView(transaction);
-        }
-
-        // POST: Transactions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var transaction = await _db.Transactions
-                .Include(t => t.Client)
-                .Include(t => t.Votes)
-                .Include(t => t.Group)
-                .ThenInclude(g => g.Clients)
-                .ThenInclude(rp => rp.Client)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            if (transaction.Group.Clients.FirstOrDefault(rp => rp.ClientId == currentUserID).R == "Забанен")
-            {
-                return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
-            }
-            if (transaction.Status == true)
-            {
-                return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
-            }
-            var name = transaction.Group.Name;
-            _db.Votes.RemoveRange(transaction.Votes);
-            _db.Transactions.Remove(transaction);
+            else {//просто удалить уведомление  
+                var n = _db.Notifications.Find(id);
+                _db.Notifications.Remove(n);
+            }    
             await _db.SaveChangesAsync();
-            return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
+            return RedirectToAction("/");
         }
     }
 }

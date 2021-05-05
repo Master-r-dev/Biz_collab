@@ -40,12 +40,12 @@ namespace Biz_collab.Models
                             foreach (var c in client.Group.Clients)
                             {
                                 if (c.ClientId==client.ClientId) { continue; }
-                                if (!c.Client.MutedList.Any(m=>m.MutedId == message.GroupId || m.MutedId == message.ClientId)) {
+                                if (!c.Client.MutedList.Any(m=>m.MutedName == message.GroupId || m.MutedName == message.ClientId)) {
                                     Notification callUser = new Notification
                                     {
                                         ClientId = c.ClientId,
-                                        NotiHeader = "Вас упомянули в чате",
-                                        NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                        NotiHeader = "Упомянули Вас в чате",
+                                        NotiBody = " Вызван пользователем-" + message.Name +" в группе:" + Groupname  ,
                                         IsRead = false,
                                         Url = "../Groups/OpenGroup?name=" + Groupname
                                     };
@@ -64,13 +64,13 @@ namespace Biz_collab.Models
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "Mod"))
                                     {
                                         if (c.ClientId == client.ClientId) { continue; }
-                                        if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                        if (!c.Client.MutedList.Any(m => m.MutedName == message.GroupId || m.MutedName == message.ClientId))
                                         {
                                             Notification callUser = new Notification
                                             {
                                                 ClientId = c.ClientId,
-                                                NotiHeader = "Вас упомянули в чате",
-                                                NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                NotiHeader = "Упомянули Вас в чате",
+                                                NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
                                                 IsRead = false,
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
@@ -83,13 +83,13 @@ namespace Biz_collab.Models
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "VIP"))
                                     {
                                         if (c.ClientId == client.ClientId) { continue; }
-                                        if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                        if (!c.Client.MutedList.Any(m => m.MutedName == message.GroupId || m.MutedName == message.ClientId))
                                         {
                                             Notification callUser = new Notification
                                             {
                                                 ClientId = c.ClientId,
-                                                NotiHeader = "Вас упомянули в чате",
-                                                NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                NotiHeader = "Упомянули Вас в чате",
+                                                NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
                                                 IsRead = false,
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
@@ -102,13 +102,13 @@ namespace Biz_collab.Models
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "User"))
                                     {
                                         if (c.ClientId == client.ClientId) { continue; }
-                                        if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                        if (!c.Client.MutedList.Any(m => m.MutedName == message.GroupId || m.MutedName == message.ClientId))
                                         {
                                             Notification callUser = new Notification
                                             {
                                                 ClientId = c.ClientId,
-                                                NotiHeader = "Вас упомянули в чате",
-                                                NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                NotiHeader = "Упомянули Вас в чате",
+                                                NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
                                                 IsRead = false,
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
@@ -121,13 +121,13 @@ namespace Biz_collab.Models
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "Don"))
                                     {
                                         if (c.ClientId == client.ClientId) { continue; }
-                                        if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                        if (!c.Client.MutedList.Any(m => m.MutedName == message.GroupId || m.MutedName == message.ClientId))
                                         {
                                             Notification callUser = new Notification
                                             {
                                                 ClientId = c.ClientId,
-                                                NotiHeader = "Вас упомянули в чате",
-                                                NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                NotiHeader = "Упомянули Вас в чате",
+                                                NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
                                                 IsRead = false,
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
@@ -142,13 +142,13 @@ namespace Biz_collab.Models
                                         if (c.Client.Login == notify[i])
                                         {
                                             if (c.ClientId == client.ClientId) { continue; }
-                                            if (!c.Client.MutedList.Any(m => m.MutedId == message.GroupId || m.MutedId == message.ClientId))
+                                            if (!c.Client.MutedList.Any(m => m.MutedName == message.GroupId || m.MutedName == message.ClientId))
                                             {
                                                 Notification callUser = new Notification
                                                 {
                                                     ClientId = c.ClientId,
-                                                    NotiHeader = "Вас упомянули в чате",
-                                                    NotiBody = "В группе: " + Groupname + " вызван пользователем:   " + message.Name,
+                                                    NotiHeader = "Упомянули Вас в чате",
+                                                    NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
                                                     IsRead = false,
                                                     Url = "../Groups/OpenGroup?name=" + Groupname
                                                 };

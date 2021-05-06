@@ -100,6 +100,7 @@
                             window.location.href = item.url;
                         }
                     });
+
                 });
             }
         }

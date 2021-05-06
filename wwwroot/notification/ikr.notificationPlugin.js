@@ -61,15 +61,6 @@
         }
     };
     $.fn.ikrNotificationCount = function (options) {
-        /*
-          Declaration : $("#myComboId").ikrNotificationCount({
-                    NotificationList: [],
-                    ListTitlePropName: "",
-                    ListBodyPropName: "",
-                    ControllerName: "Notifications",
-                    ActionName: "AllNotifications"
-          });
-       */
         opt = options
         var defaultSettings = $.extend({
             NotificationList: [],
@@ -89,25 +80,89 @@
             $('#' + parentId + ' .notiCounterOnHead').text(totalUnReadNoti);
             if (defaultSettings.NotificationList.length > 0) {
                 $.map(defaultSettings.NotificationList, function (item) {
-                    var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";                   
-                    $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
-                        "<h5 class='ikrNotificationTitle'>" + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
+                    head = item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)].substring(0, 2);
+                    console.log(item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)])
+                    if (head == "Уд") {
+                        var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";
+                        $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
+                            "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
-                        "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
-                        "</div>");
+                            "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this)'></i></a>" +
+                            "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>");
+                    } else if (head == "Ва") {
+                        var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";
+                        $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
+                            "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
+                            "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
+                            "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this'></i></a>" +
+                            "<a title='Заглушить группу' href=''><i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a>" +
+                            "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>" +
+                            "<a title='Принять' href=''><i class='fas fa-thumbs-up'></a>");
+                    } else {
+                        var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";
+                        $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
+                            "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
+                            "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
+                            "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this)'></i></a>" +
+                            "<a title='Заглушить группу' href=''><i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a>" +
+                            "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>");
+                    }
                     $("#" + parentId + " .ikrNotificationItems .ikrSingleNotiDiv[Id=" + item.id + "]").click(function () {
                         if ($.trim(item.url) != "") {
                             window.location.href = item.url;
                         }
                     });
-
                 });
             }
         }
     };
 }(jQuery));
 
+function partyMuting(element) {
+    str = $(element).parent().parent()[0].innerText
+    let result = str.match(/@(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/);
+    if ($(element).attr('data-icon') == 'volume-up') {
+        $(element).parent().attr('title', 'Включить группу')
+        $(element).attr('data-icon', 'volume-mute')
+        let request = new XMLHttpRequest();
+        request.open("GET", "/Notifications/Mute?act=False&name=" + result[0], true);
+        request.send();
+    }
+    else {
+        $(element).attr('data-icon', 'volume-up')
+        $(element).parent().attr('title', 'Заглушить')
+        let request = new XMLHttpRequest();
+        request.open("GET", "/Notifications/Mute?act=True&name=" + result[0], true);
+        request.send();
+    }
+}
+
+function memberMuting(element) {
+    str = $(element).parent().parent()[0].innerText
+    let result = str.match(/(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/);
+    if ($(element).attr('data-icon') == 'user-slash') {
+        $(element).parent().attr('title', 'Включить участника')
+        $(element).attr('data-icon', 'user')
+        let request = new XMLHttpRequest();
+        request.open("GET", "/Notifications/Mute?act=False&name=" + result[0], true);
+        request.send();
+    }
+    else {
+        $(element).parent().attr('title', 'Заглушить участника')
+        $(element).attr('data-icon', 'user-slash')
+        let request = new XMLHttpRequest();
+        request.open("GET", "/Notifications/Mute?act=True&name=" + result[0], true);
+        request.send();
+    }
+}
+
+function deleteNoti(element) {
+    notiId = $(element).parent().parent()[0].id
+    let request = new XMLHttpRequest();
+    request.open("GET", "/Notifications/Delete/" + notiId + "?act=False", true);
+    request.send();
+}
+
 function ikrLowerFirstLetter(value) {
     return value.charAt(0).toLowerCase() + value.slice(1);
 }
-

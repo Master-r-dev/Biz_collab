@@ -65,125 +65,132 @@
 
                     System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+", System.Text.RegularExpressions.RegexOptions.CultureInvariant | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                     var matches = regex.Matches(n.NotiBody);
+                    if (matches.Count > 0)
+                    {
                     <td>
-                        <a title="Принять" href="@Url.Action("Accept", "Notifications", new { n.Id, name=matches[1].Value })">
+                        <a title="Принять" href="@Url.Action("Accept", "Notifications", new { n.Id, name = matches[1].Value })">
                             <i class="fas fa-thumbs-up"></i>
                         </a>
                     </td>
                     <td>
-                        <a title="Отказаться и удалить уведомление" href="@Url.Action("Delete", "Notifications", new { n.Id , act=true, login=matches[0].Value, name=matches[1].Value })">
+                        <a title="Отказаться и удалить уведомление" href="@Url.Action("Delete", "Notifications", new { n.Id, act = true, login = matches[0].Value, name = matches[1].Value })">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>
-                    if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[0].Value) == false)
-                    {//не заглушены
+                        if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[0].Value) == false)
+                        {//не заглушены
                         <td>
-                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new {  act = true,name=matches[0].Value })">
+                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
                                 <i class="fas fa-user-slash"></i>
                             </a>
                         </td>
 
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
                         <td>
-                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=matches[0].Value})">
+                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
                                 <i class="fas fa-user"></i>
                             </a>
                         </td>
-                    }
-                    if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[1].Value) == false)
-                    {//не заглушены
+                        }
+                        if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[1].Value) == false)
+                        {//не заглушены
                         <td>
-                            <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=matches[1].Value })">
+                            <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[1].Value })">
                                 <i class="fas fa-volume-mute"></i>
                             </a>
                         </td>
 
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
                         <td>
-                            <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=matches[1].Value })">
+                            <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[1].Value })">
                                 <i class="fas fa-volume-up"></i>
                             </a>
                         </td>
+                        }
                     }
-                }    
+                }
                 else if (n.NotiHeader.Substring(0, 2) == "Вы") //были заблокированы
                 {
                     System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+", System.Text.RegularExpressions.RegexOptions.CultureInvariant | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                     var matches = regex.Matches(n.NotiBody);
-                    if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[0].Value) == false)
-                    {//не заглушены
+                    if (matches.Count > 0)
+                    {
+                        if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[0].Value) == false)
+                        {//не заглушены
                         <td>
-                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new {  act = true,name=matches[0].Value })">
+                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
                                 <i class="fas fa-user-slash"></i>
                             </a>
                         </td>
 
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
                         <td>
-                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=matches[0].Value})">
+                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
                                 <i class="fas fa-user"></i>
                             </a>
                         </td>
-                    }
-                    if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[1].Value) == false)
-                    {//не заглушены
+                        }
+                        if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[1].Value) == false)
+                        {//не заглушены
                         <td>
-                            <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=matches[1].Value })">
+                            <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[1].Value })">
                                 <i class="fas fa-volume-mute"></i>
                             </a>
                         </td>
 
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
                         <td>
-                            <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=matches[1].Value })">
+                            <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[1].Value })">
                                 <i class="fas fa-volume-up"></i>
                             </a>
                         </td>
-                    }
+                        }
                     <td>
-                        <a title="Удалить уведомление" href="@Url.Action("Delete", "Notifications", new { n.Id , act=false })">
+                        <a title="Удалить уведомление" href="@Url.Action("Delete", "Notifications", new { n.Id, act = false })">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>
+                    }
                 }
-                
                 else if (n.NotiHeader.Substring(0, 2) == "Уд") //Удалена группа
                 {
                     System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"(?<=[-])[^\s]+@[^\s]+\.[^\s]+", System.Text.RegularExpressions.RegexOptions.CultureInvariant | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                     var matches = regex.Matches(n.NotiBody);
-                    if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[0].Value) == false)
-                    {//не заглушены
+                    if (matches.Count > 0)
+                    {
+                        if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[0].Value) == false)
+                        {//не заглушены
                         <td>
-                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new {  act = true,name=matches[0].Value })">
+                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
                                 <i class="fas fa-user-slash"></i>
                             </a>
                         </td>
 
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
                         <td>
-                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=matches[0].Value})">
+                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
                                 <i class="fas fa-user"></i>
                             </a>
                         </td>
-                    }
+                        }
 
                     <td>
-                        <a title="Удалить уведомление" href="@Url.Action("Delete", "Notifications", new { n.Id , act=false })">
+                        <a title="Удалить уведомление" href="@Url.Action("Delete", "Notifications", new { n.Id, act = false })">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>
+                    }
                 }
-                
                 else //все остальные случаи
                 {
                     <td>
@@ -193,45 +200,48 @@
                     </td>
                     System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+", System.Text.RegularExpressions.RegexOptions.CultureInvariant | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                     var matches = regex.Matches(n.NotiBody);
-                    if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[0].Value) == false)
-                    {//не заглушены
+                    if (matches.Count > 0)
+                    {
+                        if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[0].Value) == false)
+                        {//не заглушены
                         <td>
-                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new {  act = true,name=matches[0].Value })">
+                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
                                 <i class="fas fa-user-slash"></i>
                             </a>
                         </td>
 
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
                         <td>
-                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=matches[0].Value})">
+                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
                                 <i class="fas fa-user"></i>
                             </a>
                         </td>
-                    }
-                    if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[1].Value) == false)
-                    {//не заглушены
+                        }
+                        if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == matches[1].Value) == false)
+                        {//не заглушены
                         <td>
-                            <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=matches[1].Value })">
+                            <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[1].Value })">
                                 <i class="fas fa-volume-mute"></i>
                             </a>
                         </td>
 
-                    }
-                    else
-                    {
+                        }
+                        else
+                        {
                         <td>
-                            <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=matches[1].Value })">
+                            <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[1].Value })">
                                 <i class="fas fa-volume-up"></i>
                             </a>
                         </td>
-                    }
+                        }
                     <td>
-                        <a title="Удалить уведомление" href="@Url.Action("Delete", "Notifications", new { n.Id , act=false })">
+                        <a title="Удалить уведомление" href="@Url.Action("Delete", "Notifications", new { n.Id, act = false })">
                             <i class="fas fa-trash-alt"></i>
                         </a>
                     </td>
+                    }
                 }
             </tr>
             }

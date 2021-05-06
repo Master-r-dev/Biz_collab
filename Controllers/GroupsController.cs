@@ -387,7 +387,7 @@ namespace Biz_collab.Controllers
         [HttpPost]
         public  IActionResult EditRoleClient(string name,string login,string Percent, [Bind("R,P")] Role_Power rp)
         {   /*код изменение роли клиента*/
-            var c = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.Client.Login == login && rp.Group.Name == name);
+            var c = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).ThenInclude(c=>c.MutedList).Include(rp => rp.Group).FirstOrDefault(rp => rp.Client.Login == login && rp.Group.Name == name);
             if (rp.R==null )
             {
                 ModelState.AddModelError("Role", "Заполнить!");
@@ -594,7 +594,7 @@ namespace Biz_collab.Controllers
         [Authorize]
         public async Task<IActionResult> BanClient(string Login, string name)
         {   /*код бан клиента*/
-            var client = await _db.Role_Powers.Include(rp => rp.Client).Include(rp=>rp.Group).FirstAsync(rp => rp.Client.Login == Login && rp.Group.Name == name);
+            var client = await _db.Role_Powers.Include(rp => rp.Client).ThenInclude(c=>c.MutedList).Include(rp=>rp.Group).FirstAsync(rp => rp.Client.Login == Login && rp.Group.Name == name);
             client.R = "Забанен";
             client.P = 0;
             client.Percent = 0;
@@ -682,7 +682,7 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
-            var gg = _db.Groups.AsNoTracking().Include(g=>g.Clients).ThenInclude(rp=>rp.Client).Include(g=>g.Transactions).ThenInclude(t=>t.Votes).First(g => g.Id == group.Id);
+            var gg = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c => c.MutedList).Include(g=>g.Transactions).ThenInclude(t=>t.Votes).First(g => g.Id == group.Id);
             @group.Id = gg.Id;
             if (_db.Groups.Any(g => g.Name == @group.Name && g.Id != @group.Id) == true)
             {
@@ -758,7 +758,7 @@ namespace Biz_collab.Controllers
         public async Task<IActionResult> DeleteConfirmed(string name)
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var @group = await _db.Groups.Include(g=>g.Clients).ThenInclude(rp => rp.Client).FirstAsync(g=>g.Name==name);
+            var @group = await _db.Groups.Include(g=>g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c=>c.MutedList).FirstAsync(g=>g.Name==name);
             var client = @group.Clients.FirstOrDefault(rp=>rp.ClientId== currentUserID && rp.R=="Creator").Client;
 
             if (client != null)

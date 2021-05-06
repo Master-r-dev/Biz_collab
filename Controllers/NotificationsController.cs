@@ -87,7 +87,7 @@ namespace Biz_collab.Controllers
             var json = JsonConvert.DeserializeObject<Notification>(bodyStr);
             _db.Entry(json).State = EntityState.Modified;
             _db.SaveChanges();
-            return RedirectToAction("/");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
         public IActionResult Accept(int? id,string name)
         {
@@ -125,11 +125,11 @@ namespace Biz_collab.Controllers
             n.Url = "../Groups/OpenGroup?name=" + name;
             _db.Entry(n).State = EntityState.Modified;
             _db.SaveChanges();
-            return RedirectToAction("/");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
-        public IActionResult Mute( bool action , string name)
+        public IActionResult Mute( bool act , string name)
         {
-            if (action) {//заглушить
+            if (act) {//заглушить
                 MutedList n = new MutedList 
                 {
                     ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
@@ -150,17 +150,16 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
             _db.SaveChanges();
-            return RedirectToAction("/");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
-
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? id, bool action , string login, string name)
+        public async Task<IActionResult> Delete(int? id, bool act , string login, string name)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            if (action) {// удалить и отказаться от приглашения(отослать уведомление об отказе тому кто отправил приглашение)
+            if (act) {// удалить и отказаться от приглашения(отослать уведомление об отказе тому кто отправил приглашение)
                 Notification declineOffer = new Notification
                 {
                     ClientId =  _db.Clients.Find(login).Id,
@@ -178,7 +177,7 @@ namespace Biz_collab.Controllers
                 _db.Notifications.Remove(n);
             }    
             await _db.SaveChangesAsync();
-            return RedirectToAction("/");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
     }
 }

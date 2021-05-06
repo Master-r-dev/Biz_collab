@@ -342,10 +342,8 @@
             var notify = [];
             var cRole="@Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R";
             if (cRole == "Creator" || cRole == "Mod" || cRole == "VIP") {
-                //var regex = new RegExp(/(?<=[\s])@("@")all$|^@("@")all(?=[\s])|(?<=[\s])@("@")all(?=[\s])|^@("@")all$/);
-                //var regexOneUser = new RegExp(/(?<=[\s])@("@")[^\s]+@("@")[^\s]+\.[^\s]+$|^@("@")[^\s]+@("@")[^\s]+\.[^\s]+|(?<=[\s])@("@")[^\s]+@("@")[^\s]+\.[^\s]+|^@("@")[^\s]+@("@")[^\s]+\.[^\s]+$/)
                 // all, Mod, VIP, User, Don, Oneuser
-                var regex = new RegExp(/(?<=[\s])@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)$|^@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)(?=[\s])|(?<=[\s])@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)(?=[\s])|^@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)$/g);
+                var regex = new RegExp(/(?<=[\s])@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)$|^@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)(?=[\s])|(?<=[\s])@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)(?=[\s])|^@("@")(all|Mod|VIP|User|Don|[^\s]+@("@")[^\s]+\.[^\s\.]+)$/giu);
                 if (text.match(regex) != null && text.match(regex).length > 0) {
                     if (text.match(regex).includes("@("@")all")) { notify[0] = "all"; }
                     else {

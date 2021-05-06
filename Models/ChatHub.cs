@@ -45,7 +45,7 @@ namespace Biz_collab.Models
                                     {
                                         ClientId = c.ClientId,
                                         NotiHeader = "Упомянули Вас в чате",
-                                        NotiBody = " Вызван пользователем-" + message.Name +" в группе:" + Groupname  ,
+                                        NotiBody = " Вызван пользователем-" + Context.User.Identity.Name + " в группе:" + Groupname  ,
                                         IsRead = false,
                                         Url = "../Groups/OpenGroup?name=" + Groupname
                                     };
@@ -70,7 +70,7 @@ namespace Biz_collab.Models
                                             {
                                                 ClientId = c.ClientId,
                                                 NotiHeader = "Упомянули Вас в чате",
-                                                NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
+                                                NotiBody = " Вызван пользователем-" + Context.User.Identity.Name + " в группе:" + Groupname,
                                                 IsRead = false,
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
@@ -89,7 +89,7 @@ namespace Biz_collab.Models
                                             {
                                                 ClientId = c.ClientId,
                                                 NotiHeader = "Упомянули Вас в чате",
-                                                NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
+                                                NotiBody = " Вызван пользователем-" + Context.User.Identity.Name + " в группе:" + Groupname,
                                                 IsRead = false,
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
@@ -108,7 +108,7 @@ namespace Biz_collab.Models
                                             {
                                                 ClientId = c.ClientId,
                                                 NotiHeader = "Упомянули Вас в чате",
-                                                NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
+                                                NotiBody = " Вызван пользователем-" + Context.User.Identity.Name + " в группе:" + Groupname,
                                                 IsRead = false,
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
@@ -127,7 +127,7 @@ namespace Biz_collab.Models
                                             {
                                                 ClientId = c.ClientId,
                                                 NotiHeader = "Упомянули Вас в чате",
-                                                NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
+                                                NotiBody = " Вызван пользователем-" + Context.User.Identity.Name + " в группе:" + Groupname,
                                                 IsRead = false,
                                                 Url = "../Groups/OpenGroup?name=" + Groupname
                                             };
@@ -148,7 +148,7 @@ namespace Biz_collab.Models
                                                 {
                                                     ClientId = c.ClientId,
                                                     NotiHeader = "Упомянули Вас в чате",
-                                                    NotiBody = " Вызван пользователем-" + message.Name + " в группе:" + Groupname,
+                                                    NotiBody = " Вызван пользователем-" + Context.User.Identity.Name + " в группе:" + Groupname,
                                                     IsRead = false,
                                                     Url = "../Groups/OpenGroup?name=" + Groupname
                                                 };

@@ -189,7 +189,8 @@ namespace Biz_collab.Controllers
                 _ => trans.OrderByDescending(s => s.StartTime),
             };
             int pageSize = 8;            
-            ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);            
+            ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
+            ViewBag.MutedList = _db.MutedLists.Where(n => n.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return View(@group);
         }
         [Authorize]

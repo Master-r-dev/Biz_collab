@@ -59,7 +59,8 @@ namespace Biz_collab.Controllers
             groups = groups.OrderByDescending(s => s.Clients.Count);                
             int pageSize = 5;
             ViewBag.Groups = await PaginatedList<Group>.CreateAsync(groups, pageNumber ?? 1, pageSize);
-            ViewBag.PersBudget = _db.Clients.First(c=>c.Id==currentUserID).PersBudget;           
+            ViewBag.PersBudget = _db.Clients.First(c=>c.Id==currentUserID).PersBudget;
+            ViewBag.MutedList = _db.MutedLists.Where(n => n.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return View(await PaginatedList<Group>.CreateAsync(AllGroups, pageNumber ?? 1, pageSize));
         }
         public IActionResult About()

@@ -19,41 +19,59 @@
     <table class="default-table">
         @foreach (var group in Model)
         {
-            <tr>
-                @if (ViewBag.PersBudget >= group.EntryFeeDon || (ViewBag.PersBudget >= group.EntryFeeUser && group.EntryFeeUser != -1) || (ViewBag.PersBudget >= group.EntryFeeMod && group.EntryFeeMod != -1) || (ViewBag.PersBudget >= group.EntryFeeVIP && group.EntryFeeVIP != -1))
+        <tr>
+            @if (ViewBag.PersBudget >= group.EntryFeeDon || (ViewBag.PersBudget >= group.EntryFeeUser && group.EntryFeeUser != -1) || (ViewBag.PersBudget >= group.EntryFeeMod && group.EntryFeeMod != -1) || (ViewBag.PersBudget >= group.EntryFeeVIP && group.EntryFeeVIP != -1))
+            {
+
+                @if (group.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name) == null || group.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name && c.R == "Забанен") != null)
                 {
-
-                    @if (group.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name) == null || group.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name && c.R == "Забанен") != null)
-                    {
-                        <td>
-                            @Html.ActionLink(@group.Name, "OpenGroup", "Groups", new { name = group.Name }, new { @class = "modal-link" })
-                        </td>
-                    }
-                    else
-                    {
-                        <td>
-                            @Html.ActionLink(@group.Name, "OpenGroup", "Groups", new { name = group.Name })
-                        </td>
-                    }
-
                     <td>
-                        <a href="@Url.Action("Details", "Groups", new { name = group.Name })" class="modal-link">
-                            <i class="fas fa-info-circle"></i>
-                        </a>
-                    </td>
-                    <td>
-                        @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Creator") != null)
-                        {
-                            <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        }
+                        @Html.ActionLink(@group.Name, "OpenGroup", "Groups", new { name = group.Name }, new { @class = "modal-link" })
                     </td>
                 }
-            </tr>
+                else
+                {
+                    <td>
+                        @Html.ActionLink(@group.Name, "OpenGroup", "Groups", new { name = group.Name })
+                    </td>
+                }
+
+                <td style="width:40px">
+                    <a href="@Url.Action("Details", "Groups", new { name = group.Name })" class="modal-link">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                </td>
+
+            if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == group.Name) == false)
+            {//не заглушены
+                <td style="width:40px">
+                    <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=group.Name })">
+                        <i class="fas fa-volume-mute"></i>
+                    </a>
+                </td>
+
+            }
+            else
+            {
+               <td style="width:40px">
+                    <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=group.Name })">
+                        <i class="fas fa-volume-up"></i>
+                    </a>
+                </td>
+            }
+                <td>
+                    @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Creator") != null)
+                    {
+                        <a asp-controller="Groups" asp-action="Edit" asp-route-name="@group.Name">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="@Url.Action("Delete", "Groups", new { name = group.Name })" class="modal-link">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    }
+                </td>
+            }
+        </tr>
         }
     </table>
     @{
@@ -90,11 +108,27 @@
                 <td>
                     <a asp-controller="Groups" asp-action="OpenGroup" asp-route-name="@group.Name">@group.Name</a>
                 </td>
-                <td>
+                <td style="width:40px">
                     <a href="@Url.Action("Details", "Groups", new { name = group.Name })" class="modal-link">
                         <i class="fas fa-info-circle"></i>
                     </a>
                 </td>
+            @if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == group.Name) == false)
+            {//не заглушены
+                <td style="width:40px">
+                    <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=group.Name })">
+                        <i class="fas fa-volume-mute"></i>
+                    </a>
+                </td>
+            }
+            else
+            {
+                <td style="width:40px">
+                    <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=group.Name })">
+                        <i class="fas fa-volume-up"></i>
+                    </a>
+                </td>
+            }
                 <td>
                     @if (group.Clients.FirstOrDefault(rp => rp.Client.Login == User.Identity.Name && rp.R == "Creator") != null)
                     {

@@ -194,7 +194,25 @@
                     <td class="@currentuser">
                         @client.P
                     </td>
-
+                    @if (currentuser == "")
+                    {
+                    @if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == client.Client.Login) == false)
+                    {//не заглушены
+                        <td>
+                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = client.Client.Login })">
+                                <i class="fas fa-user-slash"></i>
+                            </a>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = client.Client.Login })">
+                                <i class="fas fa-user"></i>
+                            </a>
+                        </td>
+                    }
+                    }
                     @if (currentuserrole == "Creator" || currentuserrole == "Mod")
                     {
                         @if (client.R != "Creator" && client.Client.Login != User.Identity.Name)
@@ -310,7 +328,6 @@
             document.getElementById("chatroom").insertBefore(elem, firstElem);
         }
         $(document).ready(function () {
-            $("#noti_Container").ikrNotificationSetup();
             $.get(
                 "/Notifications/GetNotifications",
                 onAjaxSuccess
@@ -352,7 +369,7 @@
                             else if (text.match(regex)[i] == "@("@")VIP") { notify[i] = "VIP"; }
                             else if (text.match(regex)[i] == "@("@")User") { notify[i] = "User"; }
                             else if (text.match(regex)[i] == "@("@")Don") { notify[i] = "Don"; }
-                            else { notify[i] = text.match(regex)[i]; }
+                            else { notify[i] = text.match(regex)[i].substring(1); }
                         }
                     }
                 }

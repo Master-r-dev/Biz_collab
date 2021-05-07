@@ -10,6 +10,7 @@
             $("#noti_Container").ikrNotificationSetup();
             $.get(
                 "/Notifications/GetNotifications",
+                //"/Notifications/GetMutedNames", что-то такое
                 onAjaxSuccess
             );
 

@@ -27,7 +27,7 @@ namespace Biz_collab.Service
                 }
                 return _oNotifications;
         }
-        public List<MutedName> GetMutedName(string ClientId)
+        public List<MutedName> GetMutedNames(string ClientId)
         {
             _MutedName = new List<MutedName>();
 

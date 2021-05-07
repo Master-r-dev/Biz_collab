@@ -75,10 +75,10 @@ namespace Biz_collab.Controllers
             return Json(_oNotifications);
         }
 
-        public JsonResult GetMutedName()
+        public JsonResult GetMutedNames()
         {
             _MutedName = new List<MutedName>();
-            _MutedName = _notiService.GetMutedName(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            _MutedName = _notiService.GetMutedNames(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return Json(_MutedName);
         }
 

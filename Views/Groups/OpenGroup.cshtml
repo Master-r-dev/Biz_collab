@@ -180,7 +180,7 @@
             <h2 class="c-g f-s-1rem p-t-7">Клиенты</h2>
         }
 
-    <table class="default-table scroll" style="overflow-x: hidden; overflow-y: auto; text-align: justify; height:350px">
+    <table class="default-table scroll" style="overflow-x: hidden; overflow-y: auto; text-align: justify;">
 
         @foreach (var client in Model.Clients)
         {
@@ -276,6 +276,14 @@
             }
         </div>
         <div id="inputForm">
+            <div class="reply" id="reply">
+                <div class="reply-name">
+                    ff
+                </div>
+                <div class="reply-massage-text">
+                    Hello Word!
+                </div>
+            </div>
             <input type="text" id="message" class="style-field" />
             <input class="style-button" type="button" id="sendBtn" value="Отправить" />
         </div>

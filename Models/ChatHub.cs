@@ -17,7 +17,7 @@ namespace Biz_collab.Models
         public async Task Send(string Text,string Groupname ,string[] notify)
         {
             //если клиент состоит в группе и его роль не забанен
-            var client = _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).ThenInclude(c=>c.MutedList).FirstOrDefault(g => g.Name == Groupname).Clients
+            var client = _db.Groups.Include(g => g.Clients).ThenInclude(rp=>rp.Client).ThenInclude(c=>c.MutedName).FirstOrDefault(g => g.Name == Groupname).Clients
                 .FirstOrDefault(rp=>rp.ClientId == Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             Message message = new Message { Text = Text};
             message.Name = Context.User.Identity.Name.Substring(0, Context.User.Identity.Name.LastIndexOf("@"));
@@ -40,7 +40,7 @@ namespace Biz_collab.Models
                             foreach (var c in client.Group.Clients)
                             {
                                 if (c.ClientId==client.ClientId) { continue; }
-                                if (!c.Client.MutedList.Any(m=>m.MutedName == Groupname || m.MutedName == Context.User.Identity.Name)) {
+                                if (!c.Client.MutedName.Any(m=>m.Name == Groupname || m.Name == Context.User.Identity.Name)) {
                                     Notification callUser = new Notification
                                     {
                                         ClientId = c.ClientId,
@@ -64,7 +64,7 @@ namespace Biz_collab.Models
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "Mod"))
                                     {
                                         if (c.ClientId == client.ClientId) { continue; }
-                                        if (!c.Client.MutedList.Any(m=>m.MutedName == Groupname || m.MutedName == Context.User.Identity.Name))
+                                        if (!c.Client.MutedName.Any(m=>m.Name == Groupname || m.Name == Context.User.Identity.Name))
                                         {
                                             Notification callUser = new Notification
                                             {
@@ -83,7 +83,7 @@ namespace Biz_collab.Models
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "VIP"))
                                     {
                                         if (c.ClientId == client.ClientId) { continue; }
-                                        if (!c.Client.MutedList.Any(m=>m.MutedName == Groupname || m.MutedName == Context.User.Identity.Name))
+                                        if (!c.Client.MutedName.Any(m=>m.Name == Groupname || m.Name == Context.User.Identity.Name))
                                         {
                                             Notification callUser = new Notification
                                             {
@@ -102,7 +102,7 @@ namespace Biz_collab.Models
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "User"))
                                     {
                                         if (c.ClientId == client.ClientId) { continue; }
-                                        if (!c.Client.MutedList.Any(m=>m.MutedName == Groupname || m.MutedName == Context.User.Identity.Name))
+                                        if (!c.Client.MutedName.Any(m=>m.Name == Groupname || m.Name == Context.User.Identity.Name))
                                         {
                                             Notification callUser = new Notification
                                             {
@@ -121,7 +121,7 @@ namespace Biz_collab.Models
                                     foreach (var c in client.Group.Clients.Where(c => c.R == "Don"))
                                     {
                                         if (c.ClientId == client.ClientId) { continue; }
-                                        if (!c.Client.MutedList.Any(m=>m.MutedName == Groupname || m.MutedName == Context.User.Identity.Name))
+                                        if (!c.Client.MutedName.Any(m=>m.Name == Groupname || m.Name == Context.User.Identity.Name))
                                         {
                                             Notification callUser = new Notification
                                             {
@@ -142,7 +142,7 @@ namespace Biz_collab.Models
                                         if (c.Client.Login == notify[i])
                                         {
                                             if (c.ClientId == client.ClientId) { continue; }
-                                            if (!c.Client.MutedList.Any(m=>m.MutedName == Groupname || m.MutedName == Context.User.Identity.Name))
+                                            if (!c.Client.MutedName.Any(m=>m.Name == Groupname || m.Name == Context.User.Identity.Name))
                                             {
                                                 Notification callUser = new Notification
                                                 {

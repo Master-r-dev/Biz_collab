@@ -190,7 +190,7 @@ namespace Biz_collab.Controllers
             };
             int pageSize = 8;            
             ViewBag.Transactions = await PaginatedList<Transaction>.CreateAsync(trans, pageNumber ?? 1, pageSize);
-            ViewBag.MutedList = _db.MutedLists.Where(n => n.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            ViewBag.MutedName = _db.MutedNames.Where(n => n.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return View(@group);
         }
         [Authorize]
@@ -219,7 +219,7 @@ namespace Biz_collab.Controllers
         public async Task<IActionResult> JoinGroup(string name,int sum)
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;            
-            var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c=>c.MutedList).FirstAsync(g => g.Name == name);
+            var @group = await _db.Groups.Include(g => g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c=>c.MutedName).FirstAsync(g => g.Name == name);
             var client = await _db.Clients.Include(c => c.MyGroups).FirstAsync(c => c.Id == currentUserID);
             if (@group.Clients.FirstOrDefault(rp => rp.Client == client) == null && group.Type == 1 && sum == 1)
             {
@@ -237,7 +237,7 @@ namespace Biz_collab.Controllers
                 group.Budget += group.EntryFeeDon;
                 _db.Entry(client).State = EntityState.Modified;
                 _db.Entry(group).State = EntityState.Modified;
-                if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
+                if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedName.Any(m => m.Name == @group.Name))
                 {
                     Notification newUser = new Notification {
                         ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
@@ -268,7 +268,7 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeDon;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
-                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedName.Any(m => m.Name == @group.Name))
                     {
                         Notification newUser = new Notification {
                             ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
@@ -297,7 +297,7 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeUser;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
-                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedName.Any(m => m.Name == @group.Name))
                     {
                         Notification newUser = new Notification {
                             ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
@@ -326,7 +326,7 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeVIP;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
-                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedName.Any(m => m.Name == @group.Name))
                     {
                         Notification newUser = new Notification {
                             ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
@@ -348,7 +348,7 @@ namespace Biz_collab.Controllers
                     group.Budget += group.EntryFeeMod;
                     _db.Entry(client).State = EntityState.Modified;
                     _db.Entry(group).State = EntityState.Modified;
-                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedList.Any(m => m.MutedName == @group.Name))
+                    if (!@group.Clients.FirstOrDefault(rp => rp.R == "Creator").Client.MutedName.Any(m => m.Name == @group.Name))
                     {
                         Notification newUser = new Notification {
                             ClientId = @group.Clients.FirstOrDefault(rp => rp.R == "Creator").ClientId,
@@ -388,7 +388,7 @@ namespace Biz_collab.Controllers
         [HttpPost]
         public  IActionResult EditRoleClient(string name,string login,string Percent, [Bind("R,P")] Role_Power rp)
         {   /*код изменение роли клиента*/
-            var c = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).ThenInclude(c=>c.MutedList).Include(rp => rp.Group).FirstOrDefault(rp => rp.Client.Login == login && rp.Group.Name == name);
+            var c = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).ThenInclude(c=>c.MutedName).Include(rp => rp.Group).FirstOrDefault(rp => rp.Client.Login == login && rp.Group.Name == name);
             if (rp.R==null )
             {
                 ModelState.AddModelError("Role", "Заполнить!");
@@ -433,7 +433,7 @@ namespace Biz_collab.Controllers
             {
                 try
                 {
-                    if (!rp.Client.MutedList.Any(m => m.MutedName == name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
+                    if (!rp.Client.MutedName.Any(m => m.Name == name || m.Name == this.User.FindFirst(ClaimTypes.Name).Value))
                     {
                         if (rp.Percent == null)
                         {
@@ -524,7 +524,7 @@ namespace Biz_collab.Controllers
                 {
                     return NotFound();
                 }
-                rp.Client = _db.Clients.AsNoTracking().Include(c=>c.MutedList).First(c => c.Login == login);
+                rp.Client = _db.Clients.AsNoTracking().Include(c=>c.MutedName).First(c => c.Login == login);
                 rp.ClientId = _db.Clients.AsNoTracking().First(c=>c.Login==login).Id;
                 rp.GroupId = _db.Groups.AsNoTracking().First(g => g.Name == name).Id;
                 if (Percent != null)
@@ -536,7 +536,7 @@ namespace Biz_collab.Controllers
                 {
                     try
                     {
-                        if (!rp.Client.MutedList.Any(m => m.MutedName == name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
+                        if (!rp.Client.MutedName.Any(m => m.Name == name || m.Name == this.User.FindFirst(ClaimTypes.Name).Value))
                         {
                             if (rp.Percent == null)
                             {
@@ -595,12 +595,12 @@ namespace Biz_collab.Controllers
         [Authorize]
         public async Task<IActionResult> BanClient(string Login, string name)
         {   /*код бан клиента*/
-            var client = await _db.Role_Powers.Include(rp => rp.Client).ThenInclude(c=>c.MutedList).Include(rp=>rp.Group).FirstAsync(rp => rp.Client.Login == Login && rp.Group.Name == name);
+            var client = await _db.Role_Powers.Include(rp => rp.Client).ThenInclude(c=>c.MutedName).Include(rp=>rp.Group).FirstAsync(rp => rp.Client.Login == Login && rp.Group.Name == name);
             client.R = "Забанен";
             client.P = 0;
             client.Percent = 0;
             _db.Entry(client).State = EntityState.Modified;
-            if (!client.Client.MutedList.Any(m => m.MutedName == name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
+            if (!client.Client.MutedName.Any(m => m.Name == name || m.Name == this.User.FindFirst(ClaimTypes.Name).Value))
             {
                 Notification BanClient = new Notification
                 {
@@ -683,7 +683,7 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
-            var gg = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c => c.MutedList).Include(g=>g.Transactions).ThenInclude(t=>t.Votes).First(g => g.Id == group.Id);
+            var gg = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c => c.MutedName).Include(g=>g.Transactions).ThenInclude(t=>t.Votes).First(g => g.Id == group.Id);
             @group.Id = gg.Id;
             if (_db.Groups.Any(g => g.Name == @group.Name && g.Id != @group.Id) == true)
             {
@@ -701,7 +701,7 @@ namespace Biz_collab.Controllers
                     foreach (var rp in @gg.Clients)
                     {
                         if (rp.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value) { continue; }
-                        if (!rp.Client.MutedList.Any(m => m.MutedName == @group.Name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
+                        if (!rp.Client.MutedName.Any(m => m.Name == @group.Name || m.Name == this.User.FindFirst(ClaimTypes.Name).Value))
                         {
                             Notification editGroup = new Notification
                             {
@@ -759,7 +759,7 @@ namespace Biz_collab.Controllers
         public async Task<IActionResult> DeleteConfirmed(string name)
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var @group = await _db.Groups.Include(g=>g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c=>c.MutedList).FirstAsync(g=>g.Name==name);
+            var @group = await _db.Groups.Include(g=>g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c=>c.MutedName).FirstAsync(g=>g.Name==name);
             var client = @group.Clients.FirstOrDefault(rp=>rp.ClientId== currentUserID && rp.R=="Creator").Client;
 
             if (client != null)
@@ -769,7 +769,7 @@ namespace Biz_collab.Controllers
                 foreach (var rp in @group.Clients)
                 {
                     if (rp.ClientId == client.Id) { continue; }
-                    if (!rp.Client.MutedList.Any(m => m.MutedName == name || m.MutedName == this.User.FindFirst(ClaimTypes.Name).Value))
+                    if (!rp.Client.MutedName.Any(m => m.Name == name || m.Name == this.User.FindFirst(ClaimTypes.Name).Value))
                     {
                         Notification deleteGroup = new Notification
                         {

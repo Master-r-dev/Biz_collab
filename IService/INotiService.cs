@@ -6,6 +6,6 @@ namespace Biz_collab.IService
     public interface INotiService
     {
         List<Notification> GetNotifications(string ClientId, bool bIsGetOnlyUnread);
-        List<MutedList> GetMutedList(string ClientId);
+        List<MutedName> GetMutedName(string ClientId);
     }
 }

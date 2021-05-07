@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace Biz_collab.Models
 {
-    public class MutedList
+    public class MutedName
     {
         public string ClientId { get; set; }
         public virtual Client Client { get; set; }
-        public string MutedName { get; set; }
+        public string Name { get; set; }
     }
 }

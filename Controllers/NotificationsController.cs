@@ -21,7 +21,7 @@ namespace Biz_collab.Controllers
         private readonly ApplicationDbContext _db;
         readonly INotiService _notiService = null;
         List<Notification> _oNotifications = new List<Notification>();
-        List<MutedList> _MutedList = new List<MutedList>();
+        List<MutedName> _MutedName = new List<MutedName>();
         public NotificationsController(INotiService notiService, ApplicationDbContext context)
         {
             _notiService = notiService;
@@ -64,7 +64,7 @@ namespace Biz_collab.Controllers
                 _ => notifications.OrderByDescending(s => s.CreatedDate),
             };
             int pageSize = 5;
-            ViewBag.MutedList = _db.MutedLists.Where(n => n.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            ViewBag.MutedName = _db.MutedNames.Where(n => n.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             return View(await PaginatedList<Notification>.CreateAsync(notifications, pageNumber ?? 1, pageSize));
         }
 
@@ -75,11 +75,11 @@ namespace Biz_collab.Controllers
             return Json(_oNotifications);
         }
 
-        public JsonResult GetMutedList()
+        public JsonResult GetMutedName()
         {
-            _MutedList = new List<MutedList>();
-            _MutedList = _notiService.GetMutedList(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            return Json(_MutedList);
+            _MutedName = new List<MutedName>();
+            _MutedName = _notiService.GetMutedName(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            return Json(_MutedName);
         }
 
 
@@ -140,20 +140,20 @@ namespace Biz_collab.Controllers
         public IActionResult Mute( bool act , string name)
         {
             if (act) {//заглушить
-                MutedList n = new MutedList 
+                MutedName n = new MutedName 
                 {
                     ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
-                    MutedName = name
+                    Name = name
                 };
-                _db.MutedLists.Add(n);
+                _db.MutedNames.Add(n);
             }
             else { //включить
-                MutedList n = new MutedList
+                MutedName n = new MutedName
                 {
                     ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
-                    MutedName = name
+                    Name = name
                 };
-                _db.MutedLists.Remove(n);
+                _db.MutedNames.Remove(n);
             }
             if (name == null)
             {

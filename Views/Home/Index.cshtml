@@ -42,7 +42,7 @@
                     </a>
                 </td>
 
-            if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == group.Name) == false)
+            if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == group.Name) == false)
             {//не заглушены
                 <td style="width:40px">
                     <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=group.Name })">
@@ -113,7 +113,7 @@
                         <i class="fas fa-info-circle"></i>
                     </a>
                 </td>
-            @if (((IEnumerable<dynamic>)ViewBag.MutedList).Any(m => m.MutedName == group.Name) == false)
+            @if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == group.Name) == false)
             {//не заглушены
                 <td style="width:40px">
                     <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=group.Name })">

@@ -18,10 +18,10 @@ function Regime() {
         document.getElementById("Power").style.display = "block";
         document.getElementById("Percent").style.display = "none";  
         document.getElementById("perc").value = null;
-        document.getElementById("1").checked = false;
-        document.getElementById("2").checked = false;
-        document.getElementById("3").checked = false;
-        document.getElementById("4").checked = false;
+        document.getElementById("one").checked = false;
+        document.getElementById("two").checked = false;
+        document.getElementById("three").checked = false;
+        document.getElementById("four").checked = false;
 
     }
     else if (document.getElementById("p_mode").checked) {
@@ -30,14 +30,14 @@ function Regime() {
         document.getElementById("Power").style.display = "none";
         document.getElementById("Percent").style.display = "block";          
         document.getElementById("power").value = 0;
-        document.getElementById("1").checked = false;
-        document.getElementById("2").checked = false;
-        document.getElementById("3").checked = false;
-        document.getElementById("4").checked = false;
+        document.getElementById("one").checked = false;
+        document.getElementById("two").checked = false;
+        document.getElementById("three").checked = false;
+        document.getElementById("four").checked = false;
     }
 }
 function ShowCreateGroupSettings() {
-    if (document.getElementById("1").checked) {
+    if (document.getElementById("first").checked) {
         document.getElementById("Settings").style.display = "none";
         document.getElementById("InputCloseCall").checked = true;
         document.getElementById("InputMinMinus").value = "-1";
@@ -45,17 +45,17 @@ function ShowCreateGroupSettings() {
         document.getElementById("InputEntryFeeVIP").value = "-1";
         document.getElementById("InputEntryFeeMod").value = "-1";
     }
-    else if (document.getElementById("2").checked) {
+    else if (document.getElementById("second").checked) {
         document.getElementById("Settings").style.display = "block";
         document.getElementById("InputMinMinus").value = "";
-        document.getElementById("InputEntryFeeUser").value = ""; 
+        document.getElementById("InputEntryFeeUser").value = "";
         document.getElementById("InputEntryFeeVIP").value = "";
         document.getElementById("InputEntryFeeMod").value = "";
-    }    
+    }
 } 
 
 function VIPShow() {
-    if (document.getElementById("3").checked) {
+    if (document.getElementById("third").checked) {
         document.getElementById("InputEntryFeeVIP").value = "-1";
         document.getElementById("InputEntryFeeVIP").style.display = "none";
     }
@@ -65,7 +65,7 @@ function VIPShow() {
     }
 }
 function ModShow() {
-    if (document.getElementById("4").checked) {
+    if (document.getElementById("fourth").checked) {
         document.getElementById("InputEntryFeeMod").value = "-1";
         document.getElementById("InputEntryFeeMod").style.display = "none";
     }

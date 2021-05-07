@@ -193,17 +193,16 @@ namespace Biz_collab.Controllers
             }
             var transaction = await _db.Transactions
                 .Include(t => t.Client)
+                .ThenInclude(c=>c.MutedName)
                 .Include(t => t.Votes)
                 .Include(t => t.Group)
                 .ThenInclude(g=>g.Clients)
-                .ThenInclude(rp=>rp.Client)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (transaction == null)
             {
                 return NotFound();
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var client = await _db.Clients.FindAsync(currentUserID);
             if (transaction.Group.Clients.FirstOrDefault(rp => rp.ClientId == currentUserID).R == "Забанен")
             {
                 return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
@@ -212,9 +211,7 @@ namespace Biz_collab.Controllers
                 var vote = new Vote
                 {
                     ClientId = currentUserID,
-                    Client = client,
                     TransactionId = transaction.Id,
-                    Transaction = transaction,
                     V = true,
                     P = _db.Role_Powers.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.GroupId == transaction.GroupId).P
                 };
@@ -234,6 +231,18 @@ namespace Biz_collab.Controllers
                         transaction.Group.Budget -= transaction.Amount;
                         _db.Entry(transaction.Group).State = EntityState.Modified;
                         _db.Entry(transaction).State = EntityState.Modified;
+                        if (!transaction.Client.MutedName.Any(m => m.Name == transaction.Group.Name))
+                        {
+                            Notification trans_accept = new Notification
+                            {
+                                ClientId = transaction.Client.Id,
+                                NotiHeader = "Транзакция одобрена.Перевод с счета группы на причину снятия.",
+                                NotiBody = "На сумму="+ transaction.Amount+ " в группе:" + transaction.Group.Name,
+                                IsRead = false,
+                                Url = "../Groups/OpenGroup?name=" + transaction.Group.Name
+                            };
+                            _db.Notifications.Add(trans_accept);
+                        }
 
                     }
                     //перевод с счета группы на счет пользователя
@@ -244,13 +253,38 @@ namespace Biz_collab.Controllers
                         transaction.Group.Budget -= transaction.Amount;                        
                         _db.Entry(transaction.Group).State = EntityState.Modified;
                         transaction.Client.PersBudget += transaction.Amount;
-                        _db.Entry(transaction.Client).State = EntityState.Modified;                       
-                    }                   
+                        _db.Entry(transaction.Client).State = EntityState.Modified;
+                        if (!transaction.Client.MutedName.Any(m => m.Name == transaction.Group.Name))
+                        {
+                            Notification trans_accept = new Notification
+                            {
+                                ClientId = transaction.Client.Id,
+                                NotiHeader = "Транзакция одобрена.перевод с счета группы на ваш счет.",
+                                NotiBody = "На сумму=" + transaction.Amount + " в группе:" + transaction.Group.Name,
+                                IsRead = false,
+                                Url = "../Groups/OpenGroup?name=" + transaction.Group.Name
+                            };
+                            _db.Notifications.Add(trans_accept);
+                        }
+                    }
+                    
                 }
                 else if (transaction.NoPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == false))
                 {
                     _db.Votes.RemoveRange(transaction.Votes);
                     _db.Transactions.Remove(transaction);
+                    if (!transaction.Client.MutedName.Any(m => m.Name == transaction.Group.Name))
+                    {
+                        Notification trans_deny = new Notification
+                        {
+                            ClientId = transaction.Client.Id,
+                            NotiHeader = "Транзакция отклонена по голосованию",
+                            NotiBody = "На сумму=" + transaction.Amount + " в группе:" + transaction.Group.Name,
+                            IsRead = false,
+                            Url = "../Groups/OpenGroup?name=" + transaction.Group.Name
+                        };
+                        _db.Notifications.Add(trans_deny);
+                    }
                 }
                 await _db.SaveChangesAsync();
             }
@@ -266,6 +300,7 @@ namespace Biz_collab.Controllers
             }
             var transaction = await _db.Transactions
                 .Include(t => t.Client)
+                .ThenInclude(c=>c.MutedName)
                 .Include(t => t.Votes)
                 .Include(t => t.Group)                
                 .ThenInclude(g => g.Clients)
@@ -276,7 +311,6 @@ namespace Biz_collab.Controllers
                 return NotFound();
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var client = await _db.Clients.FindAsync(currentUserID);
             if (transaction.Group.Clients.FirstOrDefault(rp => rp.ClientId == currentUserID).R == "Забанен")
             {
                 return RedirectToAction("BannedInGroup", new { name = transaction.Group.Name });
@@ -286,9 +320,7 @@ namespace Biz_collab.Controllers
                 var vote = new Vote
                 {
                     ClientId = currentUserID,
-                    Client = client,
                     TransactionId = transaction.Id,
-                    Transaction = transaction,
                     V = false,
                     P = _db.Role_Powers.FirstOrDefault(rp => rp.ClientId == currentUserID && rp.GroupId == transaction.GroupId).P
                 };
@@ -302,6 +334,18 @@ namespace Biz_collab.Controllers
                 {                   
                     _db.Votes.RemoveRange(transaction.Votes);                    
                     _db.Transactions.Remove(transaction);
+                    if (!transaction.Client.MutedName.Any(m => m.Name == transaction.Group.Name))
+                    {
+                        Notification trans_deny = new Notification
+                        {
+                            ClientId = transaction.Client.Id,
+                            NotiHeader = "Транзакция отклонена по голосованию",
+                            NotiBody = "На сумму=" + transaction.Amount + " в группе:" + transaction.Group.Name,
+                            IsRead = false,
+                            Url = "../Groups/OpenGroup?name=" + transaction.Group.Name
+                        };
+                        _db.Notifications.Add(trans_deny);
+                    }
                 }
                 else if (transaction.YesPercent > 50 || (transaction.YesPercent == 50 && transaction.NoPercent == 50 && transaction.Group.CloseCall == true))
                 {
@@ -313,6 +357,18 @@ namespace Biz_collab.Controllers
                         transaction.Group.Budget -= transaction.Amount;
                         _db.Entry(transaction.Group).State = EntityState.Modified;
                         _db.Entry(transaction).State = EntityState.Modified;
+                        if (!transaction.Client.MutedName.Any(m => m.Name == transaction.Group.Name))
+                        {
+                            Notification trans_accept = new Notification
+                            {
+                                ClientId = transaction.Client.Id,
+                                NotiHeader = "Транзакция одобрена.Перевод с счета группы на причину снятия.",
+                                NotiBody = "На сумму=" + transaction.Amount + " в группе:" + transaction.Group.Name,
+                                IsRead = false,
+                                Url = "../Groups/OpenGroup?name=" + transaction.Group.Name
+                            };
+                            _db.Notifications.Add(trans_accept);
+                        }
 
                     }
                     //перевод с счета группы на счет пользователя
@@ -324,6 +380,18 @@ namespace Biz_collab.Controllers
                         _db.Entry(transaction.Group).State = EntityState.Modified;
                         transaction.Client.PersBudget += transaction.Amount;
                         _db.Entry(transaction.Client).State = EntityState.Modified;
+                        if (!transaction.Client.MutedName.Any(m => m.Name == transaction.Group.Name))
+                        {
+                            Notification trans_accept = new Notification
+                            {
+                                ClientId = transaction.Client.Id,
+                                NotiHeader = "Транзакция одобрена.перевод с счета группы на ваш счет.",
+                                NotiBody = "На сумму=" + transaction.Amount + " в группе:" + transaction.Group.Name,
+                                IsRead = false,
+                                Url = "../Groups/OpenGroup?name=" + transaction.Group.Name
+                            };
+                            _db.Notifications.Add(trans_accept);
+                        }
                     }
                 }
                 await _db.SaveChangesAsync();

@@ -35,7 +35,7 @@
                         <div>
                             <label for="1">
                                 <span class="glyphicon glyphicon-plus">
-                                    <input type="radio" onclick="SetP()" asp-for="R" id="1" value="Don">
+                                    <input type="radio" onclick="SetP()" asp-for="R" id="one" value="Don">
                                 </span>
                                 Донатер
                             </label>
@@ -43,7 +43,7 @@
                         <div>
                             <label for="2">
                                 <span class="glyphicon glyphicon-cloud-download">
-                                    <input type="radio" onclick="SetP()" asp-for="R" id="2" value="User">
+                                    <input type="radio" onclick="SetP()" asp-for="R" id="two" value="User">
                                 </span>
                                 Участник
                             </label>
@@ -51,7 +51,7 @@
                         <div>
                             <label for="3">
                                 <span class="glyphicon glyphicon-cloud-upload">
-                                    <input type="radio" onclick="SetP()" asp-for="R" id="3" value="VIP">
+                                    <input type="radio" onclick="SetP()" asp-for="R" id="three" value="VIP">
                                 </span>
                                 VIP
                             </label>
@@ -59,7 +59,7 @@
                         <div>
                             <label for="4">
                                 <span class="glyphicon glyphicon-cloud-upload">
-                                    <input type="radio" onclick="SetP()" asp-for="R" id="4" value="Mod">
+                                    <input type="radio" onclick="SetP()" asp-for="R" id="four" value="Mod">
                                 </span>
                                 Модератор
                             </label>
@@ -110,10 +110,10 @@
     }
     function SetP() {
         if (document.getElementById("s_mode").checked) {
-            if (document.getElementById("1").checked) { document.getElementById("power").value = 1; }
-            else if (document.getElementById("2").checked) { document.getElementById("power").value = 1; }
-            else if (document.getElementById("3").checked) { document.getElementById("power").value = @Convert.ToInt32(Math.Ceiling(Convert.ToDouble(ViewBag.Count * 0.25)));  }
-            else if (document.getElementById("4").checked) { document.getElementById("power").value = @Convert.ToInt32(Math.Floor(Convert.ToDouble(ViewBag.Count * 0.5)));  }
+            if (document.getElementById("one").checked) { document.getElementById("power").value = 1; }
+            else if (document.getElementById("two").checked) { document.getElementById("power").value = 1; }
+            else if (document.getElementById("three").checked) { document.getElementById("power").value = @Convert.ToInt32(Math.Ceiling(Convert.ToDouble(ViewBag.Count * 0.25)));  }
+            else if (document.getElementById("four").checked) { document.getElementById("power").value = @Convert.ToInt32(Math.Floor(Convert.ToDouble(ViewBag.Count * 0.5)));  }
         }
     }
     </script>

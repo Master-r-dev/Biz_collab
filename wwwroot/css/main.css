@@ -941,7 +941,14 @@ ol > a > li {
 	width: 25%;
 	margin: 5px;
 }
-
+.scroll-box-clients {
+	overflow-x: hidden;
+	overflow-y: auto;
+	text-align: justify;
+	overflow: auto;
+	display: flex;
+	flex-direction: column-reverse;
+}
 .scroll-box {
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -975,11 +982,24 @@ ol > a > li {
 }
 
 .chat-container {
+	position: relative;
+	padding: 10px;
+	width: 360px;
+	border-radius: 30px;
 	border: 2px solid #dedede;
 	background-color: #f1f1f1;
-	border-radius: 5px;
-	padding: 10px;
 	margin: 10px 0;
+}
+
+.chat-container::after {
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	left: 20px;
+	top: 93px;
+	border: 6px solid;
+	border-color: #f1f1f1 transparent transparent #f1f1f1;
 }
 
 .style-name {
@@ -991,11 +1011,24 @@ ol > a > li {
 }
 
 .chat-usercontainer {
-	border: 2px solid #dedede;
-	background-color: #7A36B2;
-	border-radius: 5px;
+	position: relative;
 	padding: 10px;
-	margin: 10px 0;
+	width: 360px;
+	margin: 10px 70px;
+	background-color: #7A36B2;
+	border: 2px solid #dedede;
+	border-radius: 30px;
+}
+
+.chat-usercontainer::after {
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	left: 310px;
+	top: 93px;
+	border: 6px solid;
+	border-color: #fff #fff transparent transparent;
 }
 
 .style-username {
@@ -1058,19 +1091,16 @@ ol > a > li {
 	border-radius: 10px;
 }
 ::-webkit-scrollbar {
-	width: 5px;
+	width: 5px
 }
 
-::-webkit-scrollbar-button {
-	background: #202020;
-}
-
-::-webkit-scrollbar-track-piece {
-	background: #888;
-}
 
 ::-webkit-scrollbar-thumb {
-	background: #007bff;
+	background: #555
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #7A36B2
 }
 
 ​

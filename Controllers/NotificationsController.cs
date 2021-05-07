@@ -21,6 +21,7 @@ namespace Biz_collab.Controllers
         private readonly ApplicationDbContext _db;
         readonly INotiService _notiService = null;
         List<Notification> _oNotifications = new List<Notification>();
+        List<MutedList> _MutedList = new List<MutedList>();
         public NotificationsController(INotiService notiService, ApplicationDbContext context)
         {
             _notiService = notiService;
@@ -73,6 +74,15 @@ namespace Biz_collab.Controllers
             _oNotifications = _notiService.GetNotifications(this.User.FindFirst(ClaimTypes.NameIdentifier).Value, bIsGetOnlyUnread);
             return Json(_oNotifications);
         }
+
+        public JsonResult GetMutedList()
+        {
+            _MutedList = new List<MutedList>();
+            _MutedList = _notiService.GetMutedList(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            return Json(_MutedList);
+        }
+
+
         [Route("/notificationSeen")]
         [HttpPut]
         public ActionResult NotificationSeen()

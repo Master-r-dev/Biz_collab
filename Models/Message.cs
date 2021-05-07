@@ -11,7 +11,6 @@ namespace Biz_collab.Models
         [Required]
         public string Text { get; set; }
         public DateTime Time { get; set; }
-        public int RepliedTo { get; set; }
         public string ClientId { get; set; }
         public virtual Client Client { get; set; } //нужен для того чтобы редактировать/удалять свои сообщения
         public string GroupId { get; set; }

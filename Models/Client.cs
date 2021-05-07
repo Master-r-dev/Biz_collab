@@ -15,10 +15,10 @@ namespace Biz_collab.Models
         public ICollection<Transaction> MyTransactions { get; set; }
         public ICollection<Notification>  MyNotifications { get; set; }
         public ICollection<Vote> MyVotes { get; set; }
-        //для изменения и удаления
         public virtual ICollection<Message> MyMessages { get; set; }
         public Client()
-        {               
+        {
+               MutedName = new List<MutedName>();
                MyMessages = new HashSet<Message>();
                MyGroups = new List<Role_Power>();
                MyTransactions = new List<Transaction>();

@@ -1,6 +1,5 @@
 ﻿@model Biz_collab.Models.Group
 @{ ViewData["Title"] = "Группа " + Model.Name; }
-<script src="~/notification/ikr.notificationPlugin.js"></script>
 <div style="display: flex;">
     <div class="graphics-box">
         <div class="chart bg-b b-r-10 p-l-20 p-r-20 p-b-20" align="center">
@@ -276,14 +275,6 @@
             }
         </div>
         <div id="inputForm">
-            <div class="reply" id="reply">
-                <div class="reply-name">
-                    ff
-                </div>
-                <div class="reply-massage-text">
-                    Hello Word!
-                </div>
-            </div>
             <input type="text" id="message" class="style-field" />
             <input class="style-button" type="button" id="sendBtn" value="Отправить" />
         </div>

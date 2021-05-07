@@ -987,7 +987,7 @@ ol > a > li {
 	width: 360px;
 	border-radius: 30px;
 	border: 2px solid #dedede;
-	background-color: #f1f1f1;
+	background-color: #2e4cba;
 	margin: 10px 0;
 }
 
@@ -1003,11 +1003,11 @@ ol > a > li {
 }
 
 .style-name {
-	color: #4e4d4d;
+	color: #9dab13;
 }
 
 .style-massage-text {
-	color: #4e4d4d;
+	color: #000000;
 }
 
 .chat-usercontainer {
@@ -1032,7 +1032,7 @@ ol > a > li {
 }
 
 .style-username {
-	color: #8D0726;
+	color: #10cdaf;
 }
 
 .style-usermassage-text {
@@ -1051,7 +1051,9 @@ ol > a > li {
 }
 
 .style-field {
-	padding: 1px 16px;
+	padding: 1px 5px;
+	margin-top:7px;
+	width:322px;
 	border-radius: 8px;
 }
 

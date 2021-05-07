@@ -20,7 +20,7 @@ namespace Biz_collab.Service
         {
             _oNotifications = new List<Notification>();
             
-                var oNotis = _db.Notifications.Where(n => n.ClientId == ClientId).ToList();
+                var oNotis = _db.Notifications.Where(n => n.ClientId == ClientId).OrderByDescending(n=> n.CreatedDate).ToList();
                 if (oNotis != null && oNotis.Count() > 0)
                 {
                     _oNotifications = oNotis;

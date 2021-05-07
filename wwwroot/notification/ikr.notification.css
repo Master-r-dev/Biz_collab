@@ -1,11 +1,14 @@
 .ikrNoti_Button {
     width: 22px;
     height: 22px;
+    position: absolute;
+    left: -35px;
+    top: 13px;
     line-height: 22px;
     border-radius: 50%;
     -moz-border-radius: 50%;
     -webkit-border-radius: 50%;
-    background: #2e467c;
+    background: #20ada8;
     margin: -3px 10px 0 10px;
     cursor: pointer
 }
@@ -13,12 +16,13 @@
 .ikrNoti_Counter {
     display: block;
     position: absolute;
-    background: #e1141e;
+    left: -35px;
+    background: #4a1097;
     color: #fff;
     font-size: 12px;
     font-weight: 400;
     padding: 1px 3px;
-    margin: -8px 0 0 25px;
+    margin: 0px 1px 0px 25px;
     border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
@@ -29,10 +33,10 @@
     display: none;
     width: 300px;
     position: absolute;
-    top: 30px;
-    left: 0;
-    background: #fff;
-    border: solid 1px rgba(100,100,100,.2);
+    left: -35px;
+    top: 43px;
+    background: #545454;
+    border: solid 1px rgb(100 100 100 / 20%);
     -webkit-box-shadow: 0 3px 8px rgba(0,0,0,.2);
     z-index: 1000;
     border-radius: 15px;
@@ -43,27 +47,27 @@
         display: block;
         width: 0;
         height: 0;
-        color: transparent;
+        color: #545454;
         border: 10px solid #ccc;
-        border-color: transparent transparent #fff;
+        border-color: transparent transparent #545454;
         margin-top: -20px;
         margin-left: 10px
     }
 
     .ikrNotifications h3 {
         display: block;
-        color: #333;
-        background: #fff;
+        color: #20ada8;
+        background: #545454;
         font-weight: 700;
         padding: 8px;
         margin: 0;
-        font-size:12px;
+        font-size: 12px;
         border-radius: 15px;
         border-bottom: solid 1px rgba(100,100,100,.3);
     }
 
     .ikrNotifications .ikrSeeAll {
-        background: #f6f7f8;
+        background: #545454;
         padding: 8px;
         font-size: 12px;
         font-weight: 700;
@@ -73,44 +77,45 @@
     }
 
         .ikrNotifications .ikrSeeAll a {
-            color: #3b5998
+            color: #20ada8
         }
 
             .ikrNotifications .ikrSeeAll a:hover {
-                background: #f6f7f8;
-                color: #3b5998;
+                color: #b71121;
                 text-decoration: underline
             }
 
 .ikrNotificationItems {
     height: 300px;
     overflow-y: scroll;
-    background-color: #f0f8ff
+    background-color: #14bec6;
 }
 
 .ikrSingleNotiDiv {
-    border-top: 1px solid #ccc;
-    margin-bottom: 20px;
+    border-top: 3px solid #165c98;
     cursor: pointer;
     color: #000
 }
 
 .ikrSingleNotiDivUnReadColor {
-    color: #c00
+    background: #f09;
 }
 
 .ikrNotificationTitle {
-    font-weight: 700;
+    font-weight: 600;
     margin-left: 10px
 }
 
 .ikrNotificationBody {
+    font-style: italic;
     margin: 0 10px 0 10px
 }
+
 .ikrNofiCreatedDate {
     text-align: right;
     margin-right: 10px;
 }
+
 .ikrNotiFromPropName {
     text-align: right;
 }

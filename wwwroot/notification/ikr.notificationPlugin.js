@@ -2,8 +2,8 @@
     var opt
     $.fn.ikrNotificationSetup = function (options) {
         var defaultSettings = $.extend({
-            BeforeSeenColor: "#2E467C",
-            AfterSeenColor: "#ccc"
+            BeforeSeenColor: "#ff00c8",
+            AfterSeenColor: "#20ada8"
         }, options);
         $(".ikrNoti_Button").css({
             "background": defaultSettings.BeforeSeenColor
@@ -13,10 +13,10 @@
             $("#" + parentId).append("<div class='ikrNoti_Counter'></div>" +
                 "<div class='ikrNoti_Button'></div>" +
                 "<div class='ikrNotifications'>" +
-                "<h3>Уведомления (<span class='notiCounterOnHead'>0</span>)</h3>" +
+                "<h3 charset='windows - 1251'>Уведомления (<span class='notiCounterOnHead'>0</span>)</h3>" +
                 "<div class='ikrNotificationItems'>" +
                 "</div>" +
-                "<div class='ikrSeeAll'><a href='#'>Посмотреть все</a></div>" +
+                "<div class='ikrSeeAll' charset='windows - 1251'><a href='#'>Посмотреть все</a></div>" +
                 "</div>");
 
             $('#' + parentId + ' .ikrNoti_Counter')
@@ -87,7 +87,7 @@
                         $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
                             "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" + 
-                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
+                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB') + "</div>" +
                             "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this)'></i></a>" +
                             "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>");
                     } else if (head == "Ва") {
@@ -95,7 +95,7 @@
                         $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
                             "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
-                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
+                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB') + "</div>" +
                             "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this'></i></a>" +
                             "<a title='Заглушить группу' href=''><i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a>" +
                             "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>" +
@@ -105,7 +105,7 @@
                         $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
                             "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
-                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
+                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB') + "</div>" +
                             "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this)'></i></a>" +
                             "<a title='Заглушить группу' href=''><i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a>" +
                             "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>");

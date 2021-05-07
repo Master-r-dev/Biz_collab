@@ -86,7 +86,8 @@
                         var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";
                         $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
                             "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
-                            "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
+                            "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" + 
+                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
                             "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this)'></i></a>" +
                             "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>");
                     } else if (head == "Ва") {
@@ -94,6 +95,7 @@
                         $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
                             "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
+                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
                             "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this'></i></a>" +
                             "<a title='Заглушить группу' href=''><i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a>" +
                             "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>" +
@@ -103,6 +105,7 @@
                         $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
                             "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
+                            "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB', { timeZone: 'UTC' }) + "</div>" +
                             "<a title='Заглушить участника' href=''><i class='fa fa-user-slash' onclick='memberMuting(this)'></i></a>" +
                             "<a title='Заглушить группу' href=''><i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a>" +
                             "<a title='Удалить уведомление' href=''><i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a>");
@@ -114,7 +117,7 @@
                     });
                 });
             }
-        }
+        } 
     };
 }(jQuery));
 

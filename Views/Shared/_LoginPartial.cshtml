@@ -10,11 +10,15 @@
             $("#noti_Container").ikrNotificationSetup();
             $.get(
                 "/Notifications/GetNotifications",
-                //"/Notifications/GetMutedNames", что-то такое
-                onAjaxSuccess
+                onAjaxNotiSuccess
             );
 
-            function onAjaxSuccess(data) {
+            $.get(
+                "/Notifications/GetMutedNames",
+                onAjaxMutedSuccess
+            );
+            
+            function onAjaxNotiSuccess(data) {
                 var notifications = data;
                 $("#noti_Container").ikrNotificationCount({
                     NotificationList: notifications,
@@ -23,6 +27,14 @@
                     ControllerName: "Notifications",
                     ActionName: "AllNotifications"
                 });
+            }
+
+            function onAjaxMutedSuccess(data) {
+                let names = [];
+                data.forEach(function (item, i, arr) {
+                    names.push(item.name)
+                });
+                localStorage.setItem("mutedNames", JSON.stringify(names));
             }
         });
     </script>

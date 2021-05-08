@@ -5,15 +5,24 @@
 
 function Regime() {
     if (document.getElementById("s_mode").checked) {
-        document.getElementById("Standart").style.display = "block";
+        document.getElementById("Standart").style.display = "block";   
+        document.getElementById("buttonn").style.display = "none";
         document.getElementById("Role").style.display = "none";
         document.getElementById("Power").style.display = "none";
         document.getElementById("Percent").style.display = "none";  
         document.getElementById("perc").value = null;
-        document.getElementById("R").value = null;
+        document.getElementById("R").value = "xxxx";
+        if (document.getElementById("one").checked == true ||
+            document.getElementById("two").checked == true ||
+            document.getElementById("three").checked ==true ||
+            document.getElementById("four").checked == true)
+        {
+            document.getElementById("buttonn").style.display = "block";            
+        }
     }
     else if (document.getElementById("n_mode").checked) {
-        document.getElementById("Standart").style.display = "none";
+        document.getElementById("buttonn").style.display = "none"; 
+        document.getElementById("Standart").style.display = "none";  
         document.getElementById("Role").style.display = "block";
         document.getElementById("Power").style.display = "block";
         document.getElementById("Percent").style.display = "none";  
@@ -25,6 +34,7 @@ function Regime() {
 
     }
     else if (document.getElementById("p_mode").checked) {
+        document.getElementById("buttonn").style.display = "none";   
         document.getElementById("Standart").style.display = "none";
         document.getElementById("Role").style.display = "block";
         document.getElementById("Power").style.display = "none";

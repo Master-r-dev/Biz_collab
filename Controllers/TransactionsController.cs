@@ -182,7 +182,18 @@ namespace Biz_collab.Controllers
                 return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
 
             }
-            return View(transaction);
+            var rp = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name);
+            if (rp.R == "Забанен")
+            {
+                return Redirect("~/Home/Index");
+            }
+            ViewBag.MinPlus = rp.Group.MinPlus;
+            ViewBag.MinMinus = rp.Group.MinMinus;
+            ViewBag.Name = name;
+            ViewBag.Budget = rp.Group.Budget;
+            ViewBag.PersBudget = rp.Client.PersBudget;
+            ViewBag.Role = rp.R;
+            return PartialView();
         }
 
         public async Task<IActionResult> VoteYes(string id)

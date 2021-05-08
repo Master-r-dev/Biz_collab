@@ -45,7 +45,7 @@
             if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == group.Name) == false)
             {//не заглушены
                 <td style="width:40px">
-                    <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=group.Name })">
+                    <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new { name=group.Name })">
                         <i class="fas fa-volume-mute"></i>
                     </a>
                 </td>
@@ -54,7 +54,7 @@
             else
             {
                <td style="width:40px">
-                    <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=group.Name })">
+                    <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  name=group.Name })">
                         <i class="fas fa-volume-up"></i>
                     </a>
                 </td>
@@ -116,7 +116,7 @@
             @if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == group.Name) == false)
             {//не заглушены
                 <td style="width:40px">
-                    <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  act = true ,name=group.Name })">
+                    <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  name=group.Name })">
                         <i class="fas fa-volume-mute"></i>
                     </a>
                 </td>
@@ -124,7 +124,7 @@
             else
             {
                 <td style="width:40px">
-                    <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  act = false ,name=group.Name })">
+                    <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  name=group.Name })">
                         <i class="fas fa-volume-up"></i>
                     </a>
                 </td>

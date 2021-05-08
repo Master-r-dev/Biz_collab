@@ -137,29 +137,29 @@ namespace Biz_collab.Controllers
             _db.SaveChanges();
             return Redirect(Request.Headers["Referer"].ToString());
         }
-        public IActionResult Mute( bool act , string name)
+        public IActionResult Mute( string name)
         {
             if (name == null)
             {
                 return NotFound();
             }
-            if (act) {//заглушить
-                MutedName n = new MutedName 
+            if (_db.MutedNames.Any(m => m.Name == name))
+            {
+                var n = _db.MutedNames.FirstOrDefault(m => m.Name == name);
+                _db.MutedNames.Remove(n);
+            }
+            else {
+                MutedName n = new MutedName
                 {
                     ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
                     Name = name
                 };
                 _db.MutedNames.Add(n);
-            }
-            else { //включить
-                var n = _db.MutedNames.FirstOrDefault(m=>m.Name==name);
-                _db.MutedNames.Remove(n);
-            }
-            
+            }            
             _db.SaveChanges();
             return Redirect(Request.Headers["Referer"].ToString());
         }
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> Delete(int? id, bool act , string login, string name)
         {
             if (id == null)
@@ -169,7 +169,7 @@ namespace Biz_collab.Controllers
             if (act) {// удалить и отказаться от приглашения(отослать уведомление об отказе тому кто отправил приглашение)
                 Notification declineOffer = new Notification
                 {
-                    ClientId =  _db.Clients.Find(login).Id,
+                    ClientId =  _db.Clients.FirstOrDefault(c=>c.Login==login).Id,
                     NotiHeader = "Отказ вашему приглашению",
                     NotiBody = " Пользователем-" + this.User.FindFirst(ClaimTypes.Name).Value + " в группу:" + name,
                     IsRead = false,

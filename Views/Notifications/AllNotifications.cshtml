@@ -80,7 +80,7 @@
                         if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == matches[0].Value) == false)
                         {//не заглушены
                             <td>
-                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
+                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-user-slash"></i>
                                 </a>
                             </td>
@@ -89,7 +89,7 @@
                         else
                         {
                             <td>
-                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
+                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-user"></i>
                                 </a>
                             </td>
@@ -97,7 +97,7 @@
                         if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == matches[1].Value) == false)
                         {//не заглушены
                             <td>
-                                <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[1].Value })">
+                                <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  name = matches[1].Value })">
                                     <i class="fas fa-volume-mute"></i>
                                 </a>
                             </td>
@@ -106,7 +106,7 @@
                         else
                         {
                             <td>
-                                <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[1].Value })">
+                                <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  name = matches[1].Value })">
                                     <i class="fas fa-volume-up"></i>
                                 </a>
                             </td>
@@ -122,7 +122,7 @@
                         if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == matches[0].Value) == false)
                         {//не заглушены
                             <td>
-                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
+                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { name = matches[0].Value })">
                                     <i class="fas fa-user-slash"></i>
                                 </a>
                             </td>
@@ -131,7 +131,7 @@
                         else
                         {
                             <td>
-                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
+                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-user"></i>
                                 </a>
                             </td>
@@ -139,7 +139,7 @@
                         if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == matches[1].Value) == false)
                         {//не заглушены
                             <td>
-                                <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[1].Value })">
+                                <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  name = matches[1].Value })">
                                     <i class="fas fa-volume-mute"></i>
                                 </a>
                             </td>
@@ -148,7 +148,7 @@
                         else
                         {
                             <td>
-                                <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[1].Value })">
+                                <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  name = matches[1].Value })">
                                     <i class="fas fa-volume-up"></i>
                                 </a>
                             </td>
@@ -174,7 +174,7 @@
                         if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == matches[0].Value) == false)
                         {//не заглушены
                             <td>
-                                <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
+                                <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-volume-mute"></i>
                                 </a>
                             </td>
@@ -183,7 +183,7 @@
                         else
                         {
                             <td>
-                                <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
+                                <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-volume-up"></i>
                                 </a>
                             </td>
@@ -204,7 +204,7 @@
                         if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == matches[0].Value) == false)
                         {//не заглушены
                             <td>
-                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
+                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-user-slash"></i>
                                 </a>
                             </td>
@@ -213,7 +213,7 @@
                         else
                         {
                             <td>
-                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
+                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-user"></i>
                                 </a>
                             </td>
@@ -240,7 +240,7 @@
                         if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == matches[0].Value) == false)
                         {//не заглушены
                             <td>
-                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[0].Value })">
+                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-user-slash"></i>
                                 </a>
                             </td>
@@ -249,7 +249,7 @@
                         else
                         {
                             <td>
-                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[0].Value })">
+                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  name = matches[0].Value })">
                                     <i class="fas fa-user"></i>
                                 </a>
                             </td>
@@ -257,7 +257,7 @@
                         if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == matches[1].Value) == false)
                         {//не заглушены
                             <td>
-                                <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new { act = true, name = matches[1].Value })">
+                                <a title="Заглушить группу" href="@Url.Action("Mute", "Notifications", new {  name = matches[1].Value })">
                                     <i class="fas fa-volume-mute"></i>
                                 </a>
                             </td>
@@ -266,7 +266,7 @@
                         else
                         {
                             <td>
-                                <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new { act = false, name = matches[1].Value })">
+                                <a title="Включить группу" href="@Url.Action("Mute", "Notifications", new { name = matches[1].Value })">
                                     <i class="fas fa-volume-up"></i>
                                 </a>
                             </td>

@@ -105,6 +105,11 @@
     font-weight: 600;
     margin-left: 10px
 }
+.ikrNotificationTitle a {
+    font-weight: 600;
+    color: #070004;
+    margin-left: 10px
+}
 
 .ikrNotificationBody {
     font-style: italic;

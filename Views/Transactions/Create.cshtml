@@ -12,7 +12,7 @@
                 <br />
                 <label for="1">
                     <span class="glyphicon glyphicon-plus">
-                        <input type="radio" asp-for="OperationType" id="1" value="1">
+                        <input type="radio" asp-for="OperationType" id="1" value="1" checked="checked">
                     </span>
                     Потратить из группового бюджета <i class="fas fa-share-square"></i>
                 </label>
@@ -35,7 +35,7 @@
             </div>
             <div class="form-group wrap-input100 m-b-20">
                 <label asp-for="Amount" class="control-label">Сумма</label>
-                <input oninput="Trans()" id="input" type="number" asp-for="Amount" class="input100" />
+                <input min="1" value="1" oninput="Trans()" id="input" type="number" asp-for="Amount" class="input100" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
         }
@@ -52,18 +52,18 @@
             </div>
             <div class="form-group wrap-input100 m-b-20">
                 <label asp-for="Amount" class="control-label">Сумма</label>
-                <input oninput="Trans2()" id="input" type="number" asp-for="Amount" class="input100" />
+                <input min="1" value="1"  oninput="Trans2()" id="input" type="number" asp-for="Amount" class="input100" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
         }
 
         <div class="form-group wrap-input100 m-b-20">
             <label asp-for="Explanation" class="control-label">Описание</label>
-            <input asp-for="Explanation" class="input100" />
+            <input asp-for="Explanation"  value="xxxx" type="text" minlength="4" class="input100" />
             <span asp-validation-for="Explanation" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <input type="submit" value="Создать" asp-route-name="@ViewBag.Name" class="btn btn-primary" />
+            <input type="submit" value="Создать"  asp-route-name="@ViewBag.Name" class="btn btn-primary" />
         </div>
     </form>
 </div>
@@ -73,19 +73,19 @@
     var x = document.getElementById("input").value;
     var y =@ViewBag.Budget;
     var z =@ViewBag.PersBudget;
-          if (document.getElementById("1").checked && Math.abs(x) <= y) {
+          if (document.getElementById("1").checked && Math.abs(x) < y) {
               document.getElementById("input").setAttribute("min", @ViewBag.MinMinus);
               document.getElementById("input").value = Math.abs(x);
          }
-          else if (document.getElementById("2").checked && Math.abs(x) <= y && Math.abs(x) + z < 2000000000) {
+          else if (document.getElementById("2").checked && Math.abs(x) < y && Math.abs(x) + z < 2000000000) {
               document.getElementById("input").setAttribute("min", @ViewBag.MinMinus);
               document.getElementById("input").value = Math.abs(x);
           }
-          else if (document.getElementById("3").checked && Math.abs(x) <= z && Math.abs(x) + y < 2000000000) {
+          else if (document.getElementById("3").checked && Math.abs(x) < z && Math.abs(x) + y < 2000000000) {
               document.getElementById("input").setAttribute("min", @ViewBag.MinPlus);
               document.getElementById("input").value = Math.abs(x);
           }       
-        else  document.getElementById("input").value = 0;
+        else  document.getElementById("input").value = 1;
     }
     function Trans2() {
         var x = document.getElementById("input").value;
@@ -95,7 +95,7 @@
            document.getElementById("input").setAttribute("min", @ViewBag.MinPlus);
           document.getElementById("input").value = Math.abs(x);
         }
-        else document.getElementById("input").value = 0;
+        else document.getElementById("input").value = 1;
     }
 </script>
 @section Scripts {

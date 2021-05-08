@@ -139,6 +139,10 @@ namespace Biz_collab.Controllers
         }
         public IActionResult Mute( bool act , string name)
         {
+            if (name == null)
+            {
+                return NotFound();
+            }
             if (act) {//заглушить
                 MutedName n = new MutedName 
                 {
@@ -148,17 +152,10 @@ namespace Biz_collab.Controllers
                 _db.MutedNames.Add(n);
             }
             else { //включить
-                MutedName n = new MutedName
-                {
-                    ClientId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value,
-                    Name = name
-                };
+                var n = _db.MutedNames.FirstOrDefault(m=>m.Name==name);
                 _db.MutedNames.Remove(n);
             }
-            if (name == null)
-            {
-                return NotFound();
-            }
+            
             _db.SaveChanges();
             return Redirect(Request.Headers["Referer"].ToString());
         }

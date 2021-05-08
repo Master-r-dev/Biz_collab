@@ -84,7 +84,7 @@ namespace Biz_collab.Data
                 .HasForeignKey(x => x.ClientId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.Entity < MutedName > ()
-                .HasKey(x => x.ClientId);
+                .HasKey(x => x.Id);
             builder.Entity<MutedName>()
                 .HasOne(x => x.Client)
                 .WithMany(m => m.MutedName)

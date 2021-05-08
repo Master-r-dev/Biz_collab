@@ -259,7 +259,7 @@ namespace Biz_collab.Controllers
                             Notification trans_accept = new Notification
                             {
                                 ClientId = transaction.Client.Id,
-                                NotiHeader = "Транзакция одобрена.перевод с счета группы на ваш счет.",
+                                NotiHeader = "Транзакция одобрена.Перевод с счета группы на ваш счет.",
                                 NotiBody = "На сумму=" + transaction.Amount + " в группе:" + transaction.Group.Name,
                                 IsRead = false,
                                 Url = "../Groups/OpenGroup?name=" + transaction.Group.Name
@@ -385,7 +385,7 @@ namespace Biz_collab.Controllers
                             Notification trans_accept = new Notification
                             {
                                 ClientId = transaction.Client.Id,
-                                NotiHeader = "Транзакция одобрена.перевод с счета группы на ваш счет.",
+                                NotiHeader = "Транзакция одобрена.Перевод с счета группы на ваш счет.",
                                 NotiBody = "На сумму=" + transaction.Amount + " в группе:" + transaction.Group.Name,
                                 IsRead = false,
                                 Url = "../Groups/OpenGroup?name=" + transaction.Group.Name

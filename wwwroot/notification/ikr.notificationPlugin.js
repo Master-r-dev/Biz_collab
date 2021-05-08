@@ -91,14 +91,14 @@
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
                             "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB') + "</div>");
                         if (muted.includes(mutedName[0])) {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title = 'Включить участника' href = '' >" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title = 'Включить участника' href = '' >" +
                                 "<i class= 'fa fa-user' onclick = 'memberMuting(this)'></i></a>");
                         } else {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title = 'Заглушить участника' href = '' >" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title = 'Заглушить участника' href = '' >" +
                                 "<i class= 'fa fa-user-slash' onclick = 'memberMuting(this)'></i></a>");
                         }
-                        $("#" + parentId + " .ikrNotificationItems").append("<a title='Удалить уведомление' href=''>" +
-                            "<i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a > ");
+                        $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title='Удалить уведомление' href=''>" +
+                            "<i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a ></div>");
                     } else if (head == "Ва") {
                         var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";
                         $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
@@ -106,18 +106,18 @@
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
                             "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB') + "</div>");
                         if (muted.includes(mutedName[0])) {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title = 'Включить участника' href = '' >" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title = 'Включить участника' href = '' >" +
                                 "<i class= 'fa fa-user' onclick = 'memberMuting(this)'></i></a>");
                         } else {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title = 'Заглушить участника' href = '' >" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title = 'Заглушить участника' href = '' >" +
                                 "<i class= 'fa fa-user-slash' onclick = 'memberMuting(this)'></i></a>");
                         }
                         if (muted.includes(mutedGroup[0])) {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title='Включить группу' href=''>" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title='Включить группу' href=''>" +
                                 "<i class='fas fa-volume-up' onclick='partyMuting(this)'></i></a > ");
                         } else {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title='Заглушить группу' href=''>" +
-                                "<i class='fas fa-volume-mute' onclick='partyMuting(this, true)'></i></a > ");
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title='Заглушить группу' href=''>" +
+                                "<i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a ></div> ");
                         }
 
                         $("#" + parentId + " .ikrNotificationItems").append("<a title='Удалить уведомление' href=''>" +
@@ -125,16 +125,16 @@
                             "<a title='Принять' href=''><i class='fas fa-thumbs-up' onclick='acceptInvite(this)'></a>");
                     } else if (head == "Тр") {
                         var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";
-                        $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
+                        $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +
                             "<h5 class='ikrNotificationTitle'> " + item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)] + "</h5>" +
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
                             "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB') + "</div>");
                         if (muted.includes(mutedGroup[0])) {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title='Включить группу' href=''>" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title='Включить группу' href=''>" +
                                 "<i class='fas fa-volume-up' onclick='partyMuting(this)'></i></a > ");
                         } else {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title='Заглушить группу' href=''>" +
-                                "<i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a > ");
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title='Заглушить группу' href=''>" +
+                                "<i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a ></div> ");
                         }
 
                         $("#" + parentId + " .ikrNotificationItems").append("<a title='Удалить уведомление' href=''>" +
@@ -146,21 +146,21 @@
                             "<div class='ikrNotificationBody'>" + item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)] + "</div>" +
                             "<div class='ikrNofiCreatedDate'>" + new Date(item.createdDate).toLocaleString('en-GB') + "</div>");
                         if (muted.includes(mutedName[0])) {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title = 'Включить участника' href = '' >" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title = 'Включить участника' href = '' >" +
                                 "<i class= 'fa fa-user' onclick = 'memberMuting(this)'></i></a>");
                         } else {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title = 'Заглушить участника' href = '' >" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title = 'Заглушить участника' href = '' >" +
                                 "<i class= 'fa fa-user-slash' onclick = 'memberMuting(this)'></i></a>");
                         }
                         if (muted.includes(mutedGroup[0])) {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title='Включить группу' href=''>" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title='Включить группу' href=''>" +
                                 "<i class='fas fa-volume-up' onclick='partyMuting(this)'></i></a > ");
                         } else {
-                            $("#" + parentId + " .ikrNotificationItems").append("<a title='Заглушить группу' href=''>" +
+                            $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title='Заглушить группу' href=''>" +
                                 "<i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a > ");
                         }
-                        $("#" + parentId + " .ikrNotificationItems").append("<a title='Удалить уведомление' href=''>" +
-                            "<i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a > ");
+                        $("#" + parentId + " .ikrSingleNotiDiv" + "#" + item.id).append("<a title='Удалить уведомление' href=''>" +
+                            "<i class='fas fa-trash-alt' onclick='deleteNoti(this)'></i></a >");
                     }
 
                     $("#" + parentId + " .ikrNotificationTitle .ikrNotificationBody .ikrSingleNotiDiv[Id=" + item.id + "]").click(function () {
@@ -175,7 +175,7 @@
 }(jQuery));
 
 function partyMuting(element) {
-    str = $(element).parent().parent()[0].innerText
+    str = $(element).parent().parent()[0].childNodes[1].innerText
     let result = str.match(/@(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/);
     if ($(element).attr('data-icon') == 'volume-up') {
         $(element).parent().attr('title', 'Включить группу')
@@ -193,7 +193,7 @@ function partyMuting(element) {
 }
 
 function acceptInvite(element) {
-    str = $(element).parent().parent()[0].innerText
+    str = $(element).parent().parent()[0].childNodes[1].innerText
     let result = str.match(/@(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/);
     let request = new XMLHttpRequest();
     request.open("GET", "/Notifications/Accept/" + $(element).parent().parent().attr("id") + "?name=" + result[0], true);
@@ -201,7 +201,7 @@ function acceptInvite(element) {
 }
 
 function memberMuting(element) {
-    str = $(element).parent().parent()[0].innerText
+    str = $(element).parent().parent()[0].childNodes[1].innerText
     let result = str.match(/(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/);
     if ($(element).attr('data-icon') == 'user-slash') {
         $(element).parent().attr('title', 'Включить участника')
@@ -219,8 +219,8 @@ function memberMuting(element) {
 }
 
 function deleteNoti(element, f) {
-    notiId = $(element).parent().parent()[0].id
-    console.log(notiId = $(element).parent().parent()[0].innerText)
+    notiId = $(element).parent().parent();
+    console.log($(element).parent().parent()[0].childNodes[1].innerText);
     let request = new XMLHttpRequest();
     request.open("GET", "/Notifications/Delete/" + notiId + "?act=" + f, true);
     request.send();

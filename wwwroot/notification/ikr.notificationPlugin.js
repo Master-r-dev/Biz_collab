@@ -117,7 +117,7 @@
                                 "<i class='fas fa-volume-up' onclick='partyMuting(this)'></i></a > ");
                         } else {
                             $("#" + parentId + " .ikrNotificationItems").append("<a title='Заглушить группу' href=''>" +
-                                "<i class='fas fa-volume-mute' onclick='partyMuting(this)'></i></a > ");
+                                "<i class='fas fa-volume-mute' onclick='partyMuting(this, true)'></i></a > ");
                         }
 
                         $("#" + parentId + " .ikrNotificationItems").append("<a title='Удалить уведомление' href=''>" +
@@ -218,10 +218,11 @@ function memberMuting(element) {
     }
 }
 
-function deleteNoti(element) {
+function deleteNoti(element, f) {
     notiId = $(element).parent().parent()[0].id
+    console.log(notiId = $(element).parent().parent()[0].innerText)
     let request = new XMLHttpRequest();
-    request.open("GET", "/Notifications/Delete/" + notiId + "?act=False", true);
+    request.open("GET", "/Notifications/Delete/" + notiId + "?act=" + f, true);
     request.send();
 }
 

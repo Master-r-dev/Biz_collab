@@ -207,13 +207,13 @@ function memberMuting(element) {
         $(element).parent().attr('title', 'Включить участника')
         $(element).attr('data-icon', 'user')
         let request = new XMLHttpRequest();
-        request.open("GET", "/Notifications/Mute?act=False&name=" + result[0], true);
+        request.open("GET", "/Notifications/Mute?act=True&name=" + result[0], true);
         request.send();
     } else {
         $(element).parent().attr('title', 'Заглушить участника')
         $(element).attr('data-icon', 'user-slash')
         let request = new XMLHttpRequest();
-        request.open("GET", "/Notifications/Mute?act=True&name=" + result[0], true);
+        request.open("GET", "/Notifications/Mute?act=False&name=" + result[0], true);
         request.send();
     }
 }

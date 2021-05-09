@@ -33,7 +33,7 @@
                 <br />
                 <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
-            <div class="form-group wrap-input100 m-b-20">
+            <div class="form-group wrap-input100" style="margin-bottom: 20px;">
                 <label asp-for="Amount" class="control-label">Сумма</label>
                 <input min="1" value="1" oninput="Trans()" id="input" type="number" asp-for="Amount" class="input100" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
@@ -50,14 +50,14 @@
                 </label>
                 <span asp-validation-for="OperationType" class="text-danger"></span>
             </div>
-            <div class="form-group wrap-input100 m-b-20">
+            <div class="form-group wrap-input100" style="margin-bottom: 20px;">
                 <label asp-for="Amount" class="control-label">Сумма</label>
                 <input min="1" value="1"  oninput="Trans2()" id="input" type="number" asp-for="Amount" class="input100" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
         }
 
-        <div class="form-group wrap-input100 m-b-20">
+        <div class="form-group wrap-input100" style="margin-bottom: 20px;">
             <label asp-for="Explanation" class="control-label">Описание</label>
             <input asp-for="Explanation"  value="xxxx" type="text" minlength="4" class="input100" />
             <span asp-validation-for="Explanation" class="text-danger"></span>

@@ -2,7 +2,7 @@
 
 @{ ViewData["Title"] = "Изменить параметры группы" + Model.Name; }
 
-<div class="create-group color bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
+<div class="create-group color">
     <form class="scroll" asp-action="Edit">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" />

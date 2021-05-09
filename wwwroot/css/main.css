@@ -353,8 +353,22 @@ iframe {
 	opacity: 1;
 }
 
+.styles {
+	background: #202020;
+	border-radius: 10px;
+	padding-right: 20px;
+	padding-left: 20px;
+	padding-bottom: 20px;
+}
+
 .wrap-login100 {
 	overflow: hidden;
+	background: #202020;
+	border-radius: 10px;
+	padding-left: 50px;
+	padding-right: 50px;
+	padding-top: 50px;
+	padding-bottom: 50px;
 }
 
 .tranzactions-head {
@@ -554,6 +568,12 @@ iframe {
 .create-group {
 	width: 500px;
 	margin: auto;
+	background: #202020;
+	border-radius: 10px;
+	padding-right: 50px;
+	padding-left: 50px;
+	padding-bottom: 50px;
+	padding-top: 50px;
 }
 
 .voting {
@@ -645,6 +665,7 @@ iframe {
 
 .my-balance {
 	text-align: center;
+	padding-top: 7px;
 }
 
 .my-balance-box {
@@ -928,6 +949,12 @@ ol > a > li {
 
 .chart {
 	margin-bottom: 5px;
+	background: #202020;
+	border-radius: 10px;
+	padding-right: 20px;
+	padding-left: 20px;
+	padding-bottom: 20px;
+	padding-top: 5px;
 }
 
 @media (max-width: 992px) {
@@ -961,6 +988,9 @@ ol > a > li {
 .transactions-box {
 	width: 50%;
 	margin: 5px;
+	background: #202020;
+	border-radius: 10px;
+	padding-left: 20px;
 }
 
 .participants-box {
@@ -969,6 +999,11 @@ ol > a > li {
 	overflow-x: hidden;
 	overflow-y: auto;
 	text-align: justify;
+	background: #202020;
+	border-radius: 10px;
+	padding-right: 20px;
+	padding-left: 20px;
+	padding-bottom: 20px;
 }
 
 .chat-box {
@@ -977,7 +1012,7 @@ ol > a > li {
 	height: 445px;
 	position:absolute;
 	right:-4px;
-	top: 370px;
+	top: 380px;
 	text-align: justify;
 }
 
@@ -1112,4 +1147,16 @@ ol > a > li {
 
 .a-color p {
 	color: #000;
+}
+.alls {
+	padding-top: 7px;
+	font-size: 1.5rem;
+	color: #adadad;
+}
+.managenav {
+	background: #202020;
+	border-radius: 10px;
+	padding-right: 20px;
+	padding-left: 20px;
+	padding-bottom: 20px;
 }

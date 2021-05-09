@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Главная";
 }
-<div class="wrap-login100 search bg-b b-r-10 p-l-50 p-r-50 p-t-10 p-b-10">
+<div class="wrap-login100 search">
     <form asp-action="Index" method="get">
         <div class="form-actions no-color search-box" style="width: auto">
             <input class="search-text c-g" type="text" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Поиск..." />
@@ -14,7 +14,7 @@
     </form>
 </div>
 
-<div class="wrap-login100 tr-80 top-groups bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
+<div class="wrap-login100 tr-80 top-groups">
     <h2 class="c-g"><a class="f-s-1rem">Все группы</a></h2>
     <table class="default-table">
         @foreach (var group in Model)
@@ -94,7 +94,7 @@
          >>
     </a>
 </div>
-<div class="wrap-login100 tr-80 my-groups bg-b b-r-10 p-l-50 p-r-50 p-t-50 p-b-50">
+<div class="wrap-login100 tr-80 my-groups">
     <h2 class="c-g">
         <a class="f-s-1rem">Мои группы</a>
         <a asp-controller="Groups" asp-action="Create" title="Создать группу">

@@ -2,7 +2,7 @@
 <script src="~/notification/ikr.notificationPlugin.js" charset="windows-1251"></script>
 @model PaginatedList<Biz_collab.Models.Notification>
 
-<div class="transactions-box bg-b b-r-10 p-l-20 p-r-20p-b-20" style="width: auto">
+<div class="transactions-box" style="width: auto">
     <h4 class="c-g">
         Мои уведомления
     </h4>
@@ -283,7 +283,7 @@
     </table>
 
 
-    <div class="m-r-20" align="right">
+    <div align="right" style="margin-right: 20px;">
         @{
             var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
             var nextDisabled = !Model.HasNextPage ? "disabled" : "";

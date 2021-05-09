@@ -275,7 +275,7 @@ namespace Biz_collab.Controllers
                             NotiHeader = "Новый донатер",
                             NotiBody = " Добавился пользователь-" + client.Login + " в вашей группе:" + @group.Name,
                             IsRead = false,
-                            Url = ""
+                            Url = "../Groups/OpenGroup?name=" + @group.Name
                         };
                         _db.Notifications.Add(newUser);
                     }
@@ -304,7 +304,7 @@ namespace Biz_collab.Controllers
                             NotiHeader = "Новый участник",
                             NotiBody = " Добавился пользователь-" + client.Login + " в вашей группе:" + @group.Name,
                             IsRead = false,
-                            Url = ""
+                            Url = "../Groups/OpenGroup?name=" + @group.Name
                         };
                         _db.Notifications.Add(newUser);
                     }
@@ -333,7 +333,7 @@ namespace Biz_collab.Controllers
                             NotiHeader = "Новый VIP",
                             NotiBody = " Добавился пользователь-" + client.Login + " в вашей группе:" + @group.Name,
                             IsRead = false,
-                            Url = ""
+                            Url = "../Groups/OpenGroup?name=" + @group.Name
                         };
                         _db.Notifications.Add(newUser);
                     }
@@ -355,7 +355,7 @@ namespace Biz_collab.Controllers
                             NotiHeader = "Новый модератор",
                             NotiBody = " Добавился пользователь-" + client.Login + " в вашей группе:" + @group.Name,
                             IsRead = false,
-                            Url = ""
+                            Url = "../Groups/OpenGroup?name=" + @group.Name
                         };
                         _db.Notifications.Add(newUser);
                     }
@@ -707,7 +707,7 @@ namespace Biz_collab.Controllers
                             {
                                 ClientId = rp.ClientId,
                                 NotiHeader = "Изменена группа",
-                                NotiBody = "Пользователем-"+ this.User.FindFirst(ClaimTypes.Name) + " .Изменения находятся в деталях группы:"+ name,
+                                NotiBody = "Пользователем-"+ this.User.FindFirst(ClaimTypes.Name).Value + " .Изменения находятся в деталях группы:"+ name,
                                 IsRead = false,
                                 Url = "../Groups/OpenGroup?name=" + group.Name
                             };

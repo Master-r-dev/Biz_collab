@@ -10,19 +10,19 @@
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post" class="login100-form validate-form">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group wrap-input100 validate-input" style="margin-bottom: 20px;" data-validate="Email is reauired">
-                <label asp-for="Input.Email" class="label-input100"></label>
+                <i class="far fa-user" style="color:aqua;"></i><label asp-for="Input.Email" class="label-input100"></label>
                 <input asp-for="Input.Email" class="form-control input100" placeholder="Введите Email" />
-                <span asp-validation-for="Input.Email" class="text-danger focus-input100" data-symbol="&#xf206;"></span>
+                <span asp-validation-for="Input.Email" class="text-danger focus-input100" ></span>
             </div>
             <div class="form-group wrap-input100 validate-input" data-validate="Password is required">
-                <label asp-for="Input.Password" class="label-input100"></label>
+                <i class="fas fa-key" style="color:aqua;"></i><label asp-for="Input.Password" class="label-input100"></label>
                 <input asp-for="Input.Password" class="form-control input100"  placeholder="Введите пароль" />
-                <span asp-validation-for="Input.Password" class="text-danger focus-input100" data-symbol="&#xf190;"></span>
+                <span asp-validation-for="Input.Password" class="text-danger focus-input100"></span>
             </div>
             <div class="form-group wrap-input100 validate-input" data-validate="Password is required">
-                <label asp-for="Input.ConfirmPassword" class="label-input100"></label>
+                <i class="fas fa-key" style="color:aqua;"></i><label asp-for="Input.ConfirmPassword" class="label-input100"></label>
                 <input asp-for="Input.ConfirmPassword" class="form-control input100" placeholder="Повторите пароль"/>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger focus-input100" data-symbol="&#xf190;"></span>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger focus-input100" ></span>
             </div>
             <div class="form-group container-login100-form-btn" style="padding-left: 100px; padding-right: 100px;">
                     <div class="wrap-login100-form-btn">

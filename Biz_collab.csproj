@@ -27,8 +27,6 @@
 
   <ItemGroup>
     <None Include="wwwroot\fonts\.DS_Store" />
-    <None Include="wwwroot\fonts\iconic\fonts\Material-Design-Iconic-Font.svg" />
-    <None Include="wwwroot\fonts\iconic\fonts\Material-Design-Iconic-Font.woff2" />
     <None Include="wwwroot\images\.DS_Store" />
     <None Include="wwwroot\images\background\.DS_Store" />
   </ItemGroup>

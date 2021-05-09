@@ -69,6 +69,7 @@
             ControllerName: "Notifications",
             ActionName: "AllNotifications"
         }, options);
+        var muted = this.localStorage.getItem("mutedNames");
         var parentId = $(this).attr("id");
         if ($.trim(parentId) != "" && parentId.length > 0) {
             $("#" + parentId + " .ikrNotifications .ikrSeeAll").click(function () {
@@ -83,7 +84,7 @@
                     head = item[ikrLowerFirstLetter(defaultSettings.ListTitlePropName)].substring(0, 2);
                     let mutedName = item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)].match(/(?<=[-])[^\s]+@[^\s]+\.[^\s]+/);
                     let mutedGroup = item[ikrLowerFirstLetter(defaultSettings.ListBodyPropName)].match(/(?<=[:])[^\s]+/);
-                    let muted = this.localStorage.getItem("mutedNames")
+                    
                     if (head == "Óä") {
                         var className = item.isRead ? "" : " ikrSingleNotiDivUnReadColor";
                         $("#" + parentId + " .ikrNotificationItems").append("<div class='ikrSingleNotiDiv" + className + "' Id=" + item.id + ">" +

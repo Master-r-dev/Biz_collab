@@ -7,17 +7,15 @@
 {
     <script type="text/javascript" charset="windows-1251">
         $(document).ready(function () {
-            $("#noti_Container").ikrNotificationSetup();
-            $.get(
-                "/Notifications/GetNotifications",
-                onAjaxNotiSuccess
-            );
-
             $.get(
                 "/Notifications/GetMutedNames",
                 onAjaxMutedSuccess
             );
-            
+            $("#noti_Container").ikrNotificationSetup();
+            $.get(
+                "/Notifications/GetNotifications",
+                onAjaxNotiSuccess
+            );      
             function onAjaxNotiSuccess(data) {
                 var notifications = data;
                 $("#noti_Container").ikrNotificationCount({

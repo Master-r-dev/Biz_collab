@@ -9,15 +9,19 @@
   <ItemGroup>
     <Compile Remove="Views\Transaction\**" />
     <Compile Remove="wwwroot\fonts\font-awesome-4.7.0\**" />
+    <Compile Remove="wwwroot\fonts\fontawesome-free-5.15.3-web\sprites\**" />
     <Compile Remove="wwwroot\vendor\**" />
     <Content Remove="Views\Transaction\**" />
     <Content Remove="wwwroot\fonts\font-awesome-4.7.0\**" />
+    <Content Remove="wwwroot\fonts\fontawesome-free-5.15.3-web\sprites\**" />
     <Content Remove="wwwroot\vendor\**" />
     <EmbeddedResource Remove="Views\Transaction\**" />
     <EmbeddedResource Remove="wwwroot\fonts\font-awesome-4.7.0\**" />
+    <EmbeddedResource Remove="wwwroot\fonts\fontawesome-free-5.15.3-web\sprites\**" />
     <EmbeddedResource Remove="wwwroot\vendor\**" />
     <None Remove="Views\Transaction\**" />
     <None Remove="wwwroot\fonts\font-awesome-4.7.0\**" />
+    <None Remove="wwwroot\fonts\fontawesome-free-5.15.3-web\sprites\**" />
     <None Remove="wwwroot\vendor\**" />
   </ItemGroup>
 

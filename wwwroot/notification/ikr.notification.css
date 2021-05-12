@@ -88,22 +88,26 @@
 .ikrNotificationItems {
     height: 300px;
     overflow-y: scroll;
-    background-color: #14bec6;
+    background: linear-gradient(to right,#2e4cba, #0e1631);
 }
 
 .ikrSingleNotiDiv {
-    border-top: 3px solid #165c98;
-    cursor: pointer;
-    color: #000
+    border-top: 3px solid #565656;
+    border-radius: 20px;    
+    color: #000;
+    background: linear-gradient(to right,#007a80, #a598b2);
 }
 
 .ikrSingleNotiDivUnReadColor {
-    background: #f09;
+    background: linear-gradient(to right,purple, #8135d0);
+}
+.ikrNotiOptions {
+    margin-left: 6px
 }
 
 .ikrNotificationTitle {
     font-weight: 600;
-    margin-left: 10px
+    margin-left: 10px;
 }
 .ikrNotificationTitle a {
     font-weight: 600;

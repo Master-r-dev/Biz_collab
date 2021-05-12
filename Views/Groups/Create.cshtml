@@ -7,7 +7,7 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
             <label asp-for="Name" class="control-label">Название группы</label>
-            <input asp-for="Name" type="text" onkeypress="return event.charCode != 32" class="form-control input100" />
+            <input asp-for="Name" type="text" id="xnamex" class="form-control input100" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group">
@@ -82,7 +82,11 @@
     </form>
 </div>
 <script>
-    
+    document.getElementById("xnamex").onkeypress = function (e) {
+        var chr = String.fromCharCode(e.which);
+        if ("!#$%^&*()_-=+~?`№;:{}[]|,@("@")></\"\'\\".indexOf(chr) >= 0)
+            return false;
+    };
 </script>
 
 @section Scripts {

@@ -1,7 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Biz_collab.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +18,17 @@ namespace Biz_collab.Models
         {
             _db = db;
         }
+        public override async Task OnConnectedAsync()
+        {
+            await Clients.Caller.SendAsync("Notify", $"{Context.ConnectionId} вошел в чат");
+            await base.OnConnectedAsync();
+        }
+        public async Task AddGr(string Groupname)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, Groupname);
+
+        }
+        
         public async Task Send(string Text,string Groupname ,string[] notify)
         {
             //если клиент состоит в группе и его роль не забанен
@@ -24,7 +39,7 @@ namespace Biz_collab.Models
             
             if (client.R != "Забанен" || client != null)
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, Groupname);
+                
                 //объявляем сообщение нового дня              
                 if (!_db.Groups.AsNoTracking().Include(g => g.Messages).FirstOrDefault(g => g.Name == Groupname).Messages.Any() || message.Time.Day - _db.Groups.AsNoTracking().Include(g => g.Messages).FirstOrDefault(g => g.Name == Groupname).Messages.Last().Time.Day >= 1)
                 { await Clients.Group(Groupname).SendAsync("Receive", message.Name, message.Text, message.Time.ToString("HH:mm:ss"), message.Time.ToString("ddd , dd/MM/yy")); }

@@ -7,11 +7,12 @@
 {
     <script type="text/javascript" charset="windows-1251">
         $(document).ready(function () {
+            
+            $("#noti_Container").ikrNotificationSetup();
             $.get(
                 "/Notifications/GetMutedNames",
                 onAjaxMutedSuccess
             );
-            $("#noti_Container").ikrNotificationSetup();
             $.get(
                 "/Notifications/GetNotifications",
                 onAjaxNotiSuccess

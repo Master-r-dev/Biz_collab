@@ -25,7 +25,7 @@
                             </label> 
                         }
 
-                        @if (ViewBag.PersBudget >= Model.EntryFeeVIP) {
+                        @if (ViewBag.PersBudget >= Model.EntryFeeVIP && Model.EntryFeeVIP>0) {
                             <label for="3" class="control-label">
                                 <input type="radio" id="3" onclick="JoinGroup()" value="3" name="sum" />
                                 VIP(можете ставить на голосование и пополнять счет).Голос равен 1/4 сумме участников
@@ -33,7 +33,7 @@
                             </label> 
                         }
  
-                        @if (ViewBag.PersBudget >= Model.EntryFeeMod) {
+                        @if (ViewBag.PersBudget >= Model.EntryFeeMod && Model.EntryFeeMod>0) {
                             <label for="4" class="control-label">
                                 <input type="radio" id="4" onclick="JoinGroup()" value="4" name="sum" />
                                 Модератор(можете ставить на голосование и пополнять счет).Голос равен 1/2 сумме участников

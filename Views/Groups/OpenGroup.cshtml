@@ -285,13 +285,27 @@
     const hubConnection = new signalR.HubConnectionBuilder()
         .withUrl("/chat")
         .build();
-   // Прямо через группу чат запускаться не хочет =( Надеюсь и не нужно
-    //.withUrl("https://localhost:44301/Groups/OpenGroup?name=@Model.Name/chat", {
-   //         skipNegotiation: true,
-  //          transport: signalR.HttpTransportType.WebSockets
-   //     })
     hubConnection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
+    async function start() {
+        try {
+            await hubConnection.start();
+            console.log("SignalR Connected.");
+        } catch (err) {
+            console.log(err);
+            setTimeout(start, 5000);
+        }
+    };
 
+    hubConnection.onclose(start);
+
+    // Start the connection.
+    start();
+    var groupname = "@Model.Name";
+    hubConnection.on("Notify", function (message) {
+
+        hubConnection.invoke("AddGr", groupname);
+        console.log('notify');
+    });
     // получение сообщения от сервера
     hubConnection.on('Receive', function (name, text, time, nday) {
         var firstElem = document.getElementById("chatroom").firstChild;
@@ -325,23 +339,6 @@
             elem.appendChild(notifyElem);
             document.getElementById("chatroom").insertBefore(elem, firstElem);
         }
-        $(document).ready(function () {
-            $.get(
-                "/Notifications/GetNotifications",
-                onAjaxSuccess
-            );
-
-            function onAjaxSuccess(data) {
-                var notifications = data;
-                $("#noti_Container").ikrNotificationCount({
-                    NotificationList: notifications,
-                    ListTitlePropName: "NotiHeader",
-                    ListBodyPropName: "NotiBody",
-                    ControllerName: "Notifications",
-                    ActionName: "AllNotifications"
-                });
-            }
-        });
     });
 
     // отправка сообщения на сервер
@@ -353,7 +350,7 @@
     document.getElementById("sendBtn").addEventListener("click", function (e) {
         var text = document.getElementById("message").value;
         if (text != "") {
-            var groupname = "@Model.Name";
+
             var notify = [];
             var cRole="@Model.Clients.FirstOrDefault(c => c.Client.Login == User.Identity.Name).R";
             if (cRole == "Creator" || cRole == "Mod" || cRole == "VIP") {
@@ -372,12 +369,12 @@
                     }
                 }
             }
-            hubConnection.invoke("Send", text, groupname, notify /*, "name": name*/ );
+            hubConnection.invoke("Send", text, groupname, notify);
             document.getElementById("message").value = '';
             }
     });
 
-    hubConnection.start();
+
 </script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">

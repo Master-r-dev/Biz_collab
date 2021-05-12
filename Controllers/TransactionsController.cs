@@ -182,17 +182,13 @@ namespace Biz_collab.Controllers
                 return RedirectToAction("OpenGroup", "Groups", new { name = transaction.Group.Name });
 
             }
-            var rp = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name);
-            if (rp.R == "Забанен")
-            {
-                return Redirect("~/Home/Index");
-            }
-            ViewBag.MinPlus = rp.Group.MinPlus;
-            ViewBag.MinMinus = rp.Group.MinMinus;
+            
+            ViewBag.MinPlus = gc.Group.MinPlus;
+            ViewBag.MinMinus = gc.Group.MinMinus;
             ViewBag.Name = name;
-            ViewBag.Budget = rp.Group.Budget;
-            ViewBag.PersBudget = rp.Client.PersBudget;
-            ViewBag.Role = rp.R;
+            ViewBag.Budget = gc.Group.Budget;
+            ViewBag.PersBudget = gc.Client.PersBudget;
+            ViewBag.Role = gc.R;
             return PartialView();
         }
 
@@ -247,7 +243,7 @@ namespace Biz_collab.Controllers
                             Notification trans_accept = new Notification
                             {
                                 ClientId = transaction.Client.Id,
-                                NotiHeader = "Транзакция одобрена.Перевод с счета группы на причину снятия.",
+                                NotiHeader = "Транзакция одобрена. Перевод с счета группы на причину снятия.",
                                 NotiBody = "На сумму="+ transaction.Amount+ " в группе:" + transaction.Group.Name,
                                 IsRead = false,
                                 Url = "../Groups/OpenGroup?name=" + transaction.Group.Name
@@ -270,7 +266,7 @@ namespace Biz_collab.Controllers
                             Notification trans_accept = new Notification
                             {
                                 ClientId = transaction.Client.Id,
-                                NotiHeader = "Транзакция одобрена.Перевод с счета группы на ваш счет.",
+                                NotiHeader = "Транзакция одобрена. Перевод с счета группы на ваш счет.",
                                 NotiBody = "На сумму=" + transaction.Amount + " в группе:" + transaction.Group.Name,
                                 IsRead = false,
                                 Url = "../Groups/OpenGroup?name=" + transaction.Group.Name

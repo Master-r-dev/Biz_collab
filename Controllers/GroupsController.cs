@@ -605,7 +605,7 @@ namespace Biz_collab.Controllers
                 Notification BanClient = new Notification
                 {
                     ClientId = client.ClientId,
-                    NotiHeader = "Вы были заблокированы.Осмыслите свое поведение.",
+                    NotiHeader = "Вы были заблокированы. Осмыслите свое поведение.",
                     NotiBody = "Пользователем-" + this.User.FindFirst(ClaimTypes.Name).Value + " в группе:" + name,
                     IsRead = false,
                     Url = ""

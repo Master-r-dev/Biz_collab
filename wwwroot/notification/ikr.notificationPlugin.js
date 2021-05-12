@@ -25,17 +25,7 @@
                 .css({ top: '-10px' })
                 .animate({ top: '-2px', opacity: 1 }, 500);
 
-            $('#' + parentId + ' .ikrNoti_Button').click(function () {
-                opt.NotificationList.forEach(function (item) {
-                    item.isRead = true
-                    let json = JSON.stringify(item);
-                    console.log(json)
-                    let request = new XMLHttpRequest();
-                    request.open("PUT", "/notificationSeen", true);
-                    request.setRequestHeader("Content-Type", "application/json");
-                    request.send(json);
-                });   
-
+            $('#' + parentId + ' .ikrNoti_Button').click(function () {       
                 $('#' + parentId + ' .ikrNotifications').fadeToggle('fast', 'linear', function () {
                     if ($('#' + parentId + ' .ikrNotifications').is(':hidden')) {
                         $('#' + parentId + ' .ikrNoti_Button').css('background-color', defaultSettings.AfterSeenColor);
@@ -69,8 +59,20 @@
             ControllerName: "Notifications",
             ActionName: "AllNotifications"
         }, options);
-        var muted = localStorage.getItem("mutedNames");
         var parentId = $(this).attr("id");
+        $('#' + parentId + ' .ikrNoti_Button').click(function () {
+            defaultSettings.NotificationList.forEach(function (item) {
+                item.isRead = true
+                let json = JSON.stringify(item);
+                console.log(json)
+                let request = new XMLHttpRequest();
+                request.open("PUT", "/notificationSeen", true);
+                request.setRequestHeader("Content-Type", "application/json");
+                request.send(json);
+            });            
+            });
+        var muted = localStorage.getItem("mutedNames");
+        
         if ($.trim(parentId) != "" && parentId.length > 0) {
             var totalUnReadNoti = defaultSettings.NotificationList.filter(x => x.isRead == false).length;
             $('#' + parentId + ' .ikrNoti_Counter').text(totalUnReadNoti);

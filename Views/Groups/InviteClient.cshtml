@@ -115,10 +115,20 @@
     }
     function SetP() {
         if (document.getElementById("s_mode").checked) {
-         if (document.getElementById("one").checked) { document.getElementById("power").value = 1; document.getElementById("buttonn").style.display = "block"; }
-            else if (document.getElementById("two").checked) { document.getElementById("power").value = 1; document.getElementById("buttonn").style.display = "block"; }
-            else if (document.getElementById("three").checked) { document.getElementById("power").value = @Convert.ToInt32(Math.Ceiling(Convert.ToDouble(ViewBag.Count * 0.25))); document.getElementById("buttonn").style.display = "block"; }
-            else if (document.getElementById("four").checked) { document.getElementById("power").value = @Convert.ToInt32(Math.Floor(Convert.ToDouble(ViewBag.Count * 0.5))); document.getElementById("buttonn").style.display = "block"; }
+             if (document.getElementById("one").checked) { document.getElementById("power").value = 1; document.getElementById("buttonn").style.display = "block"; }
+                else if (document.getElementById("two").checked) { document.getElementById("power").value = 1; document.getElementById("buttonn").style.display = "block"; }
+             else if (document.getElementById("three").checked) {
+                 if (@Convert.ToInt32(Math.Ceiling(Convert.ToDouble(ViewBag.Count * 0.25)))!=0) {
+                     document.getElementById("power").value = @Convert.ToInt32(Math.Ceiling(Convert.ToDouble(ViewBag.Count * 0.25))); document.getElementById("buttonn").style.display = "block";
+                 }
+                 else { document.getElementById("power").value = 1; document.getElementById("buttonn").style.display = "block"; }
+             }
+             else if (document.getElementById("four").checked) {
+                 if (@Convert.ToInt32(Math.Ceiling(Convert.ToDouble(ViewBag.Count * 0.5)))!=0) {
+                     document.getElementById("power").value = @Convert.ToInt32(Math.Ceiling(Convert.ToDouble(ViewBag.Count * 0.5))); document.getElementById("buttonn").style.display = "block";
+                 }
+                else { document.getElementById("power").value = 1; document.getElementById("buttonn").style.display = "block"; }
+             }
          }
     }
 </script>

@@ -57,11 +57,16 @@ namespace Biz_collab.Controllers
             string sortOrder,
             string currentFilter,
             string searchString,
-            int? pageNumber) //Сама группа
-        {            
+            int? pageNumber,
+            string alert) //Сама группа
+        {    
+            
             if (name == null)
             {
                 return NotFound();
+            }
+            if (alert != "") {
+                ViewBag.Alert = alert;
             }
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var client = await _db.Clients.AsNoTracking().Include(c=>c.MyGroups).FirstAsync(c=>c.Id== currentUserID);            
@@ -389,26 +394,16 @@ namespace Biz_collab.Controllers
         public  IActionResult EditRoleClient(string name,string login,string Percent, [Bind("R,P")] Role_Power rp)
         {   /*код изменение роли клиента*/
             var c = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).ThenInclude(c=>c.MutedName).Include(rp => rp.Group).FirstOrDefault(rp => rp.Client.Login == login && rp.Group.Name == name);
+            string alert = "Ошибка.Пользователь не обновлен";
             if (rp.R==null )
             {
-                ModelState.AddModelError("Role", "Заполнить!");
-                var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                ViewBag.Name = name;
-                ViewBag.Login = c.Client.Login;
-                ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).FirstOrDefault(g => g.Name == name).Clients.Count();
-                ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
-                return PartialView(c);
+                alert = "Заполните роль!";
+                return RedirectToAction("OpenGroup", new { name, alert });
             }
             if (Percent == null && rp.P==0)
             {
-                ModelState.AddModelError("P", "Заполнить!");
-                ModelState.AddModelError("Percent", "Заполнить!");
-                var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                ViewBag.Name = name;
-                ViewBag.Login = c.Client.Login;
-                ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
-                ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
-                return PartialView(c);
+                alert = "Заполните силу или процент!";
+                return RedirectToAction("OpenGroup", new { name, alert });
             }
 
             if (name == null || login==null )
@@ -477,12 +472,8 @@ namespace Biz_collab.Controllers
                 _db.Entry<Role_Power>(rp).State = EntityState.Detached;
                 return RedirectToAction("OpenGroup", new { name });
             }
-            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            ViewBag.Name = name;
-            ViewBag.Login = c.Client.Login;
-            ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
-            ViewBag.EditorRole = _db.Role_Powers.Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
-            return PartialView(c);
+            
+            return RedirectToAction("OpenGroup", new { name, alert });
         }
         [Authorize]
         [HttpGet]
@@ -498,26 +489,19 @@ namespace Biz_collab.Controllers
         [HttpPost]
         public IActionResult InviteClient(string name, string login, string Percent, [Bind("R,P")] Role_Power rp)
         {   /*код приглашения клиента*/
+            string alert = "Приглашение не отправлено.Пользователь уже есть или не существует";
             if (!ClientExists(login, name) && _db.Clients.AsNoTracking().Any(c => c.Login == login))
             {
+                
                 if (rp.R == null)
                 {
-                    ModelState.AddModelError("Role", "Заполнить!");
-                    var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                    ViewBag.Name = name;
-                    ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
-                    ViewBag.InviterRole = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
-                    return PartialView();
+                     alert = "Заполните роль!";
+                    return RedirectToAction("OpenGroup", new { name,alert });
                 }
                 if (Percent == null && rp.P == 0)
                 {
-                    ModelState.AddModelError("P", "Заполнить!");
-                    ModelState.AddModelError("Percent", "Заполнить!");
-                    var ID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                    ViewBag.Name = name;
-                    ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
-                    ViewBag.InviterRole = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == ID && rp.Group.Name == name).R;
-                    return PartialView();
+                     alert = "Заполните силу или процент!";
+                    return RedirectToAction("OpenGroup", new { name, alert });
                 }
 
                 if (name == null || login == null)
@@ -581,16 +565,13 @@ namespace Biz_collab.Controllers
                     return RedirectToAction("OpenGroup", new { name });
                 }
             }
-            var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            ViewBag.Name = name;
-            ViewBag.Count = _db.Groups.AsNoTracking().Include(g => g.Clients).ThenInclude(rp => rp.Client).First(g => g.Name == name).Clients.Count();
-            ViewBag.InviterRole = _db.Role_Powers.AsNoTracking().Include(rp => rp.Client).Include(rp => rp.Group).FirstOrDefault(rp => rp.ClientId == currentUserID && rp.Group.Name == name).R;
-            return PartialView();
+            
+            return RedirectToAction("OpenGroup", new { name, alert});
         }
         
         private bool ClientExists(string login,string name)
         {
-            return _db.Groups.First(g => g.Name == name).Clients.Any(e => e.Client.Login == login);
+            return _db.Groups.Include(g=>g.Clients).ThenInclude(rp=>rp.Client).First(g => g.Name == name).Clients.Any(e => e.Client.Login == login);
         }
         [Authorize]
         public async Task<IActionResult> BanClient(string Login, string name)

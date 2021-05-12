@@ -172,72 +172,72 @@
 
         @if (currentuserrole == "Creator" || currentuserrole == "Mod")
         {
-        <h2 class="alls">Клиенты  <a class="modal-link" href="@Url.Action("InviteClient", "Groups", new { name = Model.Name })" title="Добавить участника"><i class="fas fa-user-plus"></i></a> </h2>
+            <h2 class="alls">Клиенты  <a class="modal-link" href="@Url.Action("InviteClient", "Groups", new { name = Model.Name })" title="Добавить участника"><i class="fas fa-user-plus"></i></a> </h2>
         }
         else
         {
             <h2 class="alls">Клиенты</h2>
         }
 
-    <table class="default-table scroll" style="overflow-x: hidden; overflow-y: auto; text-align: justify;">
+        <table class="default-table scroll" style="overflow-x: hidden; overflow-y: auto; text-align: justify;">
 
-        @foreach (var client in Model.Clients)
-        {
-            var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
-            <tr>
-                <td class="@currentuser">
-                    @client.Client.Login
-                </td>
-                <td class="@currentuser">
-                    @client.R
-                </td>
-                <td class="@currentuser">
-                    @client.P
-                </td>
-                @if (currentuser == "")
-                {
-                    @if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == client.Client.Login) == false)
-                    {//не заглушены
-                        <td>
-                            <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { name = client.Client.Login })">
-                                <i class="fas fa-user-slash"></i>
-                            </a>
-                        </td>
-                    }
-                    else
+            @foreach (var client in Model.Clients)
+            {
+                var currentuser = User.Identity.Name == client.Client.Login ? "currentuser" : "";
+                <tr>
+                    <td class="@currentuser">
+                        @client.Client.Login
+                    </td>
+                    <td class="@currentuser">
+                        @client.R
+                    </td>
+                    <td class="@currentuser">
+                        @client.P
+                    </td>
+                    @if (currentuser == "")
                     {
-                        <td>
-                            <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  name = client.Client.Login })">
-                                <i class="fas fa-user"></i>
-                            </a>
-                        </td>
-                    }
-                }
-                @if (currentuserrole == "Creator" || currentuserrole == "Mod")
-                {
-                    @if (client.R != "Creator" && client.Client.Login != User.Identity.Name)
-                    {
-                        @if (client.R != "Забанен")
-                        {
+                        @if (((IEnumerable<dynamic>)ViewBag.MutedName).Any(m => m.Name == client.Client.Login) == false)
+                        {//не заглушены
                             <td>
-                                <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@client.Client.Login" asp-route-name="@Model.Name">
-                                    <i class="fas fa-ban @currentuser"></i>
+                                <a title="Заглушить участника" href="@Url.Action("Mute", "Notifications", new { name = client.Client.Login })">
+                                    <i class="fas fa-user-slash"></i>
                                 </a>
                             </td>
                         }
-                        <td>
-                            <a class="modal-link" href="@Url.Action("EditRoleClient", "Groups", new { Login = client.Client.Login, name = Model.Name })" title="Изменить роль участника">
-                                <i class="fas fa-edit @currentuser"></i>
-                            </a>
-                        </td>
+                        else
+                        {
+                            <td>
+                                <a title="Включить участника" href="@Url.Action("Mute", "Notifications", new {  name = client.Client.Login })">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                            </td>
+                        }
                     }
-                }
-            </tr>
-        }
+                    @if (currentuserrole == "Creator" || currentuserrole == "Mod")
+                    {
+                        @if (client.R != "Creator" && client.Client.Login != User.Identity.Name)
+                        {
+                            @if (client.R != "Забанен")
+                            {
+                                <td>
+                                    <a asp-controller="Groups" asp-action="BanClient" asp-route-Login="@client.Client.Login" asp-route-name="@Model.Name">
+                                        <i class="fas fa-ban @currentuser"></i>
+                                    </a>
+                                </td>
+                            }
+                            <td>
+                                <a class="modal-link" href="@Url.Action("EditRoleClient", "Groups", new { Login = client.Client.Login, name = Model.Name })" title="Изменить роль участника">
+                                    <i class="fas fa-edit @currentuser"></i>
+                                </a>
+                            </td>
+                        }
+                    }
+                </tr>
+            }
 
 
-    </table>
-        
+        </table>
+
     </div>
     <div class="chat-box styles">
         <h2 class="alls">Чат</h2>
@@ -280,6 +280,16 @@
         </div>
     </div>
 </div>
+@if (ViewBag.Alert != null)
+{
+    <script type="text/javascript">
+
+            window.onload = function () {
+                alert("@ViewBag.Alert");
+            };
+    </script>
+
+}
 <script src="../js/signalr/dist/browser/signalr.min.js"></script>
 <script>
     const hubConnection = new signalR.HubConnectionBuilder()

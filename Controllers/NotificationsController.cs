@@ -95,8 +95,11 @@ namespace Biz_collab.Controllers
                 bodyStr = reader.ReadToEndAsync().Result;
             }
             var json = JsonConvert.DeserializeObject<Notification>(bodyStr);
-            _db.Entry(json).State = EntityState.Modified;
-            _db.SaveChanges();
+            if (_db.Notifications.Any(n => n.Id == json.Id && n.IsRead==false))
+            {
+                _db.Entry(json).State = EntityState.Modified;
+                _db.SaveChanges();
+            }
             return Redirect(Request.Headers["Referer"].ToString());
         }
         public IActionResult Accept(int? id,string name)

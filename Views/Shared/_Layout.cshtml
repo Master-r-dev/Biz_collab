@@ -1,4 +1,33 @@
-﻿<!DOCTYPE html>
+﻿<script>
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+    function eraseCookie(name) {
+        document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    }
+    var x = getCookie('accept');
+    if (getCookie('accept')) {
+        window.location.replace("https://localhost:44301/Groups/OpenGroup?name=" + x + "&x=true")
+        eraseCookie('accept');
+    }  
+</script>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -6,10 +35,6 @@
     <title>@ViewData["Title"] - Biz_collab</title>
     <link rel="shortcut icon" type="image/x-icon" href="" />
     <link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <!--<link rel="stylesheet" href="~/lib/bootstrap/scss/_modal.scss" />
-     <link rel="stylesheet" href="~/lib/bootstrap/scss/_root.scss" />
-     <link rel="stylesheet" href="~/lib/bootstrap/scss/_transition.scss" />
-     <link rel="stylesheet" href="~/lib/bootstrap/scss/_reboot.scss" />*-->
     <link rel="stylesheet" type="text/css" href="~/fonts/fontawesome-free-5.15.3-web/css/fontawesome.min.css">
     <link rel="stylesheet" type="text/css" href="~/css/site.css" />
     <link rel="stylesheet" type="text/css" href="~/css/main.css">

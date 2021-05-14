@@ -1,18 +1,25 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
-<script src="~/notification/ikr.notificationPlugin.js"  charset="windows-1251"></script>
+<script src="~/notification/ikr.notificationPlugin.js?v=1"  charset="windows-1251"></script>
 
 @if (SignInManager.IsSignedIn(User))
 {
     <script type="text/javascript" charset="windows-1251">
-        $(document).ready(function () {
-            
-            $("#noti_Container").ikrNotificationSetup();
+        $(window).on("load", function () {
+           
             $.get(
                 "/Notifications/GetMutedNames",
                 onAjaxMutedSuccess
             );
+            function onAjaxMutedSuccess(data) {
+                let names = [];
+                data.forEach(function (item, i, arr) {
+                    names.push(item.name)
+                });
+                localStorage.setItem("mutedNames", JSON.stringify(names));
+            }
+            $("#noti_Container").ikrNotificationSetup();            
             $.get(
                 "/Notifications/GetNotifications",
                 onAjaxNotiSuccess
@@ -26,15 +33,8 @@
                     ControllerName: "Notifications",
                     ActionName: "AllNotifications"
                 });
-            }
-
-            function onAjaxMutedSuccess(data) {
-                let names = [];
-                data.forEach(function (item, i, arr) {
-                    names.push(item.name)
-                });
-                localStorage.setItem("mutedNames", JSON.stringify(names));
-            }
+            }    
+            console.log(localStorage);
         });
     </script>
     <ul class="navbar-nav ml-auto">

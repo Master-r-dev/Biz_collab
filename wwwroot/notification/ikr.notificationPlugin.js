@@ -25,7 +25,16 @@
                 .css({ top: '-10px' })
                 .animate({ top: '-2px', opacity: 1 }, 500);
 
-            $('#' + parentId + ' .ikrNoti_Button').click(function () {       
+            $('#' + parentId + ' .ikrNoti_Button').click(function () {    
+                /*opt.NotificationList.forEach(function (item) {
+                    item.isRead = true
+                    let json = JSON.stringify(item);
+                    console.log(json)
+                    let request = new XMLHttpRequest();
+                    request.open("PUT", "/Notifications/NotificationSeen", true);
+                    request.setRequestHeader("Content-Type", "application/json");
+                    request.send(json);
+                });    */
                 $('#' + parentId + ' .ikrNotifications').fadeToggle('fast', 'linear', function () {
                     if ($('#' + parentId + ' .ikrNotifications').is(':hidden')) {
                         $('#' + parentId + ' .ikrNoti_Button').css('background-color', defaultSettings.AfterSeenColor);
@@ -51,7 +60,7 @@
         }
     };
     $.fn.ikrNotificationCount = function (options) {
-        opt = options
+         opt = options;
         var defaultSettings = $.extend({
             NotificationList: [],
             ListTitlePropName: "",
@@ -59,18 +68,7 @@
             ControllerName: "Notifications",
             ActionName: "AllNotifications"
         }, options);
-        var parentId = $(this).attr("id");
-        $('#' + parentId + ' .ikrNoti_Button').click(function () {
-            defaultSettings.NotificationList.forEach(function (item) {
-                item.isRead = true
-                let json = JSON.stringify(item);
-                console.log(json)
-                let request = new XMLHttpRequest();
-                request.open("PUT", "/notificationSeen", true);
-                request.setRequestHeader("Content-Type", "application/json");
-                request.send(json);
-            });            
-            });
+        var parentId = $(this).attr("id");        
         var muted = localStorage.getItem("mutedNames");
         
         if ($.trim(parentId) != "" && parentId.length > 0) {
@@ -177,62 +175,45 @@
         } 
     };
 }(jQuery));
-
 function partyMuting(element) {
     str = $(element).parent().parent()[0].childNodes[1].innerText
-    let result = str.match(/(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/giu);
-    console.log(result)
-    console.log(str)   
-    let request = new XMLHttpRequest();
-    if (result[1] == undefined) {
-        request.open("GET", "/Notifications/Mute?name=" + result[0], true);
-        request.send();
-        if ($(element).attr('data-icon') == 'volume-up') { muted.splice(muted.indexOf(result[0]), 1); }
-        else { muted.push(result[0]); }
-    }
-    else {
-        request.open("GET", "/Notifications/Mute?name=" + result[1], true);
-        request.send();
-        if ($(element).attr('data-icon') == 'volume-up') { muted.splice(muted.indexOf(result[1]), 1); }
-        else { muted.push(result[1]); }
-    }      
-      
-    window.location.reload(true);     
+    let result = str.match(/(?<=[:])[^\s]+/giu);    
+    $.get(
+        "/Notifications/Mute?name=" + result[1],
+        window.location.reload(true)
+    );                
 }
-
 function memberMuting(element) {
     str = $(element).parent().parent()[0].childNodes[1].innerText
-    let result = str.match(/(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/giu);
-    let request = new XMLHttpRequest();
-    request.open("GET", "/Notifications/Mute?name=" + result[0], true);
-    request.send();   
-    if ($(element).attr('data-icon') == 'user') { muted.splice(muted.indexOf(result[0]), 1); }
-    else { muted.push(result[0]); }
-    
-    window.location.reload(true); 
+    let result = str.match(/(?<=[-])[^\s]+@[^\s]+\.[^\s]+/giu);
+    $.get(
+        "/Notifications/Mute?name=" + result[0],
+        window.location.reload(true)
+    );
 }
 function acceptInvite(element, idd) {
     str = $(element).parent().parent()[0].childNodes[1].innerText
-    let result = str.match(/(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/giu);
-    let request = new XMLHttpRequest();
-    request.open("GET", "/Notifications/Accept/" + idd + "?name=" + result[1], true);
-    request.send();
-    window.location.reload(true);
+    let result = str.match(/(?<=[:])[^\s]+/giu);
+    $.get(
+        "/Notifications/Accept/" + idd + "?name=" + result[0],
+        setCookie('accept', result[0], 1) 
+    );
 }
 function deleteNoti(element, idd, f) {
-    let request = new XMLHttpRequest();
     if (f) {
         str = $(element).parent().parent()[0].childNodes[1].innerText
         let result = str.match(/(?<=[-])[^\s]+@[^\s]+\.[^\s]+|(?<=[:])[^\s]+/giu);
-        console.log(result)
-        request.open("GET", "/Notifications/Delete/" + idd + "?act=" + f + "&login=" + result[0] + "&name=" + result[1], true);
-        request.send();
+        $.get(
+            "/Notifications/Delete/" + idd + "?act=" + f + "&login=" + result[0] + "&name=" + result[1],
+            window.location.reload(true)
+        );
     }
     else {
-        request.open("GET", "/Notifications/Delete/" + idd + "?act=" + f, true);
-        request.send();
+        $.get(
+            "/Notifications/Delete/" + idd + "?act=" + f,
+            window.location.reload(true)
+        );
     }
-    window.location.reload(true);
 }
 
 

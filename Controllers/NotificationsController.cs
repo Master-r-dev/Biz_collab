@@ -1,6 +1,8 @@
 ﻿using Biz_collab.Data;
 using Biz_collab.IService;
 using Biz_collab.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -13,7 +15,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace Biz_collab.Controllers
 {
     public class NotificationsController : Controller
@@ -22,11 +23,14 @@ namespace Biz_collab.Controllers
         readonly INotiService _notiService = null;
         List<Notification> _oNotifications = new List<Notification>();
         List<MutedName> _MutedName = new List<MutedName>();
-        public NotificationsController(INotiService notiService, ApplicationDbContext context)
+        private readonly NavigationManager _nm ;
+        public NotificationsController(INotiService notiService, ApplicationDbContext context, NavigationManager nm)
         {
             _notiService = notiService;
             _db = context;
+            _nm = nm;
         }
+        [Authorize]
         public async Task<IActionResult> AllNotifications(string sortOrder,
             string currentFilter,
             string searchString,
@@ -83,7 +87,6 @@ namespace Biz_collab.Controllers
         }
 
 
-        [Route("/notificationSeen")]
         [HttpPut]
         public ActionResult NotificationSeen()
         {
@@ -100,7 +103,8 @@ namespace Biz_collab.Controllers
                 _db.Entry(json).State = EntityState.Modified;
                 _db.SaveChanges();
             }
-            return Redirect(Request.Headers["Referer"].ToString());
+            return Ok();
+            //return Redirect(Request.Headers["Referer"].ToString());
         }
         public IActionResult Accept(int? id,string name)
         {
@@ -120,7 +124,8 @@ namespace Biz_collab.Controllers
                     R = matches[0].Value,
                     P = int.Parse(matches[1].Value, NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite) 
                 };
-                _db.Role_Powers.Add(cl);                
+                _db.Role_Powers.Add(cl);  
+                /*add power to all participanc of the group*/
             }
             else //с процентом
             {
@@ -134,18 +139,24 @@ namespace Biz_collab.Controllers
             };
                 _db.Role_Powers.Add(cl);
             }
-            n.NotiHeader= "ПРИНЯТО " + n.NotiHeader;
-            n.Url = "../Groups/OpenGroup?name=" + name;
-            _db.Entry(n).State = EntityState.Modified;
-            _db.SaveChanges();
-            return Redirect(Request.Headers["Referer"].ToString());
-        }
-        public IActionResult Mute( string name)
-        {
-            if (name == null)
-            {
-                return NotFound();
+            foreach (var item in _db.Notifications.Where(n=>n.ClientId== this.User.FindFirst(ClaimTypes.NameIdentifier).Value && n.NotiHeader.Substring(0, 2) == "Ва")) {
+                 matches = regex.Matches(item.NotiBody);
+                 if (matches.Count > 0)
+                 {
+                     if (matches[0].Value == name)
+                     {
+                         _db.Notifications.Remove(item);
+                     }
+                 }
             }
+            _db.SaveChanges();
+            return Ok();
+             //return RedirectToAction("OpenGroup", "Groups", new { name, x = true });
+            //return Json(Url.Action("OpenGroup", "Groups", new { name, x = true }));
+        }
+        public ActionResult Mute( string name)
+        {
+           
             if (_db.MutedNames.Any(m => m.ClientId== this.User.FindFirst(ClaimTypes.NameIdentifier).Value && m.Name == name))
             {
                 var n = _db.MutedNames.FirstOrDefault(m => m.ClientId == this.User.FindFirst(ClaimTypes.NameIdentifier).Value && m.Name == name);
@@ -160,9 +171,9 @@ namespace Biz_collab.Controllers
                 _db.MutedNames.Add(n);
             }            
             _db.SaveChanges();
-            return Redirect(Request.Headers["Referer"].ToString());
+           return Ok();
         }
-        
+
         public async Task<IActionResult> Delete(int? id, bool act , string login, string name)
         {
             if (id == null)
@@ -188,7 +199,8 @@ namespace Biz_collab.Controllers
                 _db.Notifications.Remove(n);
             }    
             await _db.SaveChangesAsync();
-            return Redirect(Request.Headers["Referer"].ToString());
+            return Ok();
+            //return Redirect(Request.Headers["Referer"].ToString());
         }
     }
 }

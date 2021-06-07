@@ -180,7 +180,8 @@ namespace Biz_collab.Controllers
             {
                 return NotFound();
             }
-            if (act && !_db.MutedNames.Any(m => m.ClientId == _db.Clients.FirstOrDefault(c => c.Login == login).Id && m.Name == this.User.FindFirst(ClaimTypes.Name).Value)) {// удалить и отказаться от приглашения(отослать уведомление об отказе тому кто отправил приглашение)
+            if (act && !_db.MutedNames.Any(m => m.ClientId == _db.Clients.FirstOrDefault(c => c.Login == login).Id && m.Name == this.User.FindFirst(ClaimTypes.Name).Value)) {// удалить и отказаться от приглашения
+                                                                                                                                                                              // (отослать уведомление об отказе тому кто отправил приглашение)
                 
                 Notification declineOffer = new Notification
                 {

@@ -26,7 +26,7 @@
                 .animate({ top: '-2px', opacity: 1 }, 500);
 
             $('#' + parentId + ' .ikrNoti_Button').click(function () {    
-                /*opt.NotificationList.forEach(function (item) {
+                opt.NotificationList.forEach(function (item) {
                     item.isRead = true
                     let json = JSON.stringify(item);
                     console.log(json)
@@ -34,7 +34,7 @@
                     request.open("PUT", "/Notifications/NotificationSeen", true);
                     request.setRequestHeader("Content-Type", "application/json");
                     request.send(json);
-                });    */
+                });    
                 $('#' + parentId + ' .ikrNotifications').fadeToggle('fast', 'linear', function () {
                     if ($('#' + parentId + ' .ikrNotifications').is(':hidden')) {
                         $('#' + parentId + ' .ikrNoti_Button').css('background-color', defaultSettings.AfterSeenColor);

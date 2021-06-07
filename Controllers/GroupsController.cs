@@ -740,7 +740,7 @@ namespace Biz_collab.Controllers
         public async Task<IActionResult> DeleteConfirmed(string name)
         {
             var currentUserID = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var @group = await _db.Groups.Include(g=>g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c=>c.MutedName).FirstAsync(g=>g.Name==name);
+            var @group = await _db.Groups.Include(g=>g.Clients).ThenInclude(rp => rp.Client).ThenInclude(c=>c.MutedName).Include(g => g.Transactions).ThenInclude(t => t.Votes).FirstAsync(g=>g.Name==name);
             var client = @group.Clients.FirstOrDefault(rp=>rp.ClientId== currentUserID && rp.R=="Creator").Client;
 
             if (client != null)
@@ -763,7 +763,7 @@ namespace Biz_collab.Controllers
                         _db.Notifications.Add(deleteGroup);
                     }
                 }
-
+                
                 _db.Groups.Remove(@group);                
                 await _db.SaveChangesAsync();
             }
